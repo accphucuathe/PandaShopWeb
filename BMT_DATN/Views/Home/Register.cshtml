@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewBag.Title = "Đăng ký";
+    Layout = "~/Views/Shared/layout.cshtml";
+}
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        loadBirthday();
+    });
+
+    function loadBirthday() {
+        var date = new Date();
+
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+
+        var today = year + "-" + month + "-" + day;
+        //$("#birthday").attr("value", today);
+        document.getElementById('birthday').value = today;
+    }
+
+    function birthdayChange() {
+        var d = new Date();
+        var date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        var mydate = new Date(document.getElementById('birthday').value);
+
+        if (date < mydate) {
+            alert("Ngày không hợp lệ");
+            loadBirthday();
+        }
+    }
+
+    var checkPass = function () {
+        if (document.getElementById('password').value ==
+            document.getElementById('password2').value) {
+            document.getElementById('messagePass').style.color = 'green';
+            document.getElementById('messagePass').innerHTML = 'Khớp mật khẩu';
+        } else {
+            document.getElementById('messagePass').style.color = 'red';
+            document.getElementById('messagePass').innerHTML = 'Không khớp mật khẩu';
+        }
+    }
+</script>
+
+<div class="loginAll d-flex flex-column">
+    <form class="loginForm m-md-auto" action="/Home/UserRegister" method="post">
+        <span class="h4 mb-0">ĐĂNG KÝ TÀI KHOẢN</span>
+        <div class="form-group">
+            <label for="userName">Tên người dùng:</label>
+            <input type="text" class="form-control" name="userName" id="userName" autocomplete="off" required>
+        </div>
+        <div class="form-group">
+            <label for="birthday">Ngày sinh:</label>
+            <input type="date" class="form-control" name="birthday" id="birthday" onchange="birthdayChange()">
+        </div>
+        <div class="form-group">
+            <label for="address">Địa chỉ:</label>
+            <input type="text" class="form-control" name="address" id="address" autocomplete="off" required>
+        </div>
+        <div class="form-group">
+            <label for="phoneNumber">Số điện thoại:</label>
+            <input type="tel" class="form-control" name="phoneNumber" id="phoneNumber" autocomplete="off" pattern="[0-9]{10}" required>
+        </div>
+        <div class="form-group">
+            <label for="loginName">Tên đăng nhập:</label>
+            <input type="text" class="form-control" name="loginName" id="loginName" autocomplete="off" pattern="[a-z0-9]{1,50}" required>
+        </div>
+        <div class="form-group">
+            <label for="password1">Mật khẩu:</label>
+            <input type="password" class="form-control" name="password1" id="password1" required>
+        </div>
+        <div class="form-group">
+            <label for="password2">Nhập lại mật khẩu:</label>
+            <input type="password" class="form-control" name="password2" id="password2" required onkeyup="checkPass();">
+        </div>
+        <div>
+            <label id="messagePass"></label> <br/>
+            <label style="color:red; font-weight:normal;">@ViewBag.checkRegister</label>
+        </div>
+        <div>
+            <button type="submit" class="ml-auto btn hvr-hover" style="color:#ffffff">Đăng ký</button>
+            <p class="fw-bold mt-2 pt-1 mb-0">
+                Bạn đã có tài khoản? <a href="/dang-nhap" class="link-danger">Đăng nhập</a>
+            </p>
+        </div>
+    </form>
+</div>
+

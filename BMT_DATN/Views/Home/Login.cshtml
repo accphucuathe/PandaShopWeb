@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = "~/Views/Shared/layout.cshtml";
+}
+
+<div class="loginAll d-flex flex-column">
+    <form class="loginForm m-md-auto" action="/Home/UserLogin" method="post">
+        <span class="h4 mb-0">ĐĂNG NHẬP TÀI KHOẢN</span>
+        <div class="form-group">
+            <label for="loginName">Tên đăng nhập:</label>
+            <input type="text" class="form-control" name="loginName" id="loginName">
+        </div>
+        <div class="form-group">
+            <label for="password">Mật khẩu:</label>
+            <input type="password" class="form-control" name="password" id="password">
+        </div>
+        @*<div class="form-group form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox"> Remember me
+            </label>
+        </div>*@
+        <div>
+            <label style="color:red; font-weight:normal;">@ViewBag.checkAccount</label>
+        </div>
+        <div>
+            <button type="submit" class="btn hvr-hover" style="color:#ffffff">Đăng nhập</button>
+            <p class="fw-bold mt-2 pt-1 mb-0">
+                Bạn chưa có tài khoản? <a href="/dang-ky" class="link-danger">Đăng ký ngay</a>
+            </p>
+        </div>
+    </form>
+</div>

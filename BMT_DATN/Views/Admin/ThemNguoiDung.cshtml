@@ -1,0 +1,112 @@
+﻿
+@{
+    ViewBag.Title = "Thêm người dùng";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+@using BMT_DATN.Models;
+@{ 
+    int pms = (int)EnumQuyen.NhanVien;
+}
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#birthday").attr("value", getToday());
+        var q = @pms;
+        $("#permission").val(q);
+    });
+
+    function getToday() {
+        var date = new Date();
+
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+
+        var today = year + "-" + month + "-" + day;
+        return today;
+    }
+    function birthdayChange() {
+        var d = new Date();
+        var date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        var mydate = new Date(document.getElementById('birthday').value);
+
+        if (date < mydate) {
+            alert("Ngày không hợp lệ");
+            document.getElementById('birthday').value = getToday();
+        }
+    }
+
+    var checkPass = function () {
+        if (document.getElementById('password1').value ==
+            document.getElementById('password2').value) {
+            document.getElementById('messagePass').style.color = 'green';
+            document.getElementById('messagePass').innerHTML = 'Khớp mật khẩu';
+        } else {
+            document.getElementById('messagePass').style.color = 'red';
+            document.getElementById('messagePass').innerHTML = 'Không khớp mật khẩu';
+        }
+    }
+</script>
+
+@using BMT_DATN.Models;
+<div class="admin_content_area">
+    <h2>QUẢN LÝ NGƯỜI DÙNG - THÊM NGƯỜI DÙNG</h2>
+    <div>
+        <form class="AdminForm m-md-auto" action="/Admin/AdminThemNguoiDung" method="post">
+            <span class="h4 mb-0">Nhập các thông tin</span>
+            <div class="form-group">
+                <label for="userName">Tên người dùng:</label>
+                <input type="text" class="form-control" name="userName" id="userName" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="birthday">Ngày sinh:</label>
+                <input type="date" class="form-control" name="birthday" id="birthday" onchange="birthdayChange()">
+            </div>
+            <div class="form-group">
+                <label for="address">Địa chỉ:</label>
+                <input type="text" class="form-control" name="address" id="address" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Số điện thoại:</label>
+                <input type="tel" class="form-control" name="phoneNumber" id="phoneNumber" autocomplete="off" pattern="[0-9]{10}" required>
+            </div>
+            <div class="form-group">
+                <label for="loginName">Tên đăng nhập:</label>
+                <input type="text" class="form-control" name="loginName" id="loginName" autocomplete="off" pattern="[a-z0-9]{1,50}" required>
+            </div>
+            <div class="form-group">
+                <label for="password1">Mật khẩu:</label>
+                <input type="password" class="form-control" name="password1" id="password1" required>
+            </div>
+            <div class="form-group">
+                <label for="password2">Nhập lại mật khẩu:</label>
+                <input type="password" class="form-control" name="password2" id="password2" required onkeyup="checkPass();">
+            </div>
+            <div class="form-group">
+                <label for="permission">Quyền người dùng:</label>
+                <select name="permission" id="permission" required>
+                    @{
+                        BMT_DATNEntities db = new BMT_DATNEntities();
+                        var allQuyen = (from q in db.tblQuyens
+                                        select q).ToList();
+                        foreach (var quyen in allQuyen)
+                        {
+                            <option value="@quyen.PK_MaQuyen">@quyen.TenQuyen</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div>
+                <label id="messagePass"></label>
+                <label style="color:red; font-weight:normal;">@ViewBag.checkDuplicateLoginName</label>
+            </div>
+            <div>
+                <button type="submit" class="ml-auto btn hvr-hover" style="color:#ffffff">Thêm mới</button>
+            </div>
+        </form>
+    </div>
+</div>

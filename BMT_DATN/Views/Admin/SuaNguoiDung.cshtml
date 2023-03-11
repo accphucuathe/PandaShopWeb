@@ -1,0 +1,123 @@
+﻿
+@{
+    ViewBag.Title = "Sửa người dùng";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+@using BMT_DATN.Models
+@{
+    Guid maND = ViewBag.maNguoiDung;
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var infoNguoiDung = (from nd in db.tblNguoiDungs
+                         where nd.PK_MaNguoiDung.Equals(maND)
+                         select new
+                         {
+                             nd.PK_MaNguoiDung,
+                             nd.TenNguoiDung,
+                             NgaySinh = nd.NgaySinh.HasValue ? nd.NgaySinh.Value : DateTime.MinValue,
+                             nd.DiaChi,
+                             nd.SoDienThoai,
+                             nd.TenDangNhap,
+                             TinhTrangHoatDong = nd.TinhTrangHoatDong ? 4 : 5,
+                             nd.FK_MaQuyen
+                         }
+                         ).FirstOrDefault();
+}
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".inputPass").hide();
+
+        $('input:radio[name="rsPass"]').change(
+            function () {
+                if (this.checked && this.value == 'Yes') {
+                    $(".inputPass").show();
+                }
+                else {
+                    $(".inputPass").hide();
+                }
+            });
+
+        $("#permission").val(@infoNguoiDung.FK_MaQuyen);
+        $("#activation").val(@infoNguoiDung.TinhTrangHoatDong);
+        //document.getElementById("activation").value = @infoNguoiDung.TinhTrangHoatDong;
+
+    });
+</script>
+
+<div class="admin_content_area">
+    <h2>QUẢN LÝ NGƯỜI DÙNG - SỬA THÔNG TIN NGƯỜI DÙNG</h2>
+    <div>
+        <form class="AdminForm m-md-auto" action="/Admin/AdminSuaNguoiDung" method="post">
+            <span class="h4 mb-0">Sửa các thông tin</span>
+            <div class="form-group">
+                <input hidden value="@infoNguoiDung.PK_MaNguoiDung" name="userId" />
+            </div>
+            <div class="form-group">
+                <label for="userName">Tên người dùng:</label>
+                <input type="text" class="form-control" name="userName" id="userName" value="@infoNguoiDung.TenNguoiDung" disabled>
+            </div>
+            <div class="form-group">
+                <label for="birthday">Ngày sinh:</label>
+                <input type="date" class="form-control" name="birthday" id="birthday" value="@infoNguoiDung.NgaySinh.ToString("yyyy-MM-dd")" disabled>
+            </div>
+            <div class="form-group">
+                <label for="address">Địa chỉ:</label>
+                <input type="text" class="form-control" name="address" id="address" value="@infoNguoiDung.DiaChi" disabled>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Số điện thoại:</label>
+                <input type="tel" class="form-control" name="phoneNumber" id="phoneNumber" value="@infoNguoiDung.SoDienThoai" disabled>
+            </div>
+            <div class="form-group">
+                <label for="loginName">Tên đăng nhập:</label>
+                <input type="text" class="form-control" name="loginName" id="loginName" value="@infoNguoiDung.TenDangNhap" disabled>
+            </div>
+
+            <input type="radio" name="rsPass" id="rdNotResetPass" value="No" checked />
+            <label for="rdNotResetPass">Giữ nguyên mật khẩu</label>
+            <input type="radio" name="rsPass" id="rdResetPass" value="Yes" />
+            <label for="rdResetPass">Đặt lại mật khẩu</label>
+
+            <div class="inputPass">
+                <div class="form-group">
+                    <label for="password1">Mật khẩu:</label>
+                    <input type="password" class="form-control" name="password1" id="password1">
+                </div>
+                <div class="form-group">
+                    <label for="password2">Nhập lại mật khẩu:</label>
+                    <input type="password" class="form-control" name="password2" id="password2" onkeyup="checkPass();">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="activation">Tình trạng hoạt động:</label>
+                <select name="activation" id="activation" required>
+                    <option value="4">Hoạt động</option>
+                    <option value="5">Ngừng hoạt động</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="permission">Quyền người dùng:</label>
+                <select name="permission" id="permission" required>
+                    <option value="1">Chủ cửa hàng</option>
+                    <option value="2">Nhân viên</option>
+                    <option value="3">Khách hàng</option>
+                </select>
+            </div>
+            <div>
+                <label id="messagePass"></label>
+                @*<label style="color:red; font-weight:normal;">@ViewBag.checkDuplicateLoginName</label>*@
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <button type="submit" class="ml-auto btn hvr-hover" style="color:#ffffff">Lưu</button>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="location.href = '@Url.Action("QuanLyNguoiDung", "Admin")'">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,78 @@
+﻿
+@{
+    ViewBag.Title = "Quản lý danh mục sản phẩm";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+<link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+@using BMT_DATN.Models;
+
+<div class="container">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-7"><h2><b>QUẢN LÝ DANH MỤC SẢN PHẨM</b></h2></div>
+                    <div class="col-sm-4">
+                        <div class="search-box">
+                            @*<i class="material-icons">&#xE8B6;</i>
+                                <input type="text" class="form-control" placeholder="Tìm kiếm ... ">*@
+                        </div>
+                    </div>
+                    <div class="col-sm-1" title="Thêm" data-toggle="tooltip">
+                        <a href="/them-danh-muc-san-pham"><i class="material-icons add_user_button">add</i></a>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">STT</th>
+                        <th>Tên danh mục sản phẩm</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        BMT_DATNEntities db = new BMT_DATNEntities();
+                        var allDanhMucSanPham = (from dmsp in db.tblDanhMucSanPhams
+                                            select dmsp).ToList();
+                        int stt = 1;
+                        foreach (var danhmuc in allDanhMucSanPham)
+                        {
+                            <tr>
+                                <td>@stt</td>
+                                <td>@danhmuc.TenDanhMucSanPham</td>
+                                
+                                <td>
+                                    <a href="#" class="view" title="Xem" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                                    <a href="#" class="edit" title="Sửa" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a href="#" class="delete" title="Xóa" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+                    }
+                </tbody>
+            </table>
+            <div class="clearfix">
+                <div class="hint-text">Có tất cả <b>@allDanhMucSanPham.Count()</b> danh mục sản phẩm</div>
+                @*<ul class="pagination">
+                    <li class="page-item disabled"><a href="#"><i class="fa fa-angle-double-left"></i></a></li>
+                    <li class="page-item"><a href="#" class="page-link">1</a></li>
+                    <li class="page-item"><a href="#" class="page-link">2</a></li>
+                    <li class="page-item active"><a href="#" class="page-link">3</a></li>
+                    <li class="page-item"><a href="#" class="page-link">4</a></li>
+                    <li class="page-item"><a href="#" class="page-link">5</a></li>
+                    <li class="page-item"><a href="#" class="page-link"><i class="fa fa-angle-double-right"></i></a></li>
+                </ul>*@
+            </div>
+        </div>
+    </div>
+</div>

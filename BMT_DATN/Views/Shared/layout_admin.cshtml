@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<!-- Basic -->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Site Metas -->
+    <title>@ViewBag.title</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Site Icons -->
+    <link rel="shortcut icon" href="~/Image/layout/panda_logo.png" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
+    <link href="~/Theme/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Site CSS -->
+    <link href="~/Theme/css/style.css" rel="stylesheet" />
+    <!-- Responsive CSS -->
+    <link href="~/Theme/css/responsive.css" rel="stylesheet" />
+    <!-- Custom CSS -->
+    <link href="~/Theme/css/custom.css" rel="stylesheet" />
+    <!-- Custom Admin CSS -->
+    <link href="~/Theme/css/custom_admin.css" rel="stylesheet" />
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+@using BMT_DATN.Controllers;
+@using BMT_DATN.Models;
+<body>
+
+    <!-- Start Main Top -->
+    <header class="main-header" style="position: static">
+        <!-- Start Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
+            <div class="container header-bar">
+                <!-- Start Header Navigation -->
+                <div class="navbar-header">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <a class="navbar-brand" href="index.html"><img height="51px" src="~/Image/layout/padan_logo_merge.png" class="logo" alt=""></a>
+                </div>
+                <!-- End Header Navigation -->
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="navbar-menu">
+                    <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
+                        <li class="nav-item active"><a class="nav-link" href="/trang-chu">Trang chủ</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">Danh mục sản phẩm <i class="fas fa-angle-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Giày Patin</a></li>
+                                <li><a href="#">Giày thể thao</a></li>
+                                <li><a href="#">Ván trượt</a></li>
+                                <li><a href="#">Đồ bảo hộ</a></li>
+                                <li><a href="#">Khác</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">Đơn hàng <i class="fas fa-angle-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Giỏ hàng</a></li>
+                                <li><a href="#">Đơn hàng của tôi</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="#">Cửa hàng</a></li>
+                        @{ if (Session["userID"] != null)
+                            {
+                                <li class="dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">@(HomeController.nguoidung.tenNguoiDung) <i class="fas fa-angle-down"></i></a>
+                                    <ul class="dropdown-menu">
+                                        @{ if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.ChuCuaHang)
+                                            {
+                                                <li><a href="/trang-chu-admin">Quản lý của ADMIN</a></li>
+                                            }
+                                        }
+                                        <li><a href="/thong-tin-nguoi-dung?maNguoiDung=@HomeController.nguoidung.maNguoiDung">Thông tin tài khoản</a></li>
+                                        <li>@Html.ActionLink("Đăng xuất", "UserLogout", "Home")</li>
+                                    </ul>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item"><a class="nav-link" href="/dang-nhap">Đăng nhập</a></li>
+                            }
+                        }
+
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+                <!-- Start Atribute Navigation -->
+                <div class="attr-nav">
+                    <ul>
+                        <li class="search"><a href="#"><i class="fa fa-search"></i></a></li>
+                        <li class="side-menu">
+                            <a href="#">
+                                <i class="fa fa-shopping-bag"></i>
+                                <span class="badge">3</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- End Atribute Navigation -->
+            </div>
+            <!-- Start Side Menu -->
+            <div class="side">
+                <a href="#" class="close-side"><i class="fa fa-times"></i></a>
+                <li class="cart-box">
+                    @*<ul class="cart-list">
+                            <li>
+                                <a href="#" class="photo"><img src="images/img-pro-01.jpg" class="cart-thumb" alt="" /></a>
+                                <h6><a href="#">Delica omtantur </a></h6>
+                                <p>1x - <span class="price">$80.00</span></p>
+                            </li>
+                            <li>
+                                <a href="#" class="photo"><img src="images/img-pro-02.jpg" class="cart-thumb" alt="" /></a>
+                                <h6><a href="#">Omnes ocurreret</a></h6>
+                                <p>1x - <span class="price">$60.00</span></p>
+                            </li>
+                            <li>
+                                <a href="#" class="photo"><img src="images/img-pro-03.jpg" class="cart-thumb" alt="" /></a>
+                                <h6><a href="#">Agam facilisis</a></h6>
+                                <p>1x - <span class="price">$40.00</span></p>
+                            </li>
+                            <li class="total">
+                                <a href="#" class="btn btn-default hvr-hover btn-cart">VIEW CART</a>
+                                <span class="float-right"><strong>Total</strong>: $180.00</span>
+                            </li>
+                        </ul>*@
+                </li>
+            </div>
+            <!-- End Side Menu -->
+        </nav>
+        <!-- End Navigation -->
+    </header>
+    <!-- End Main Top -->
+    <!-- Start Top Search -->
+    <div class="top-search">
+        <div class="container">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                <input type="text" class="form-control" placeholder="Tìm kiếm ...">
+                <span class="input-group-addon close-search"><i class="fa fa-times"></i></span>
+            </div>
+        </div>
+    </div>
+    <!-- End Top Search -->
+    <!-- Admin Content Container-->
+    <div class="content-container">
+        <div class="row">
+            <div class="menu_admin col-md-2">
+                <h2 class="font-italic font-weight-bold text-center">QUẢN LÝ</h2>
+                <ul>
+                    <li><a href="/quan-ly-nguoi-dung"><b>NGƯỜI DÙNG</b></a></li>
+                    <li><a href="/quan-ly-danh-muc-san-pham"><b>DANH MỤC SẢN PHẨM</b></a></li>
+                    <li><a href="#"><b>NHÀ CUNG CẤP</b></a></li>
+                    <li><a href="#"><b>SẢN PHẨM</b></a></li>
+                    <li><a href="#"><b>ĐƠN HÀNG</b></a></li>
+                    <li><a href="#"><b>PHIẾU NHẬP</b></a></li>
+                    <li><a href="#"><b>ĐÁNH GIÁ SẢN PHẨM</b></a></li>
+                    <li><a href="#"><b>CHƯƠNG TRÌNH KHUYẾN MẠI</b></a></li>
+                </ul>
+            </div>
+
+            <div class="content_admin col-md-10">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <!-- End Admin Content Container-->
+    <!-- Start Footer  -->
+    <footer>
+        <div class="footer-main">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <div class="footer-widget">
+                            <h4>Về PandaShop</h4>
+                            <p style="font-family: Arial, Helvetica, sans-serif;">
+                                Với phương châm hoạt động "NHANH & MỚI". Chúng tôi tự tin là cửa hàng luôn kịp thời cập nhật xu hướng trong cộng đồng yêu thích giày patin và giày thể thao. Giá cả hợp lý, chất lượng đảm bảo và thời gian giao hàng nhanh cùng với thái độ phục vụ tận tâm. Chúng tôi tin PandaShop sẽ làm hài lòng bất kỳ khách hàng nào đến với cửa hàng.
+                            </p>
+                            <ul>
+                                <li><a target="_blank" href="https://www.facebook.com/tongkhogiaytruotpatin"><i class="fab fa-facebook" aria-hidden="true"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <div class="footer-link">
+                            <h4>Lý do chọn PandaShop</h4>
+                            <ul>
+                                <li><a style="color:#cccccc">Mẫu mã đa dạng</a></li>
+                                <li><a style="color:#cccccc">Giá cả hợp lý</a></li>
+                                <li><a style="color:#cccccc">Chất lượng đảm bảo</a></li>
+                                <li><a style="color:#cccccc">Giao hàng toàn quốc</a></li>
+                                <li><a style="color:#cccccc">Đổi trả dễ dàng</a></li>
+                                <li><a style="color:#cccccc">Tư vấn hỗ trợ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <div class="footer-link-contact">
+                            <h4>Liên hệ</h4>
+                            <ul>
+                                <li>
+                                    <p><i class="fas fa-map-marker-alt"></i>Địa chỉ: Số 29 ngõ 258 Tân Mai <br>quận Hoàng Mai,<br> thành phố Hà Nội </p>
+                                </li>
+                                <li>
+                                    <p><i class="fas fa-phone-square"></i>Phone: <a href="tel:+84-356342917">0356342917</a></p>
+                                </li>
+                                <li>
+                                    <p><i class="fas fa-envelope"></i>Email: <a href="mailto:accphucuathe@gmail.com">accphucuathe@gmail.com</a></p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- End Footer  -->
+    <!-- Start copyright  -->
+    <div class="footer-copyright">
+        <p class="footer-company">
+            Bùi Mạnh Thể - ĐATN - Web PandaShop
+        </p>
+    </div>
+    <!-- End copyright  -->
+
+    <a href="#" id="back-to-top" title="Back to top" style="display: none;">&uarr;</a>
+
+    <!-- ALL JS FILES -->
+    <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+    <script src="~/Theme/js/popper.min.js"></script>
+    <script src="~/Theme/js/bootstrap.min.js"></script>
+    <!-- ALL PLUGINS -->
+    <script src="~/Theme/js/jquery.superslides.min.js"></script>
+    <script src="~/Theme/js/bootstrap-select.js"></script>
+    <script src="~/Theme/js/inewsticker.js"></script>
+    <script src="~/Theme/js/bootsnav.js"></script>
+    <script src="~/Theme/js/images-loded.min.js"></script>
+    <script src="~/Theme/js/isotope.min.js"></script>
+    <script src="~/Theme/js/owl.carousel.min.js"></script>
+    <script src="~/Theme/js/baguetteBox.min.js"></script>
+    <script src="~/Theme/js/form-validator.min.js"></script>
+    <script src="~/Theme/js/contact-form-script.js"></script>
+    <script src="~/Theme/js/custom.js"></script>
+</body>
+
+</html>

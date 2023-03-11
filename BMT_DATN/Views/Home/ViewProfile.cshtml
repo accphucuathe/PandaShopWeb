@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = "Thông tin cá nhân";
+    Layout = "~/Views/Shared/layout.cshtml";
+}
+
+@using BMT_DATN.Models;
+@{
+    Guid maND = ViewBag.userId;
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var infoNguoiDung = (from nd in db.tblNguoiDungs
+                         where nd.PK_MaNguoiDung.Equals(maND)
+                         select nd).FirstOrDefault();
+}
+
+<style>
+    .gradient-custom-3 {
+        background: rgb(194,166,174);
+        background: linear-gradient(90deg, rgba(194,166,174,1) 8%, rgba(185,116,114,0.9447321428571429) 100%);
+    }
+
+    .back-avatar {
+        background: rgb(194,166,174);
+        background: linear-gradient(90deg, rgba(194,166,174,1) 8%, rgba(185,116,114,0.9447321428571429) 100%);
+    }
+</style>
+
+<section class="h-100 gradient-custom-2">
+    <div class="container py-5 h-100 gradient-custom-3">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-9 col-xl-7">
+                <div class="card">
+                    <div class="rounded-top text-white d-flex flex-row back-avatar" style="background-color: #d33b33; height:170px;">
+                        <div class="ml-3 mt-5 d-flex flex-column" style="width: 150px;">
+                            <img src="~/Image/layout/avatar_profile_2.png"
+                                 alt="PandaShop placeholder image" class="img-fluid img-thumbnail mt-4 mb-2"
+                                 style="width: 150px; z-index: 1">
+                            <button type="button" class="btn" data-mdb-ripple-color="dark" style="z-index: 1; max-width: 50px;"
+                                    onclick="location.href='@Url.Action("EditProfile", "Home", new { maNguoiDung = infoNguoiDung.PK_MaNguoiDung })'">
+                                <i class="material-icons">&#xe22b;</i>
+                            </button>
+                            <a><i class="material-icons">&#xe22b;</i></a>
+                        </div>
+                    </div>
+                    <div class="p-4 text-black" style="background-color: #f8f9fa;">
+                        <div class="d-flex justify-content-end text-center py-1">
+                            <div>
+                                <p class="h4 mb-3 text-body">@infoNguoiDung.TenNguoiDung</p>
+                                @{ if (infoNguoiDung.NgaySinh.HasValue)
+                                   {
+                                        <p class="text-dark h5">@infoNguoiDung.NgaySinh.Value.ToString("dd-MM-yyyy")</p>
+                                   }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-4 text-dark">
+                        <div class="mb-5">
+                            <p class="lead fw-normal mb-1">Thông tin</p>
+                            <div class="p-4" style="background-color: #f8f9fa;">
+                                <p class="font-italic mb-1">@infoNguoiDung.tblQuyen.TenQuyen</p>
+                                <p class="font-italic mb-1">Tên đăng nhập: @infoNguoiDung.TenDangNhap</p>
+                                <p class="font-italic mb-1">Địa chỉ: @infoNguoiDung.DiaChi</p>
+                                <p class="font-italic"> SĐT: @infoNguoiDung.SoDienThoai</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

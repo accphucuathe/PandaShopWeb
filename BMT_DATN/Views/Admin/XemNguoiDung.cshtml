@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewBag.Title = "Xem người dùng";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+@using BMT_DATN.Models;
+<div class="admin_content_area">
+    <h2>QUẢN LÝ NGƯỜI DÙNG - XEM THÔNG TIN NGƯỜI DÙNG</h2>
+    <div>
+        @{
+            Guid maND = ViewBag.maNguoiDung;
+            BMT_DATNEntities db = new BMT_DATNEntities();
+            var infoNguoiDung = (from nd in db.tblNguoiDungs
+                                 where nd.PK_MaNguoiDung.Equals(maND)
+                                 select new
+                                 {
+                                     nd.TenNguoiDung,
+                                     NgaySinh = nd.NgaySinh.HasValue ? nd.NgaySinh.Value : DateTime.MinValue,
+                                     nd.DiaChi,
+                                     nd.SoDienThoai,
+                                     nd.TenDangNhap,
+                                     nd.TinhTrangHoatDong,
+                                     TenQuyen = nd.tblQuyen.TenQuyen
+                                 }).FirstOrDefault();
+        }
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Nội dung</th>
+                    <th>Thông tin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Họ tên</td>
+                    <td>@infoNguoiDung.TenNguoiDung</td>
+                </tr>
+                <tr>
+                    <td>Ngày sinh</td>
+                    <td>@infoNguoiDung.NgaySinh.ToString("dd-MM-yyyy")</td>
+                </tr>
+                <tr>
+                    <td>Địa chỉ</td>
+                    <td>@infoNguoiDung.DiaChi</td>
+                </tr>
+                <tr>
+                    <td>Số điện thoại</td>
+                    <td>@infoNguoiDung.SoDienThoai</td>
+                </tr>
+                <tr>
+                    <td>Tên đăng nhập</td>
+                    <td>@infoNguoiDung.TenDangNhap</td>
+                </tr>
+                <tr>
+                    <td>Tình trạng hoạt động</td>
+                    @if (infoNguoiDung.TinhTrangHoatDong)
+                    {
+                        <td>Hoạt động</td>
+                    }
+                    else
+                    {
+                        <td>Ngừng hoạt động</td>
+                    }
+                </tr>
+                <tr>
+                    <td>Quyền</td>
+                    <td>@infoNguoiDung.TenQuyen</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Quay lại</button>
+    </div>
+</div>

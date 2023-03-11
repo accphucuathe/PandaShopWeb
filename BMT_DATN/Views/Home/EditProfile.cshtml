@@ -1,0 +1,184 @@
+﻿
+@{
+    ViewBag.Title = "Chỉnh sửa thông tin cá nhân";
+    Layout = "~/Views/Shared/layout.cshtml";
+}
+
+@using BMT_DATN.Models;
+@{
+    Guid maND = ViewBag.userId;
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var infoNguoiDung = (from nd in db.tblNguoiDungs
+                         where nd.PK_MaNguoiDung.Equals(maND)
+                         select new
+                         {
+                             nd.PK_MaNguoiDung,
+                             nd.TenNguoiDung,
+                             NgaySinh = nd.NgaySinh.HasValue ? nd.NgaySinh.Value : DateTime.MinValue,
+                             nd.DiaChi,
+                             nd.SoDienThoai,
+                             nd.TenDangNhap,
+                             TinhTrangHoatDong = nd.TinhTrangHoatDong ? 4 : 5,
+                             nd.FK_MaQuyen
+                         }
+                         ).FirstOrDefault();
+}
+
+<style>
+    .gradient-custom-3 {
+        background: rgb(194,166,174);
+        background: linear-gradient(90deg, rgba(194,166,174,1) 8%, rgba(185,116,114,0.9447321428571429) 100%);
+    }
+
+    .back-avatar {
+        background: rgb(194,166,174);
+        background: linear-gradient(90deg, rgba(194,166,174,1) 8%, rgba(185,116,114,0.9447321428571429) 100%);
+    }
+</style>
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        showBirthday();
+        $(".inputPass").hide();
+
+        $('input:radio[name="changePass"]').change(
+            function () {
+                if (this.checked && this.value == 'Yes') {
+                    $(".inputPass").show();
+                    $("#oldPassword").prop("required", true);
+                    $("#password1").prop("required", true);
+                    $("#password2").prop("required", true);
+                }
+                else {
+                    $(".inputPass").hide();
+                    $("#oldPassword").val(""); $("#oldPassword").prop("required", false);
+                    $("#password1").val(""); $("#password1").prop("required", false);
+                    $("#password2").val(""); $("#password2").prop("required", false);
+                    $("#messagePass").text("");
+                    $("#btnLuu").prop("disabled", false);
+                }
+            });
+    });
+
+    function showBirthday() {
+        var day = @infoNguoiDung.NgaySinh.Day;
+        var month = @infoNguoiDung.NgaySinh.Month;
+        var year = @infoNguoiDung.NgaySinh.Year;
+
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+
+        var bd = year + "-" + month + "-" + day;
+        $("#birthday").attr("value", bd);
+        document.getElementById('birthday').value = bd;
+    }
+
+    function birthdayChange() {
+        var d = new Date();
+        var date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        var mydate = new Date(document.getElementById('birthday').value);
+
+        if (date < mydate) {
+            alert("Ngày không hợp lệ");
+            showBirthday();
+        }
+    }
+
+    //var checkOldPass = function () {
+    //    if (document.getElementById('oldPassword').value ==
+    //        document.getElementById('password1').value) {
+    //        document.getElementById('messagePass').style.color = 'red';
+    //        document.getElementById('messagePass').innerHTML = 'Mật khẩu mới đang trùng mật khẩu cũ';
+    //    }
+    //}
+    var checkNewPass = function () {
+        if (document.getElementById('password1').value ==
+            document.getElementById('password2').value) {
+            document.getElementById('messagePass').style.color = 'green';
+            document.getElementById('messagePass').innerHTML = 'Mật khẩu xác nhận đã khớp';
+            document.getElementById('btnLuu').disabled = false;
+
+        } else {
+            document.getElementById('messagePass').style.color = 'red';
+            document.getElementById('messagePass').innerHTML = 'Mật khẩu xác nhận không khớp';
+            document.getElementById('btnLuu').disabled = true;
+        }
+    }
+</script>
+
+<section class="h-100 gradient-custom-2">
+    <div class="container py-5 h-100 gradient-custom-3">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-9 col-xl-7">
+                <div class="card">
+                    <div class="rounded-top text-white d-flex flex-row back-avatar" style="background-color: #d33b33; height:120px;">
+                        <div class="m-auto mt-5 d-flex flex-column">
+                            <h1>CHỈNH SỬA THÔNG TIN CÁ NHÂN</h1>
+                        </div>
+                    </div>
+                    <div>
+                        <form class="UserForm m-md-auto" action="/Home/UserEditProfile" method="post">
+                            <div class="form-group">
+                                <input hidden value="@infoNguoiDung.PK_MaNguoiDung" name="userId" />
+                            </div>
+                            <div class="form-group">
+                                <label for="userName">Tên người dùng:</label>
+                                <input type="text" class="form-control" name="userName" id="userName" value="@infoNguoiDung.TenNguoiDung">
+                            </div>
+                            <div class="form-group">
+                                <label for="birthday">Ngày sinh:</label>
+                                <input type="date" class="form-control" name="birthday" id="birthday" onchange="birthdayChange()">
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Địa chỉ:</label>
+                                <input type="text" class="form-control" name="address" id="address" value="@infoNguoiDung.DiaChi">
+                            </div>
+                            <div class="form-group">
+                                <label for="phoneNumber">Số điện thoại:</label>
+                                <input type="tel" class="form-control" name="phoneNumber" id="phoneNumber" value="@infoNguoiDung.SoDienThoai">
+                            </div>
+                            <div class="form-group">
+                                <label for="loginName">Tên đăng nhập:</label>
+                                <input type="text" class="form-control" name="loginName" id="loginName" value="@infoNguoiDung.TenDangNhap" disabled>
+                            </div>
+
+                            <input type="radio" name="changePass" id="rdNotChangePass" value="No" checked />
+                            <label for="rdNotChangePass">Giữ nguyên mật khẩu</label>
+                            <input type="radio" name="changePass" id="rdChangePass" value="Yes" />
+                            <label for="rdChangePass">Đổi mật khẩu</label>
+
+                            <div class="inputPass">
+                                <div class="form-group">
+                                    <label for="oldPassword">Mật khẩu cũ:</label>
+                                    <input type="password" class="form-control" name="oldPassword" id="oldPassword">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password1">Mật khẩu mới:</label>
+                                    <input type="password" class="form-control" name="password1" id="password1" onkeyup="checkOldPass();">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password2">Xác nhận mật khẩu mới:</label>
+                                    <input type="password" class="form-control" name="password2" id="password2" onkeyup="checkNewPass();">
+                                </div>
+                            </div>
+                            <div>
+                                <label id="messagePass"></label>
+                                <label style="color:red; font-weight:normal;">@ViewBag.checkEdit</label>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="m-auto">
+                                    <button type="submit" class="ml-auto btn hvr-hover" id="btnLuu" style="color:#ffffff">Lưu</button>
+                                </div>
+                                <div class="m-auto">
+                                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="location.href = '@Url.Action("QuanLyNguoiDung", "Admin")'">Hủy</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
