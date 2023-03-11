@@ -25,14 +25,15 @@ namespace BMT_DATN.Controllers
         }
 
         // QL Nguoi dung
-        public ActionResult QuanLyNguoiDung(int? pageNumber)
+        public ActionResult QuanLyNguoiDung(int? pageNumber, String searchKeyword)
         {
             // check permission
             if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang)
             {
                 return RedirectToAction("Index", "Home");
             }
-            int pageSize = 5;
+            int pageSize = 10;   // set page size
+            ViewBag.searchKeyword = searchKeyword;
             ViewBag.pageNumber = pageNumber == null ? 1 : pageNumber;
             ViewBag.pageSize = pageSize;
             return View();
@@ -141,6 +142,14 @@ namespace BMT_DATN.Controllers
                 db.SaveChanges();
             }    
             return RedirectToAction("QuanLyNguoiDung");
+        }
+
+        // QL Nguoi dung - tim kiem nguoi dung
+        [HttpPost]
+        public JsonResult AdminTimKiemNguoiDung(int? pageNumber, String searchKeyword)
+        {
+            string searchK = searchKeyword;
+            return Json(new { redirectToUrl = Url.Action("QuanLyNguoiDung", "Admin", new { searchKeyword = searchK }) });
         }
     }
 }
