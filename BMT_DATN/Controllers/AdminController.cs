@@ -9,6 +9,7 @@ namespace BMT_DATN.Controllers
 {
     public class AdminController : Controller
     {
+        /*** admin - adm789 ***/
         BMT_DATNEntities db = new BMT_DATNEntities();
 
         // GET: Admin
