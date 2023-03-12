@@ -157,6 +157,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ProviderController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -272,6 +273,10 @@
     <Content Include="Views\Category\QuanLyDanhMucSanPham.cshtml" />
     <Content Include="Views\Category\ThemDanhMucSanPham.cshtml" />
     <Content Include="Views\Home\EditProfile.cshtml" />
+    <Content Include="Views\Category\XemDanhMucSanPham.cshtml" />
+    <Content Include="Views\Category\SuaDanhMucSanPham.cshtml" />
+    <Content Include="Views\Provider\QuanLyNhaCungCap.cshtml" />
+    <Content Include="Views\Provider\ThemNhaCungCap.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,23 +1,31 @@
 ﻿
 @{
-    ViewBag.Title = "Thêm danh mục sản phẩm";
+    ViewBag.Title = "SuaDanhMucSanPham";
     Layout = "~/Views/Shared/layout_admin.cshtml";
 }
 
-@using BMT_DATN.Models;
+@using BMT_DATN.Models
+@{
+    int maDmsp = ViewBag.maDmsp;
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var infoDmsp = (from dm in db.tblDanhMucSanPhams
+                         where dm.PK_MaDanhMucSanPham == maDmsp
+                         select dm).FirstOrDefault();
+}
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
-<script>
+<script type="text/javascript">
     $(document).ready(function () {
-        $('#btnThemDanhMuc').click(function () {
-            //alert("3");
+        $('#btnSuaDanhMuc').click(function () {
+            var cateId = $("#categoryId").val();
             var cateName = $("#categoryName").val();
             var obj = {
+                categoryId: cateId,
                 categoryName: cateName
             }
             $.ajax({
                 type: 'POST',
-                url: '@Url.Action("AdminThemDanhMucSanPham", "Category")',
+                url: '@Url.Action("AdminSuaDanhMucSanPham", "Category")',
                 data: JSON.stringify(obj),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -31,7 +39,6 @@
                     if (valueReturn.rdt == "1") {
                         window.location.href = '@Url.Action("QuanLyDanhMucSanPham", "Category")';
                     }
-
                 },
                 failure: function (response) {
                     alert("fail");
@@ -49,13 +56,18 @@
 </script>
 
 <div class="admin_content_area">
-    <h2>QUẢN LÝ DANH MỤC SẢN PHẨM - THÊM DANH MỤC SẢN PHẨM</h2>
+    <h2>QUẢN LÝ DANH MỤC SẢN PHẨM - SỬA THÔNG TIN DANH MỤC SẢN PHẨM</h2>
     <div class="m-md-auto" style="padding:10px 0px 20px 0px;">
+        <input hidden value="@infoDmsp.PK_MaDanhMucSanPham" name="categoryId" id="categoryId" />
         <label>Tên danh mục sản phẩm:</label>
-        <input type="text" name="categoryName" id="categoryName" style="width:50%" required />
+        <input type="text" name="categoryName" id="categoryName" style="width:50%" value="@infoDmsp.TenDanhMucSanPham" required />
     </div>
-    <div>
-        <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" name="btnThemDanhMuc" id="btnThemDanhMuc">Thêm mới</button>
+    <div class="row">
+        <div class="col-md-6">
+            <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff; display:block; margin:0 auto;" name="btnSuaDanhMuc" id="btnSuaDanhMuc">Lưu</button>
+        </div>
+        <div class="col-md-6">
+            <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Hủy</button>
+        </div>
     </div>
 </div>
-

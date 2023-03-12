@@ -78,6 +78,28 @@ namespace BMT_DATN
                 url: "them-danh-muc-san-pham",
                 defaults: new { controller = "Category", action = "ThemDanhMucSanPham", id = UrlParameter.Optional }
             );
+            routes.MapRoute(
+                name: "XemDanhMucSanPham",
+                url: "xem-danh-muc-san-pham",
+                defaults: new { controller = "Category", action = "XemDanhMucSanPham", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "SuaDanhMucSanPham",
+                url: "sua-danh-muc-san-pham",
+                defaults: new { controller = "Category", action = "SuaDanhMucSanPham", id = UrlParameter.Optional }
+            );
+
+            // QuanLyNhaCungCap View
+            routes.MapRoute(
+                name: "QuanLyNhaCungCap",
+                url: "quan-ly-nha-cung-cap",
+                defaults: new { controller = "Provider", action = "QuanLyNhaCungCap", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "ThemNhaCungCap",
+                url: "them-nha-cung-cap",
+                defaults: new { controller = "Provider", action = "ThemNhaCungCap", id = UrlParameter.Optional }
+            );
 
             // mac dinh
             routes.MapRoute(

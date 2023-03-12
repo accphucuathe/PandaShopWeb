@@ -5,9 +5,43 @@
 }
 
 <link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script>
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
+
+        $('a[name="deleteCategory"]').click(function () {
+            var deleteCateId = this.id;
+            var obj = {
+                categoryId: deleteCateId
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AdminXoaDanhMucSanPham", "Category")',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+
+                beforeSend: function () {
+
+                },
+                success: function (response) {
+                    var valueReturn = response;
+                    alert(valueReturn.msg);
+                    window.location.reload(true);
+                },
+                failure: function (response) {
+                    alert("fail");
+                },
+                complete: function () {
+
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                },
+            });
+        });
     });
 </script>
 
@@ -49,11 +83,10 @@
                             <tr>
                                 <td>@stt</td>
                                 <td>@danhmuc.TenDanhMucSanPham</td>
-                                
                                 <td>
-                                    <a href="#" class="view" title="Xem" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
-                                    <a href="#" class="edit" title="Sửa" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                    <a href="#" class="delete" title="Xóa" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                    <a href="/xem-danh-muc-san-pham?maDmsp=@danhmuc.PK_MaDanhMucSanPham" class="view" title="Xem" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                                    <a href="/sua-danh-muc-san-pham?maDmsp=@danhmuc.PK_MaDanhMucSanPham" class="edit" title="Sửa" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a href="javascript:void(0)" class="delete" title="Xóa" data-toggle="tooltip" name="deleteCategory" id="@danhmuc.PK_MaDanhMucSanPham"><i class="material-icons">&#xE872;</i></a>
                                 </td>
                             </tr>
                             stt++;
@@ -63,15 +96,6 @@
             </table>
             <div class="clearfix">
                 <div class="hint-text">Có tất cả <b>@allDanhMucSanPham.Count()</b> danh mục sản phẩm</div>
-                @*<ul class="pagination">
-                    <li class="page-item disabled"><a href="#"><i class="fa fa-angle-double-left"></i></a></li>
-                    <li class="page-item"><a href="#" class="page-link">1</a></li>
-                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                    <li class="page-item active"><a href="#" class="page-link">3</a></li>
-                    <li class="page-item"><a href="#" class="page-link">4</a></li>
-                    <li class="page-item"><a href="#" class="page-link">5</a></li>
-                    <li class="page-item"><a href="#" class="page-link"><i class="fa fa-angle-double-right"></i></a></li>
-                </ul>*@
             </div>
         </div>
     </div>

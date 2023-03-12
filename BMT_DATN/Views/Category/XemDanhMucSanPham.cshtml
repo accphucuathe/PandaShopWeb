@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewBag.Title = "XemDanhMucSanPham";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+@using BMT_DATN.Models;
+<div class="admin_content_area">
+    <h2>QUẢN LÝ DANH MỤC SẢN PHẨM - XEM THÔNG TIN DANH MỤC SẢN PHẨM</h2>
+    <div>
+        @{
+            int maDmsp = ViewBag.maDmsp;
+            BMT_DATNEntities db = new BMT_DATNEntities();
+            var infoDmsp = (from dm in db.tblDanhMucSanPhams
+                                 where dm.PK_MaDanhMucSanPham == maDmsp
+                                 select dm).FirstOrDefault();
+        }
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Nội dung</th>
+                    <th>Thông tin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tên danh mục sản phẩm</td>
+                    <td>@infoDmsp.TenDanhMucSanPham</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Quay lại</button>
+    </div>
+</div>
