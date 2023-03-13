@@ -100,6 +100,16 @@ namespace BMT_DATN
                 url: "them-nha-cung-cap",
                 defaults: new { controller = "Provider", action = "ThemNhaCungCap", id = UrlParameter.Optional }
             );
+            routes.MapRoute(
+                name: "XemNhaCungCap",
+                url: "xem-nha-cung-cap",
+                defaults: new { controller = "Provider", action = "XemNhaCungCap", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "SuaNhaCungCap",
+                url: "sua-nha-cung-cap",
+                defaults: new { controller = "Provider", action = "SuaNhaCungCap", id = UrlParameter.Optional }
+            );
 
             // mac dinh
             routes.MapRoute(

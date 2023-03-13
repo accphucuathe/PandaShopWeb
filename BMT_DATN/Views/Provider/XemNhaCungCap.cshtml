@@ -1,0 +1,44 @@
+﻿
+@{
+    ViewBag.Title = "XemNhaCungCap";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+@using BMT_DATN.Models;
+<div class="admin_content_area">
+    <h2>QUẢN LÝ NHÀ CUNG CẤP - XEM THÔNG TIN NHÀ CUNG CẤP</h2>
+    <div>
+        @{
+            int maNCC = ViewBag.maNhaCungCap;
+            BMT_DATNEntities db = new BMT_DATNEntities();
+            var infoNhaCungCap = (from ncc in db.tblNhaCungCaps
+                                 where ncc.PK_MaNhaCungCap == maNCC
+                                 select  ncc).FirstOrDefault();
+        }
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Nội dung</th>
+                    <th>Thông tin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tên nhà cung cấp</td>
+                    <td>@infoNhaCungCap.TenNhaCungCap</td>
+                </tr>
+                <tr>
+                    <td>Địa chỉ</td>
+                    <td>@infoNhaCungCap.DiaChi</td>
+                </tr>
+                <tr>
+                    <td>Số điện thoại</td>
+                    <td>@infoNhaCungCap.SoDienThoai</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Quay lại</button>
+    </div>
+</div>

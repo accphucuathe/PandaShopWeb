@@ -149,7 +149,7 @@ namespace BMT_DATN.Controllers
             }
             else
             {
-                result = "Không tồn tại danh mục sản phẩm!";
+                result = "Xóa danh mục sản phẩm thất bại!";
             }
 
             return Json(new

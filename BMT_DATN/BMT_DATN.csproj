@@ -157,6 +157,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -277,6 +278,8 @@
     <Content Include="Views\Category\SuaDanhMucSanPham.cshtml" />
     <Content Include="Views\Provider\QuanLyNhaCungCap.cshtml" />
     <Content Include="Views\Provider\ThemNhaCungCap.cshtml" />
+    <Content Include="Views\Provider\XemNhaCungCap.cshtml" />
+    <Content Include="Views\Provider\SuaNhaCungCap.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -287,6 +290,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Account\" />
+    <Folder Include="Views\Product\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

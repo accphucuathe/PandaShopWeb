@@ -1,0 +1,56 @@
+﻿
+@{
+    ViewBag.Title = "SuaNhaCungCap";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+@using BMT_DATN.Models
+@{
+    int maNCC = ViewBag.maNhaCungCap;
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var infoNhaCungCap = (from ncc in db.tblNhaCungCaps
+                         where ncc.PK_MaNhaCungCap == maNCC
+                         select ncc).FirstOrDefault();
+}
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+    });
+</script>
+
+<div class="admin_content_area">
+    <h2>QUẢN LÝ NHÀ CUNG CẤP - SỬA THÔNG TIN NHÀ CUNG CẤP</h2>
+    <div>
+        <form class="AdminForm m-md-auto" action="/Provider/AdminSuaNhaCungCap" method="post">
+            <span class="h4 mb-0">Sửa các thông tin</span>
+            <div class="form-group">
+                <input hidden value="@infoNhaCungCap.PK_MaNhaCungCap" name="providerId" />
+            </div>
+            <div class="form-group">
+                <label for="providerName">Tên nhà cung cấp:</label>
+                <input type="text" class="form-control" name="providerName" id="providerName" value="@infoNhaCungCap.TenNhaCungCap" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Địa chỉ:</label>
+                <input type="text" class="form-control" name="address" id="address" value="@infoNhaCungCap.DiaChi" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Số điện thoại:</label>
+                <input type="tel" class="form-control" name="phoneNumber" id="phoneNumber" value="@infoNhaCungCap.SoDienThoai" autocomplete="off" pattern="[0-9]{10}" required>
+            </div>
+            
+            <div>
+                <label style="color:red; font-weight:normal;">@ViewBag.checkDuplicateProviderName</label>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <button type="submit" class="ml-auto btn hvr-hover" style="color:#ffffff">Lưu</button>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
