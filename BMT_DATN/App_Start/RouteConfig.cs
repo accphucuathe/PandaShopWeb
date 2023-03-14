@@ -111,6 +111,18 @@ namespace BMT_DATN
                 defaults: new { controller = "Provider", action = "SuaNhaCungCap", id = UrlParameter.Optional }
             );
 
+            // QuanLySanPham View
+            routes.MapRoute(
+                name: "QuanLySanPham",
+                url: "quan-ly-san-pham",
+                defaults: new { controller = "Product", action = "QuanLySanPham", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "ThemSanPham",
+                url: "them-san-pham",
+                defaults: new { controller = "Product", action = "ThemSanPham", id = UrlParameter.Optional }
+            );
+
             // mac dinh
             routes.MapRoute(
                 name: "Default",

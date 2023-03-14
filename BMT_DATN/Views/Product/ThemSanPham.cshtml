@@ -1,0 +1,161 @@
+﻿
+@{
+    ViewBag.Title = "ThemSanPham";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+@using BMT_DATN.Models;
+@{ 
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var allCategory = (from dm in db.tblDanhMucSanPhams
+                       select dm).ToList();
+    var allProvider = (from ncc in db.tblNhaCungCaps
+                       select ncc).ToList();
+    var allProviderName = allProvider.Select(p => p.TenNhaCungCap).ToArray();
+    var allProviderId = allProvider.Select(p => p.PK_MaNhaCungCap).ToArray();
+}
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#productPrice').on('keyup', function () {
+            // '' -> comma
+            let price = ($(this).val());
+            let price1 = parseInt(price.toString().replace(/,/g, ''), 10);
+            if (isNaN(price1)) {
+                price1 = 0;
+            }
+            // comma -> ''
+            obj1 = new Intl.NumberFormat('en-US');
+            output1 = obj1.format(price1);
+            $(this).val(output1);
+        });
+
+    });
+
+    var countProvider = 0;
+    var arrayProviderIdSelected = new Array();
+    function addOneProvider() {
+        var divOfProviderSelect = document.getElementById("listProvider");
+        var divOfDivProviderSelect = document.createElement("div");
+        divOfDivProviderSelect.classList.add("row");
+        divOfDivProviderSelect.id = "divSelect_" + countProvider
+        divOfProviderSelect.appendChild(divOfDivProviderSelect);
+        //Create array of options to be added
+        var arrayProviderName = @Html.Raw(Json.Encode(allProviderName));
+        var arrayProviderId = @Html.Raw(Json.Encode(allProviderId));
+
+        //Create and append select list
+        var selectList = document.createElement("select");
+        selectList.classList.add("col-11", "mb-1", "pr-3");
+        selectList.name = "providerIds[]";
+        //selectList.id = "mySelect" + countProvider;
+        divOfDivProviderSelect.appendChild(selectList);
+
+        //Create and append the options
+        for (var i = 0; i < arrayProviderName.length; i++) {
+            var option = document.createElement("option");
+            option.value = arrayProviderId[i];
+            option.text = arrayProviderName[i];
+            selectList.appendChild(option);
+        }
+
+        //Create X button on right
+        var removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.classList.add("col-1", "mb-1");
+        removeButton.id = "removeSelect_" + countProvider;
+        removeButton.innerHTML = "X";
+        removeButton.setAttribute("onclick", "removeOneProvider(this.id)");
+        divOfDivProviderSelect.appendChild(removeButton);
+
+        //
+        countProvider = countProvider + 1;
+    }
+
+    function removeOneProvider(idBtn) {
+        var idButton = idBtn.toString().split("_");
+        var idNeeded = idButton[1];
+        const removedDiv = document.getElementById("divSelect_" + idNeeded);
+        removedDiv.remove();
+    }
+
+    function hasDuplicateProviders(arr) {
+        return new Set(arr).size !== arr.length;
+    }
+
+    function beforeCallProviderAction() {
+        arrayProviderIdSelected.length = 0;
+        $('select[name="providerIds[]"]').each(function (index) { 
+            console.log($(this).val());
+            arrayProviderIdSelected.push($(this).val());
+        });
+        if (hasDuplicateProviders(arrayProviderIdSelected)) {
+            alert("Trùng nhà cung cấp");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+</script>
+
+<div class="admin_content_area">
+    <h2>QUẢN LÝ SẢN PHẨM - THÊM SẢN PHẨM</h2>
+    @using (Html.BeginForm("AdminThemSanPham", "Product", FormMethod.Post, new { @class = "AdminForm m-md-auto", @enctype = "multipart/form-data", @spellcheck = "false" }))
+    {
+        <div>
+            <span class="h4">Nhập các thông tin</span>
+            <div class="form-group col-12 mt-3 p-0 d-flex">
+                <label class="col-5 p-0" for="productCategory">Sản phẩm thuộc danh mục:</label>
+                <select class="col-7" style="color: #666666" name="productCategory" id="productCategory" required>
+                    @{
+                        foreach (var category in allCategory)
+                        {
+                            <option style="color: #666666" value="@category.PK_MaDanhMucSanPham">@category.TenDanhMucSanPham</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="productName">Tên sản phẩm:</label>
+                <input type="text" class="form-control" name="productName" id="productName" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="productSize">Kích cỡ:</label>
+                <input type="text" class="form-control" name="productSize" id="productSize" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="productUnit">Đơn vị tính:</label>
+                <input type="text" class="form-control" name="productUnit" id="productUnit" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="productPrice">Đơn giá:</label>
+                <input type="text" class="form-control" name="productPrice" id="productPrice" maxlength="12" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="productDescription">Mô tả:</label>
+                <textarea class="form-control" rows="10" name="productDescription" id="productDescription"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="productImage">Chọn ảnh:</label>
+                <input type="file" class="form-control" accept="image/*" name="productImage" id="producImage" required>
+            </div>
+            <div class="form-group">
+                <label for="productProvider">Chọn nhà cung cấp:</label>
+                <div class="col-12 d-flex flex-column" id="listProvider">
+                    
+                </div>
+                <button type="button" onclick="addOneProvider()">+ NCC</button>
+            </div>
+
+            <div>
+                <label style="color:red; font-weight:normal;">@ViewBag.checkDuplicateProduct</label>
+            </div>
+            <div>
+                <button type="submit" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="return beforeCallProviderAction()">Thêm mới</button>
+            </div>
+        </div>
+    }
+
+</div>

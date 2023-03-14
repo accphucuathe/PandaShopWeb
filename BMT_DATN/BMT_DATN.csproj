@@ -104,6 +104,7 @@
     <Content Include="Image\layout\padan_logo_merge.png" />
     <Content Include="Image\layout\panda_logo.png" />
     <Content Include="Image\patin.png" />
+    <Content Include="Image\simson.gif" />
     <Content Include="Models\DbPanda.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>DbPanda.edmx</DependentUpon>
@@ -162,6 +163,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CurrencyHelper.cs" />
     <Compile Include="Models\DbPanda.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -280,6 +282,8 @@
     <Content Include="Views\Provider\ThemNhaCungCap.cshtml" />
     <Content Include="Views\Provider\XemNhaCungCap.cshtml" />
     <Content Include="Views\Provider\SuaNhaCungCap.cshtml" />
+    <Content Include="Views\Product\QuanLySanPham.cshtml" />
+    <Content Include="Views\Product\ThemSanPham.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -289,8 +293,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Images_Data\" />
     <Folder Include="Views\Account\" />
-    <Folder Include="Views\Product\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

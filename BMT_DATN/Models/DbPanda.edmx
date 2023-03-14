@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="BMT_DATNModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="BMT_DATNModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
@@ -145,7 +145,7 @@
           </Key>
           <Property Name="PK_MaSanPham" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TenSanPham" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="KichCo" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="KichCo" Type="nvarchar" MaxLength="20" />
           <Property Name="HinhAnh" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="MoTa" Type="nvarchar(max)" Nullable="false" />
           <Property Name="DonVi" Type="nvarchar" MaxLength="20" Nullable="false" />
@@ -169,18 +169,6 @@
             </Principal>
             <Dependent Role="tblChiTietKhuyenMai">
               <PropertyRef Name="FK_MaChuongTrinhKhuyenMai" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_MaCTKM_tblChiTietKhuyenMai_tblSanPham">
-          <End Role="tblSanPham" Type="Self.tblSanPham" Multiplicity="1" />
-          <End Role="tblChiTietKhuyenMai" Type="Self.tblChiTietKhuyenMai" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="tblSanPham">
-              <PropertyRef Name="PK_MaSanPham" />
-            </Principal>
-            <Dependent Role="tblChiTietKhuyenMai">
-              <PropertyRef Name="FK_MaSanPham" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -316,6 +304,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_MaSP_tblChiTietKhuyenMai_tblSanPham">
+          <End Role="tblSanPham" Type="Self.tblSanPham" Multiplicity="1" />
+          <End Role="tblChiTietKhuyenMai" Type="Self.tblChiTietKhuyenMai" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblSanPham">
+              <PropertyRef Name="PK_MaSanPham" />
+            </Principal>
+            <Dependent Role="tblChiTietKhuyenMai">
+              <PropertyRef Name="FK_MaSanPham" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_MaSP_tblChiTietNhapHang_tblSanPham">
           <End Role="tblSanPham" Type="Self.tblSanPham" Multiplicity="1" />
           <End Role="tblChiTietNhapHang" Type="Self.tblChiTietNhapHang" Multiplicity="*" />
@@ -419,10 +419,6 @@
             <End Role="tblChuongTrinhKhuyenMai" EntitySet="tblChuongTrinhKhuyenMai" />
             <End Role="tblChiTietKhuyenMai" EntitySet="tblChiTietKhuyenMai" />
           </AssociationSet>
-          <AssociationSet Name="FK_MaCTKM_tblChiTietKhuyenMai_tblSanPham" Association="Self.FK_MaCTKM_tblChiTietKhuyenMai_tblSanPham">
-            <End Role="tblSanPham" EntitySet="tblSanPham" />
-            <End Role="tblChiTietKhuyenMai" EntitySet="tblChiTietKhuyenMai" />
-          </AssociationSet>
           <AssociationSet Name="FK_MaDH_tblChiTietDonHang_tblDonHang" Association="Self.FK_MaDH_tblChiTietDonHang_tblDonHang">
             <End Role="tblDonHang" EntitySet="tblDonHang" />
             <End Role="tblChiTietDonHang" EntitySet="tblChiTietDonHang" />
@@ -467,6 +463,10 @@
             <End Role="tblSanPham" EntitySet="tblSanPham" />
             <End Role="tblChiTietDonHang" EntitySet="tblChiTietDonHang" />
           </AssociationSet>
+          <AssociationSet Name="FK_MaSP_tblChiTietKhuyenMai_tblSanPham" Association="Self.FK_MaSP_tblChiTietKhuyenMai_tblSanPham">
+            <End Role="tblSanPham" EntitySet="tblSanPham" />
+            <End Role="tblChiTietKhuyenMai" EntitySet="tblChiTietKhuyenMai" />
+          </AssociationSet>
           <AssociationSet Name="FK_MaSP_tblChiTietNhapHang_tblSanPham" Association="Self.FK_MaSP_tblChiTietNhapHang_tblSanPham">
             <End Role="tblSanPham" EntitySet="tblSanPham" />
             <End Role="tblChiTietNhapHang" EntitySet="tblChiTietNhapHang" />
@@ -484,8 +484,7 @@
             <End Role="tblChiTietTrangThaiDonHang" EntitySet="tblChiTietTrangThaiDonHang" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="BMT_DATNModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -656,7 +655,7 @@
           </Key>
           <Property Name="PK_MaSanPham" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TenSanPham" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="KichCo" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="KichCo" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="HinhAnh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="DonVi" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
@@ -980,7 +979,7 @@
             <Parameter Name="definition" Mode="In" Type="Binary" />
           </FunctionImport>
           <FunctionImport Name="sp_dangnhap" ReturnType="Collection(BMT_DATNModel.sp_dangnhap_Result)">
-            <Parameter Name="tendangnhap" Mode="In" Type="String" />
+          <Parameter Name="tendangnhap" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_dropdiagram">
             <Parameter Name="diagramname" Mode="In" Type="String" />

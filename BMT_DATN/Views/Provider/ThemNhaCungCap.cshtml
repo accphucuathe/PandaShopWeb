@@ -3,17 +3,12 @@
     ViewBag.Title = "ThemNhaCungCap";
     Layout = "~/Views/Shared/layout_admin.cshtml";
 }
+
 @using BMT_DATN.Models;
-@{
-    int pms = (int)EnumQuyen.NhanVien;
-}
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#birthday").attr("value", getToday());
-        var q = @pms;
-        $("#permission").val(q);
     });
 </script>
 
