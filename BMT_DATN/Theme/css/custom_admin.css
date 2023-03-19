@@ -6,6 +6,7 @@
 .menu_admin {
     background-color: #FFF89A;
     padding-top: 20px;
+    padding-right: 10px;
 }
 
     .menu_admin a {
@@ -18,7 +19,7 @@
     }
     .menu_admin a:hover{
         color: crimson;
-        padding-left: 25px;
+        padding-left: 15px;
     }
 
 .content_admin{

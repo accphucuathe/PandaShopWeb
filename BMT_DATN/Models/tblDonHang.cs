@@ -25,6 +25,7 @@ namespace BMT_DATN.Models
         public string DiaChiGiaoHang { get; set; }
         public string SoDienThoai { get; set; }
         public System.Guid FK_MaNguoiDung { get; set; }
+        public string GhiChu { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblChiTietDonHang> tblChiTietDonHangs { get; set; }

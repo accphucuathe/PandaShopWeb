@@ -27,6 +27,9 @@
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        $('a[name="qlnd_menu"]').html("<b>>>NGƯỜI DÙNG</b>");
+        $('a[name="qlnd_menu"]').css("color", "red");
+
         $(".inputPass").hide();
 
         $('input:radio[name="rsPass"]').change(
@@ -75,7 +78,7 @@
                 <input type="text" class="form-control" name="loginName" id="loginName" value="@infoNguoiDung.TenDangNhap" disabled>
             </div>
 
-            <input type="radio" name="rsPass" id="rdNotResetPass" value="No" checked />
+            @*<input type="radio" name="rsPass" id="rdNotResetPass" value="No" checked />
             <label for="rdNotResetPass">Giữ nguyên mật khẩu</label>
             <input type="radio" name="rsPass" id="rdResetPass" value="Yes" />
             <label for="rdResetPass">Đặt lại mật khẩu</label>
@@ -89,7 +92,7 @@
                     <label for="password2">Nhập lại mật khẩu:</label>
                     <input type="password" class="form-control" name="password2" id="password2" onkeyup="checkPass();">
                 </div>
-            </div>
+            </div>*@
 
             <div class="form-group">
                 <label for="activation">Tình trạng hoạt động:</label>
@@ -110,11 +113,11 @@
                 <label id="messagePass"></label>
                 @*<label style="color:red; font-weight:normal;">@ViewBag.checkDuplicateLoginName</label>*@
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <button type="submit" class="ml-auto btn hvr-hover" style="color:#ffffff">Lưu</button>
+            <div class="col-12 d-flex justify-content-end">
+                <div>
+                    <button type="submit" class="ml-auto btn hvr-hover mr-2" style="color:#ffffff">Lưu</button>
                 </div>
-                <div class="col-md-6">
+                <div>
                     <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Hủy</button>
                 </div>
             </div>

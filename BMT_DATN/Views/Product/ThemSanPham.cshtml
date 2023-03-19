@@ -18,6 +18,9 @@
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        $('a[name="qlsp_menu"]').html("<b>>>SẢN PHẨM</b>");
+        $('a[name="qlsp_menu"]').css("color", "red");
+
         $('#productPrice').on('keyup', function () {
             // '' -> comma
             let price = ($(this).val());
@@ -48,7 +51,7 @@
         //Create and append select list
         var selectList = document.createElement("select");
         selectList.classList.add("col-11", "mb-1", "pr-3");
-        selectList.name = "providerIds[]";
+        selectList.name = "providerIds";
         //selectList.id = "mySelect" + countProvider;
         divOfDivProviderSelect.appendChild(selectList);
 
@@ -86,7 +89,7 @@
 
     function beforeCallProviderAction() {
         arrayProviderIdSelected.length = 0;
-        $('select[name="providerIds[]"]').each(function (index) { 
+        $('select[name="providerIds"]').each(function (index) { 
             console.log($(this).val());
             arrayProviderIdSelected.push($(this).val());
         });
@@ -123,7 +126,7 @@
             </div>
             <div class="form-group">
                 <label for="productSize">Kích cỡ:</label>
-                <input type="text" class="form-control" name="productSize" id="productSize" autocomplete="off" required>
+                <input type="text" class="form-control" name="productSize" id="productSize" autocomplete="off">
             </div>
             <div class="form-group">
                 <label for="productUnit">Đơn vị tính:</label>
@@ -148,13 +151,21 @@
                 </div>
                 <button type="button" onclick="addOneProvider()">+ NCC</button>
             </div>
-
             <div>
                 <label style="color:red; font-weight:normal;">@ViewBag.checkDuplicateProduct</label>
             </div>
-            <div>
-                <button type="submit" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="return beforeCallProviderAction()">Thêm mới</button>
+            <div class="col-12 d-flex justify-content-end">
+                <div>
+                    <button type="submit" class="ml-auto btn hvr-hover mr-2" style="color:#ffffff" onclick="return beforeCallProviderAction()">Thêm mới</button>
+                </div>
+                <div>
+                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Hủy</button>
+                </div>
             </div>
+
+            @*<div>
+                <button type="submit" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="return beforeCallProviderAction()">Thêm mới</button>
+            </div>*@
         </div>
     }
 

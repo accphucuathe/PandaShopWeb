@@ -82,26 +82,173 @@ namespace BMT_DATN.Controllers
             sanPhamMoi.HinhAnh = fileName;
 
             var ch = new CurrencyHelper();
-            var yy = ch.FormatToCurrency(1234567890);
             sanPhamMoi.DonGia = ch.FormatToNumber(productPrice);
 
             db.tblSanPhams.Add(sanPhamMoi);
 
             // insert tblNguonCungCap
-            var nguonCungCap = new List<tblNguonCungCap>();
-            foreach (int maNCC in providerIds)
+            if (providerIds != null)
             {
-                var nguon = new tblNguonCungCap();
-                nguon.FK_MaSanPham = sanPhamMoi.PK_MaSanPham;
-                nguon.FK_MaNhaCungCap = maNCC;
-                nguon.Note = "";
-                nguonCungCap.Add(nguon);
+                var nguonCungCap = new List<tblNguonCungCap>();
+                foreach (int maNCC in providerIds)
+                {
+                    var nguon = new tblNguonCungCap();
+                    nguon.FK_MaSanPham = sanPhamMoi.PK_MaSanPham;
+                    nguon.FK_MaNhaCungCap = maNCC;
+                    nguon.Note = "";
+                    nguonCungCap.Add(nguon);
+                }
+                db.tblNguonCungCaps.AddRange(nguonCungCap);
             }
-            db.tblNguonCungCaps.AddRange(nguonCungCap);
 
             db.SaveChanges();
 
             return RedirectToAction("QuanLySanPham", "Product");
+        }
+
+        // QL san pham - xem san pham
+        public ActionResult XemSanPham(int maSanPham)
+        {
+            ViewBag.maSanPham = maSanPham;
+            return View();
+        }
+
+        // QL san pham - sua san pham
+        public ActionResult SuaSanPham(int maSanPham)
+        {
+            // check permission
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang)
+            {
+                //return RedirectToAction("Index", "Home");
+            }
+            ViewBag.maSanPham = maSanPham;
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult AdminSuaSanPham(int productId, int productCategory, String productName, String productSize, String productUnit, String productPrice, String productDescription, HttpPostedFileBase productImage, int[] providerIds)
+        {
+            string result = "";
+            string redirect = "";
+            var x = 0;
+            var sanPhamDuocSua = (from sp in db.tblSanPhams
+                                where sp.PK_MaSanPham == productId
+                                select sp).FirstOrDefault();
+            if (sanPhamDuocSua == null)
+            {
+                result = "Sản phẩm không còn tồn tại!";
+                redirect = "1";     // chuyển về trang QL SP
+            }
+            if (productPrice == "NaN")
+            {
+                result = "Đơn giá không hợp lệ!";
+                redirect = "0";     // ở lại trang Sửa SP
+            }
+            var checkProduct = (from spCheck in db.tblSanPhams
+                                where spCheck.TenSanPham.Equals(productName) && 
+                                        spCheck.KichCo.Equals(productSize) &&
+                                        spCheck.PK_MaSanPham != sanPhamDuocSua.PK_MaSanPham
+                                select spCheck).FirstOrDefault();
+            if (checkProduct != null)
+            {
+                result = "Đã tồn tại sản phẩm có tên và kích cỡ này!";
+                redirect = "0";     // ở lại trang Sửa SP
+            }
+            else
+            {
+                // update sp
+                sanPhamDuocSua.TenSanPham = productName.Trim();
+                sanPhamDuocSua.KichCo = productSize.Trim();
+                sanPhamDuocSua.MoTa = productDescription;
+                sanPhamDuocSua.DonVi = productUnit.Trim();
+                sanPhamDuocSua.FK_MaDanhMucSanPham = productCategory;
+
+                if (productImage != null)
+                {
+                    string fileName = Path.GetFileName(productImage.FileName);
+                    string path = Path.Combine(Server.MapPath("~/Images_Data"), fileName);
+                    productImage.SaveAs(path);
+                    sanPhamDuocSua.HinhAnh = fileName;
+                }
+
+                var ch = new CurrencyHelper();
+                sanPhamDuocSua.DonGia = ch.FormatToNumber(productPrice);
+
+                // update tblNguonCungCap
+                if (providerIds != null)
+                {
+                    var nguonCungCapCu = (from nccc in db.tblNguonCungCaps
+                                          where nccc.FK_MaSanPham == sanPhamDuocSua.PK_MaSanPham
+                                          select nccc).ToList();
+                    db.tblNguonCungCaps.RemoveRange(nguonCungCapCu);
+
+                    var nguonCungCapMoi = new List<tblNguonCungCap>();
+                    foreach (int maNCC in providerIds)
+                    {
+                        var nguon = new tblNguonCungCap();
+                        nguon.FK_MaSanPham = sanPhamDuocSua.PK_MaSanPham;
+                        nguon.FK_MaNhaCungCap = maNCC;
+                        nguon.Note = "";
+                        nguonCungCapMoi.Add(nguon);
+                    }
+                    db.tblNguonCungCaps.AddRange(nguonCungCapMoi);
+                }
+                // save all
+                db.SaveChanges();
+                result = "Sửa thông tin sản phẩm thành công!";
+                redirect = "1";     // chuyển về trang QL SP
+            }
+
+            return Json(new
+            {
+                msg = result,
+                rdt = redirect
+            },
+            JsonRequestBehavior.AllowGet);
+        }
+
+        // QL san pham - xoa san pham
+        [HttpPost]
+        public JsonResult AdminXoaSanPham(int productId)
+        {
+            string result = "";
+            string refresh = "";
+            var sanPhamBiXoa = (from sp in db.tblSanPhams
+                             where sp.PK_MaSanPham == productId
+                             select sp).FirstOrDefault();
+            if (sanPhamBiXoa != null)
+            {
+                if (sanPhamBiXoa.tblChiTietDonHangs.Count > 0 ||
+                    sanPhamBiXoa.tblChiTietNhapHangs.Count > 0)        // tồn tại sp đang liên kết đơn hàng, phiếu nhập
+                {
+                    result = "Sản phẩm đã có đơn hàng hoặc phiếu nhập. Không thể xóa!";
+                    refresh = "0";
+                }
+                else
+                {
+                    db.tblSanPhams.Remove(sanPhamBiXoa);
+                    var nguonCungCapCu = (from nccc in db.tblNguonCungCaps
+                                          where nccc.FK_MaSanPham == sanPhamBiXoa.PK_MaSanPham
+                                          select nccc).ToList();
+                    db.tblNguonCungCaps.RemoveRange(nguonCungCapCu);
+
+                    db.SaveChanges();
+                    result = "Đã xóa thành công danh mục sản phẩm!";
+                    refresh = "1";
+                }
+            }
+            else
+            {
+                result = "Xóa danh mục sản phẩm thất bại!";
+                refresh = "0";
+            }
+
+            return Json(new
+            {
+                msg = result,
+                rf = refresh
+            },
+            JsonRequestBehavior.AllowGet);
         }
     }
 }

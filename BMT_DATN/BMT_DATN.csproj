@@ -284,6 +284,8 @@
     <Content Include="Views\Provider\SuaNhaCungCap.cshtml" />
     <Content Include="Views\Product\QuanLySanPham.cshtml" />
     <Content Include="Views\Product\ThemSanPham.cshtml" />
+    <Content Include="Views\Product\XemSanPham.cshtml" />
+    <Content Include="Views\Product\SuaSanPham.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

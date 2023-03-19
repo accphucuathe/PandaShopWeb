@@ -22,6 +22,7 @@ namespace BMT_DATN.Models
     
         public int PK_MaDanhMucSanPham { get; set; }
         public string TenDanhMucSanPham { get; set; }
+        public string MoTa { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblSanPham> tblSanPhams { get; set; }

@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="791050f54e3f409db7888fa6befa24f4" Name="Diagram1" ZoomLevel="121">
+      <Diagram DiagramId="791050f54e3f409db7888fa6befa24f4" Name="Diagram1" ZoomLevel="91">
         <EntityTypeShape EntityType="BMT_DATNModel.sysdiagram" Width="1.5" PointX="8.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblChiTietDonHang" Width="1.5" PointX="5.25" PointY="7.375" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblChiTietKhuyenMai" Width="1.5" PointX="5.25" PointY="4.5" IsExpanded="true" />
@@ -38,6 +38,7 @@
         <AssociationConnector Association="BMT_DATNModel.FK_MaNCC_tblNguonCungCap_tblNhaCungCap" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaSP_tblNguonCungCap_tblSanPham" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaNCC_tblPhieuNhap_tblNhaCungCap" ManuallyRouted="false" />
+        <AssociationConnector Association="BMT_DATNModel.FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

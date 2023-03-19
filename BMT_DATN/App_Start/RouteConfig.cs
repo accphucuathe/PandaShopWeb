@@ -122,6 +122,16 @@ namespace BMT_DATN
                 url: "them-san-pham",
                 defaults: new { controller = "Product", action = "ThemSanPham", id = UrlParameter.Optional }
             );
+            routes.MapRoute(
+                name: "XemSanPham",
+                url: "xem-san-pham",
+                defaults: new { controller = "Product", action = "XemSanPham", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "SuaSanPham",
+                url: "sua-san-pham",
+                defaults: new { controller = "Product", action = "SuaSanPham", id = UrlParameter.Optional }
+            );
 
             // mac dinh
             routes.MapRoute(

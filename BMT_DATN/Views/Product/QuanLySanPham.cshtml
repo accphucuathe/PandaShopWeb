@@ -10,27 +10,34 @@
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="tooltip"]').tooltip({
+            trigger: 'hover'
+        });
+        $('a[name="qlsp_menu"]').html("<b>>>SẢN PHẨM</b>");
+        $('a[name="qlsp_menu"]').css("color", "red");
         // nhan xoa sp
-        $('a[name="deleteProvider"]').click(function () {
-            var deleteProviId = this.id;
+        $('a[name="deleteProduct"]').click(function () {
+            var deleteProduId = this.id;
             var obj = {
-                providerId: deleteProviId
+                productId: deleteProduId
             }
             $.ajax({
                 type: 'POST',
-                url: '@Url.Action("AdminXoaNhaCungCap", "Provider")',
+                url: '@Url.Action("AdminXoaSanPham", "Product")',
                 data: JSON.stringify(obj),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
 
                 beforeSend: function () {
-
+                    return confirm("Bạn chắc chắn muốn xóa sản phẩm này chứ?");
+                    jQuery('.tooltip').hide();
                 },
                 success: function (response) {
                     var valueReturn = response;
                     alert(valueReturn.msg);
-                    window.location.reload(true);
+                    if (valueReturn.rf == "1") {
+                        window.location.reload(true);
+                    }
                 },
                 failure: function (response) {
                     alert("fail");
@@ -39,8 +46,8 @@
 
                 },
                 error: function (xhr, status, error) {
-                    var err = eval("(" + xhr.responseText + ")");
-                    alert(err.Message);
+                    var err = xhr.responseText;
+                    alert(err);
                 },
             });
         });
@@ -107,10 +114,10 @@
             <table class="table table-striped table-hover table-bordered">
                 <thead>
                     <tr>
-                        <th>STT</th>
+                        <th style="width: 50px;">STT</th>
                         <th>Hình ảnh</th>
                         <th>Tên sản phẩm</th>
-                        <th>Số lượng</th>
+                        <th style="width: 80px;">Số lượng</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
@@ -130,13 +137,13 @@
                         foreach (var sanpham in listSanPham)
                         {
                             <tr>
-                                <td>@stt</td>
-                                <td>@sanpham.HinhAnh</td>
+                                <td style="text-align:center;">@stt</td>
+                                <td><img src="~/Images_Data/@sanpham.HinhAnh" width="100px" /></td>
                                 <td>@sanpham.TenSanPham</td>
-                                <td>@sanpham.SoLuong</td>
+                                <td style="text-align:center;">@sanpham.SoLuong</td>
                                 <td>
-                                    <a href="/xem-san-pham?maNhaCungCap=@sanpham.PK_MaSanPham" class="view" title="Xem" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
-                                    <a href="/sua-san-pham?maNhaCungCap=@sanpham.PK_MaSanPham" class="edit" title="Sửa" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a href="/xem-san-pham?maSanPham=@sanpham.PK_MaSanPham" class="view" title="Xem" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                                    <a href="/sua-san-pham?maSanPham=@sanpham.PK_MaSanPham" class="edit" title="Sửa" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
                                     <a href="javascript:void(0)" class="delete" title="Xóa" data-toggle="tooltip" name="deleteProduct" id="@sanpham.PK_MaSanPham"><i class="material-icons">&#xE872;</i></a>
                                 </td>
                             </tr>

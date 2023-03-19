@@ -17,8 +17,10 @@ namespace BMT_DATN.Models
         public string FK_MaDonHang { get; set; }
         public int FK_MaTrangThaiDonHang { get; set; }
         public System.DateTime ThoiGianCapNhat { get; set; }
+        public System.Guid FK_MaNhanVienCapNhat { get; set; }
     
         public virtual tblDonHang tblDonHang { get; set; }
         public virtual tblTrangThaiDonHang tblTrangThaiDonHang { get; set; }
+        public virtual tblNguoiDung tblNguoiDung { get; set; }
     }
 }

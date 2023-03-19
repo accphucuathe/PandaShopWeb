@@ -129,9 +129,16 @@ namespace BMT_DATN.Controllers
                              select ncc).FirstOrDefault();
             if (nccBiXoa != null)
             {
-                db.tblNhaCungCaps.Remove(nccBiXoa);
-                db.SaveChanges();
-                result = "Đã xóa thành công nhà cung cấp!";
+                if (nccBiXoa.tblNguonCungCaps.Count > 0)        // tồn tại sp đang liên kết với ncc
+                {
+                    result = "Nhà cung cấp đang liên kết với sản phẩm. Không thể xóa!";
+                }
+                else
+                {
+                    db.tblNhaCungCaps.Remove(nccBiXoa);
+                    db.SaveChanges();
+                    result = "Đã xóa thành công nhà cung cấp!";
+                }
             }
             else
             {

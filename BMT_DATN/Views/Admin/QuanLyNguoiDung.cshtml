@@ -18,6 +18,8 @@
 <script>
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
+        $('a[name="qlnd_menu"]').html("<b>>>NGƯỜI DÙNG</b>");
+        $('a[name="qlnd_menu"]').css("color", "red");
 
         // nhan enter tim kiem
         $(document).keyup(function (event) {
@@ -82,7 +84,7 @@
             <table class="table table-striped table-hover table-bordered">
                 <thead>
                     <tr>
-                        <th>STT</th>
+                        <th style="width: 30px">STT</th>
                         <th>Họ tên</th>
                         <th>Quyền</th>
                         <th>Tên đăng nhập</th>
@@ -97,7 +99,7 @@
                         int pageSize = ViewBag.pageSize;
                         BMT_DATNEntities db = new BMT_DATNEntities();
                         var query = from nd in db.tblNguoiDungs
-                                    where nd.TenDangNhap.Contains(searchKeyword)
+                                    where nd.TenNguoiDung.Contains(searchKeyword)
                                     orderby nd.TenNguoiDung
                                     select nd;
                         var listNguoiDung = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
@@ -106,7 +108,7 @@
                         foreach (var nguoidung in listNguoiDung)
                         {
                             <tr>
-                                <td>@stt</td>
+                                <td style="text-align: center;">@stt</td>
                                 <td>@nguoidung.TenNguoiDung</td>
                                 <td>@nguoidung.tblQuyen.TenQuyen</td>
                                 <td>@nguoidung.TenDangNhap</td>

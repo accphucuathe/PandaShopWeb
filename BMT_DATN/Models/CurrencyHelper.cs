@@ -10,8 +10,14 @@ namespace BMT_DATN.Models
     {
         public String FormatToCurrency (int moneyNumber)
         {
-            string moneyvalue = String.Format(new CultureInfo("vi-VN"), "{0:C0}", moneyNumber);
-            return moneyvalue;
+            string moneyValue = String.Format(new CultureInfo("vi-VN"), "{0:C0}", moneyNumber);
+            return moneyValue;
+        }
+        
+        public String FormatWithComma (int moneyNumber)
+        {
+            string moneyValue = String.Format("{0:N0}", moneyNumber);
+            return moneyValue;
         }
 
         public int FormatToNumber (String moneyText)

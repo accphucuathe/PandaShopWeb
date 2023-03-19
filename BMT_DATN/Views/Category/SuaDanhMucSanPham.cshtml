@@ -19,9 +19,11 @@
         $('#btnSuaDanhMuc').click(function () {
             var cateId = $("#categoryId").val();
             var cateName = $("#categoryName").val();
+            var cateDescription = $("#categoryDescription").val();
             var obj = {
                 categoryId: cateId,
-                categoryName: cateName
+                categoryName: cateName,
+                categoryDescription: cateDescription
             }
             $.ajax({
                 type: 'POST',
@@ -57,17 +59,33 @@
 
 <div class="admin_content_area">
     <h2>QUẢN LÝ DANH MỤC SẢN PHẨM - SỬA THÔNG TIN DANH MỤC SẢN PHẨM</h2>
-    <div class="m-md-auto" style="padding:10px 0px 20px 0px;">
-        <input hidden value="@infoDmsp.PK_MaDanhMucSanPham" name="categoryId" id="categoryId" />
-        <label>Tên danh mục sản phẩm:</label>
-        <input type="text" name="categoryName" id="categoryName" style="width:50%" value="@infoDmsp.TenDanhMucSanPham" required />
+    <div class="m-auto AdminForm">
+        <span class="h4 mb-0">Sửa các thông tin</span>
+        <div class="m-md-auto" style="padding:10px 0px 20px 0px;">
+            <input hidden value="@infoDmsp.PK_MaDanhMucSanPham" name="categoryId" id="categoryId" />
+            <label>Tên danh mục sản phẩm:</label> <br />
+            <input type="text" style="width:100%;" name="categoryName" id="categoryName" value="@infoDmsp.TenDanhMucSanPham" required />
+        </div>
+        <div class="m-md-auto pt-1 pb-1">
+            <label for="categoryDescription">Mô tả:</label> <br />
+            <textarea style="width:100%;" rows="10" name="categoryDescription" id="categoryDescription">@infoDmsp.MoTa</textarea>
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+            <div>
+                <button type="button" class="ml-auto btn hvr-hover mr-2" style="color:#ffffff" name="btnSuaDanhMuc" id="btnSuaDanhMuc">Lưu</button>
+            </div>
+            <div>
+                <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Hủy</button>
+            </div>
+        </div>
     </div>
-    <div class="row">
+
+    @*<div class="row">
         <div class="col-md-6">
             <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff; display:block; margin:0 auto;" name="btnSuaDanhMuc" id="btnSuaDanhMuc">Lưu</button>
         </div>
         <div class="col-md-6">
             <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Hủy</button>
         </div>
-    </div>
+    </div>*@
 </div>

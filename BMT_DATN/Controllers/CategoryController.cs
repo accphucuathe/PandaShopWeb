@@ -21,13 +21,17 @@ namespace BMT_DATN.Controllers
         }
 
         // QL Danh muc san pham
-        public ActionResult QuanLyDanhMucSanPham()
+        public ActionResult QuanLyDanhMucSanPham(int? pageNumber, String searchKeyword)
         {
             // check permission
             if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang)
             {
                 return RedirectToAction("Index", "Home");
             }
+            int pageSize = 10;   // set page size
+            ViewBag.searchKeyword = searchKeyword;
+            ViewBag.pageNumber = pageNumber == null ? 1 : pageNumber;
+            ViewBag.pageSize = pageSize;
             return View();
         }
 
@@ -44,7 +48,7 @@ namespace BMT_DATN.Controllers
         }
 
         [HttpPost]
-        public JsonResult AdminThemDanhMucSanPham(String categoryName)
+        public JsonResult AdminThemDanhMucSanPham(String categoryName, String categoryDescription)
         {
             string result = "";
             string redirect = "";
@@ -63,6 +67,7 @@ namespace BMT_DATN.Controllers
                 // insert danh muc 
                 var danhMucSanPhamMoi = new tblDanhMucSanPham();
                 danhMucSanPhamMoi.TenDanhMucSanPham = categoryName;
+                danhMucSanPhamMoi.MoTa = categoryDescription;
                 db.tblDanhMucSanPhams.Add(danhMucSanPhamMoi);
                 db.SaveChanges();
                 result = "Thêm danh mục sản phẩm thành công!";
@@ -98,7 +103,7 @@ namespace BMT_DATN.Controllers
         }
 
         [HttpPost]
-        public JsonResult AdminSuaDanhMucSanPham(int categoryId, String categoryName)
+        public JsonResult AdminSuaDanhMucSanPham(int categoryId, String categoryName, String categoryDescription)
         {
             string result = "";
             string redirect = "";
@@ -108,7 +113,7 @@ namespace BMT_DATN.Controllers
             if (dmspDuocSua != null)
             {
                 var checkCategoryName = (from dm in db.tblDanhMucSanPhams
-                                         where dm.TenDanhMucSanPham.Equals(cateName) && 
+                                         where dm.TenDanhMucSanPham.Equals(cateName) &&
                                                 dm.PK_MaDanhMucSanPham != dmspDuocSua.PK_MaDanhMucSanPham
                                          select dm).FirstOrDefault();
                 if (checkCategoryName != null)
@@ -119,7 +124,8 @@ namespace BMT_DATN.Controllers
                 else
                 {
                     // update danh muc
-                    dmspDuocSua.TenDanhMucSanPham = categoryName;
+                    dmspDuocSua.TenDanhMucSanPham = cateName;
+                    dmspDuocSua.MoTa = categoryDescription;
                     db.SaveChanges();
                     result = "Sửa danh mục sản phẩm thành công!";
                     redirect = "1";     // về trang Quản lý DMSP
@@ -143,9 +149,16 @@ namespace BMT_DATN.Controllers
                              select dm).FirstOrDefault();
             if (dmspBiXoa != null)
             {
-                db.tblDanhMucSanPhams.Remove(dmspBiXoa);
-                db.SaveChanges();
-                result = "Đã xóa thành công danh mục sản phẩm!";
+                if (dmspBiXoa.tblSanPhams.Count > 0)        // tồn tại sp đang liên kết dmsp
+                {
+                    result = "Danh mục đang liên kết với sản phẩm. Không thể xóa!";
+                }
+                else
+                {
+                    db.tblDanhMucSanPhams.Remove(dmspBiXoa);
+                    db.SaveChanges();
+                    result = "Đã xóa thành công danh mục sản phẩm!";
+                }
             }
             else
             {
@@ -157,6 +170,14 @@ namespace BMT_DATN.Controllers
                 msg = result
             },
             JsonRequestBehavior.AllowGet);
+        }
+
+        // QL danh muc san pham - tim kiem danh muc sp
+        [HttpPost]
+        public JsonResult AdminTimKiemDanhMucSanPham(int? pageNumber, String searchKeyword)
+        {
+            string searchK = searchKeyword;
+            return Json(new { redirectToUrl = Url.Action("QuanLyDanhMucSanPham", "Category", new { searchKeyword = searchK }) });
         }
     }
 }

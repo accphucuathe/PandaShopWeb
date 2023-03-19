@@ -1,0 +1,97 @@
+﻿
+@{
+    ViewBag.Title = "XemSanPham";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+@using BMT_DATN.Models;
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('a[name="qlncc_menu"]').html("<b>>>NHÀ CUNG CẤP</b>");
+        $('a[name="qlncc_menu"]').css("color", "red");
+    });
+</script>
+<div class="admin_content_area">
+    <h2>QUẢN LÝ SẢN PHẨM - XEM THÔNG TIN SẢN PHẨM</h2>
+    <div>
+        @{
+            int maSanPham = ViewBag.maSanPham;
+            var ch = new CurrencyHelper();
+            BMT_DATNEntities db = new BMT_DATNEntities();
+            var infoSanPham = (from sp in db.tblSanPhams
+                               where sp.PK_MaSanPham == maSanPham
+                               select new
+                               {
+                                   TenSanPham = sp.TenSanPham,
+                                   KichCo = sp.KichCo,
+                                   HinhAnh = sp.HinhAnh,
+                                   MoTa = sp.MoTa,
+                                   DonVi = sp.DonVi,
+                                   SoLuong = sp.SoLuong,
+                                   DonGia = sp.DonGia,
+                                   TenDanhMucSanPham = sp.tblDanhMucSanPham.TenDanhMucSanPham,
+                                   CacNhaCungCap = sp.tblNguonCungCaps.ToList()
+                               }).FirstOrDefault();
+        }
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 180px;">Nội dung</th>
+                    <th>Thông tin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Hình ảnh</td>
+                    <td><img src="~/Images_Data/@infoSanPham.HinhAnh" height="300px" /></td>
+                </tr>
+                <tr>
+                    <td>Tên sản phẩm</td>
+                    <td>@infoSanPham.TenSanPham</td>
+                </tr>
+                <tr>
+                    <td>Danh mục sản phẩm</td>
+                    <td>@infoSanPham.TenDanhMucSanPham</td>
+                </tr>
+                <tr>
+                    <td>Kích cỡ</td>
+                    <td>@infoSanPham.KichCo</td>
+                </tr>
+                <tr>
+                    <td>Đơn vị</td>
+                    <td>@infoSanPham.DonVi</td>
+                </tr>
+                <tr>
+                    <td>Số lượng</td>
+                    <td>@infoSanPham.SoLuong</td>
+                </tr>
+                <tr>
+                    <td>Đơn giá</td>
+                    <td>@ch.FormatToCurrency(infoSanPham.DonGia)</td>
+                </tr>
+                <tr>
+                    <td>Mô tả</td>
+                    <td>@infoSanPham.MoTa</td>
+                </tr>
+                <tr>
+                    <td>Các nhà cung cấp</td>
+                    <td>
+                        <ul>
+                            @{
+                                foreach (var ncc in infoSanPham.CacNhaCungCap)
+                                {
+                                    <li style="list-style: circle; margin-left: 15px;">@ncc.tblNhaCungCap.TenNhaCungCap</li>
+                                }
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Quay lại</button>
+    </div>
+</div>
