@@ -97,11 +97,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
-    <Content Include="Image\layout\apple-touch-icon.png" />
     <Content Include="Image\layout\avatar_profile.png" />
     <Content Include="Image\layout\avatar_profile_2.png" />
-    <Content Include="Image\layout\favicon.ico" />
     <Content Include="Image\layout\padan_logo_merge.png" />
+    <Content Include="Image\layout\panda_banner_01.jpg" />
+    <Content Include="Image\layout\panda_banner_02.jpg" />
+    <Content Include="Image\layout\panda_banner_03.jpg" />
     <Content Include="Image\layout\panda_logo.png" />
     <Content Include="Image\patin.png" />
     <Content Include="Image\simson.gif" />

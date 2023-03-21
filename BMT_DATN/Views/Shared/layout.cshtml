@@ -42,7 +42,7 @@
 <body>
 
     <!-- Start Main Top -->
-    <header class="main-header">
+    <header class="main-header" style="position: static">
         <!-- Start Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
             <div class="container header-bar">
@@ -51,7 +51,7 @@
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa fa-bars"></i>
                     </button>
-                    <a class="navbar-brand" href="index.html"><img height="51px" src="~/Image/layout/padan_logo_merge.png" class="logo" alt=""></a>
+                    <a class="navbar-brand" href="/trang-chu"><img height="51px" src="~/Image/layout/padan_logo_merge.png" class="logo" alt=""></a>
                 </div>
                 <!-- End Header Navigation -->
                 <!-- Collect the nav links, forms, and other content for toggling -->
@@ -147,7 +147,7 @@
     </header>
     <!-- End Main Top -->
     <!-- Start Top Search -->
-    <div class="top-search">
+    <div class="top-search" style="background-color:#666666">
         <div class="container">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-search"></i></span>
@@ -157,6 +157,7 @@
         </div>
     </div>
     <!-- End Top Search -->
+    
     <!-- Content Container-->
     <div class="content-container">
         @RenderBody()

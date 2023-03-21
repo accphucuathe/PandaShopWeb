@@ -9,12 +9,12 @@
 <link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script>
+    $('a[name="qlsp_menu"]').html("<b>>>SẢN PHẨM</b>");
+    $('a[name="qlsp_menu"]').css("color", "red");
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip({
             trigger: 'hover'
         });
-        $('a[name="qlsp_menu"]').html("<b>>>SẢN PHẨM</b>");
-        $('a[name="qlsp_menu"]').css("color", "red");
         // nhan xoa sp
         $('a[name="deleteProduct"]').click(function () {
             var deleteProduId = this.id;

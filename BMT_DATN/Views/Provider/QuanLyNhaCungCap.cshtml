@@ -9,10 +9,10 @@
 <link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script>
+    $('a[name="qlncc_menu"]').html("<b>>>NHÀ CUNG CẤP</b>");
+    $('a[name="qlncc_menu"]').css("color", "red");
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
-        $('a[name="qlncc_menu"]').html("<b>>>NHÀ CUNG CẤP</b>");
-        $('a[name="qlncc_menu"]').css("color", "red");
         // nhan xoa ncc
         $('a[name="deleteProvider"]').click(function () {
             var deleteProviId = this.id;

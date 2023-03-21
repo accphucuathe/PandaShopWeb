@@ -3,10 +3,199 @@
     ViewBag.Title = "Trang chủ";
     Layout = "~/Views/Shared/layout.cshtml";
 }
+@using BMT_DATN.Models;
+@{
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var ch = new CurrencyHelper();
+}
 
-<div class="home-content row">
+<!-- Start Slider -->
+<div id="slides-shop" class="cover-slides">
+    <ul class="slides-container">
+        <li class="text-left">
+            <img src="~/Image/layout/panda_banner_01.jpg" alt=" " />
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="m-b-20"><strong>Chào mừng tới <br> Panda Shop</strong></h1>
+                        <p class="m-b-40">Nơi giúp bạn có thể lựa chọn những sản phẩm <br> hợp với ý bạn nhất.</p>
+                        @*<p><a class="btn hvr-hover" href="#">Panda Shop</a></p>*@
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="text-center">
+            <img src="~/Image/layout/panda_banner_02.jpg" alt=" " />
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="m-b-20"><strong>Chất lượng đảm bảo <br> Giá cả hợp lý</strong></h1>
+                        @*<p class="m-b-40">Chất lượng đảm bảo <br> Giá cả hợp lý</p>*@
+                        @*<p><a class="btn hvr-hover" href="#">Panda Shop</a></p>*@
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="text-right">
+            <img src="~/Image/layout/panda_banner_03.jpg" alt=" " />
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="m-b-20"><strong>Sản phẩm đa dạng <br /> cho cả người lớn và trẻ em</strong></h1>
+                        @*<p class="m-b-40">Sản phẩm đa dạng cho cả người lớn và trẻ em <br></p>*@
+                        @*<p><a class="btn hvr-hover" href="#">Panda Shop</a></p>*@
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="slides-navigation">
+        <a href="#" class="next"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+        <a href="#" class="prev"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+    </div>
+</div>
+<!-- End Slider -->
+@{
+    var categoryList = (from dmsp in db.tblDanhMucSanPhams
+                        orderby dmsp.tblSanPhams.Count descending
+                        select dmsp).Take(5).ToList();
+}
+<!-- Start Categories  -->
+<div class="categories-shop">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="index-category-box">
+                    <a href="#">@categoryList[0].TenDanhMucSanPham</a>
+                </div>
+                <div class="index-category-box">
+                    <a href="#">@categoryList[1].TenDanhMucSanPham</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="index-category-box">
+                    <a href="#">@categoryList[2].TenDanhMucSanPham</a>
+                </div>
+                <div class="index-category-box">
+                    <a href="#">@categoryList[3].TenDanhMucSanPham</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="index-category-box">
+                    <a href="#">@categoryList[4].TenDanhMucSanPham</a>
+                </div>
+                <div class="index-category-box">
+                    <a href="#">Các danh mục <br />sản phẩm khác</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Categories -->
+@{
+    var top8SanPhamDauTien = (from sp in db.tblSanPhams
+                              select sp).Take(8).ToList();
+}
+<!-- Start Products  -->
+<div class="products-box">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="title-all text-center">
+                    <h1>Sản phẩm nổi bật</h1>
+                    <p>Top những sản phẩm sẽ đem lại sự ấn tượng với bạn.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="special-menu text-center">
+                    <div class="button-group filter-button-group">
+                        <button class="active" data-filter="*">Tất cả</button>
+                        <button data-filter=".top-featured">Bán chạy</button>
+                        <button data-filter=".best-seller">Giảm giá</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row special-list">
+            @{
+                foreach (var sp in top8SanPhamDauTien.Take(4)) { 
+                    <div class="col-lg-3 col-md-6 special-grid best-seller">
+                        <div class="products-single fix">
+                            <div class="box-img-hover">
+                                <div class="type-lb">
+                                    <p class="sale">Sale</p>
+                                </div>
+                                <img src="~/Images_Data/@sp.HinhAnh" class="img-fluid" alt="Image">
+                                <div class="text-center">
+                                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff">Thêm vào giỏ hàng</button>
+                                </div>
+                            </div>
+                        <div class="why-text">
+                            <h4>@sp.TenSanPham</h4>
+                            <h5>@ch.FormatToCurrency(sp.DonGia)</h5>
+                        </div>
+                    </div>
+                </div>
+                }
+            }
+
+            @*<div class="col-lg-3 col-md-6 special-grid top-featured">
+                <div class="products-single fix">
+                    <div class="box-img-hover">
+                        <div class="type-lb">
+                            <p class="new">New</p>
+                        </div>
+                        <img src="images/img-pro-02.jpg" class="img-fluid" alt="Image">
+                        <div class="mask-icon">
+                            <ul>
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
+                                <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
+                            </ul>
+                            <a class="cart" href="#">Add to Cart</a>
+                        </div>
+                    </div>
+                    <div class="why-text">
+                        <h4>Lorem ipsum dolor sit amet</h4>
+                        <h5> $9.79</h5>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+        <div class="row special-list">
+            @{
+                foreach (var sp in top8SanPhamDauTien.Skip(4).Take(4))
+                {
+                    <div class="col-lg-3 col-md-6 special-grid top-featured">
+                        <div class="products-single fix">
+                            <div class="box-img-hover">
+                                <div class="type-lb">
+                                    <p class="hot">Hot</p>
+                                </div>
+                                <img src="~/Images_Data/@sp.HinhAnh" class="img-fluid" alt="Image">
+                                <div class="text-center">
+                                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff">Thêm vào giỏ hàng</button>
+                                </div>
+                            </div>
+                            <div class="why-text">
+                                <h4>@sp.TenSanPham</h4>
+                                <h5>@ch.FormatToCurrency(sp.DonGia)</h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<!-- End Products  -->
+
+@*<div class="home-content row">
     <div class="col-md-3 border">one</div>
     <div class="col-md-4 border border-danger">two</div>
     <div class="col-md-2 border border-dark">three</div>
     <div class="col-md-3 border border-info">four</div>
-</div>
+</div>*@

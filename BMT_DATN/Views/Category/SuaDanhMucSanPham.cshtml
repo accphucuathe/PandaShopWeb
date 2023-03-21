@@ -15,6 +15,8 @@
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
+    $('a[name="qldmsp_menu"]').html("<b>>>DANH MỤC SẢN PHẨM</b>");
+    $('a[name="qldmsp_menu"]').css("color", "red");
     $(document).ready(function () {
         $('#btnSuaDanhMuc').click(function () {
             var cateId = $("#categoryId").val();

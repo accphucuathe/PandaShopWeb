@@ -36,9 +36,9 @@
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
+    $('a[name="qlsp_menu"]').html("<b>>>SẢN PHẨM</b>");
+    $('a[name="qlsp_menu"]').css("color", "red");
     $(document).ready(function () {
-        $('a[name="qlsp_menu"]').html("<b>>>SẢN PHẨM</b>");
-        $('a[name="qlsp_menu"]').css("color", "red");
 
         $('#productPrice').on('keyup', function () {
             // '' -> comma

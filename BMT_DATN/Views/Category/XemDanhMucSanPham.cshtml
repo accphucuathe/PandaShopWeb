@@ -5,6 +5,12 @@
 }
 
 @using BMT_DATN.Models;
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $('a[name="qldmsp_menu"]').html("<b>>>DANH MỤC SẢN PHẨM</b>");
+    $('a[name="qldmsp_menu"]').css("color", "red");
+</script>
 <div class="admin_content_area">
     <h2>QUẢN LÝ DANH MỤC SẢN PHẨM - XEM THÔNG TIN DANH MỤC SẢN PHẨM</h2>
     <div>
@@ -12,8 +18,8 @@
             int maDmsp = ViewBag.maDmsp;
             BMT_DATNEntities db = new BMT_DATNEntities();
             var infoDmsp = (from dm in db.tblDanhMucSanPhams
-                                 where dm.PK_MaDanhMucSanPham == maDmsp
-                                 select dm).FirstOrDefault();
+                            where dm.PK_MaDanhMucSanPham == maDmsp
+                            select dm).FirstOrDefault();
         }
         <table class="table table-striped table-hover table-bordered">
             <thead>

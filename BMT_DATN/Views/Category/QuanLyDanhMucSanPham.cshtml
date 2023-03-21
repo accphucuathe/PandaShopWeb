@@ -7,10 +7,10 @@
 <link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script>
+    $('a[name="qldmsp_menu"]').html("<b>>>DANH MỤC SẢN PHẨM</b>");
+    $('a[name="qldmsp_menu"]').css("color", "red");
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
-        $('a[name="qldmsp_menu"]').html("<b>>>DANH MỤC SẢN PHẨM</b>");
-        $('a[name="qldmsp_menu"]').css("color", "red");
 
         // nhan enter tim kiem
         $(document).keyup(function (event) {
