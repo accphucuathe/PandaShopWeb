@@ -159,8 +159,8 @@ namespace BMT_DATN.Controllers
                 if (hashedOldPassword != nguoiDungHienTai.MatKhauDaMaHoa)
                 {
                     return RedirectToAction("EditProfile", new { maNguoiDung = nguoiDungHienTai.PK_MaNguoiDung, editNotification = "Mật khẩu cũ sai!" });
-                }   
-                
+                }
+
                 // save new pass
                 string updateSalt = eh.GenerateSalt();
                 nguoiDungHienTai.MaSalt = updateSalt;
@@ -171,7 +171,33 @@ namespace BMT_DATN.Controllers
             // save
             db.SaveChanges();
 
-            return RedirectToAction("ViewProfile", new {maNguoiDung = nguoiDungHienTai.PK_MaNguoiDung });
+            return RedirectToAction("ViewProfile", new { maNguoiDung = nguoiDungHienTai.PK_MaNguoiDung });
+        }
+
+        // danh sach san pham
+        public ActionResult DanhSachSanPham(int? maDmsp, int? pageNumber, String searchKeyword)
+        {
+            ViewBag.maDmsp = maDmsp == null ? 0 : maDmsp ;
+            int pageSize = 9;   // set page size
+            ViewBag.searchKeyword = searchKeyword;
+            ViewBag.pageNumber = pageNumber == null ? 1 : pageNumber;
+            ViewBag.pageSize = pageSize;
+            return View();
+        }
+
+        // danh sach san pham - tim kiem san pham
+        [HttpPost]
+        public JsonResult UserTimKiemSanPham(String searchKeyword)
+        {
+            string searchK = searchKeyword;
+            return Json(new { redirectToUrl = Url.Action("DanhSachSanPham", "Home", new { searchKeyword = searchK }) });
+        }
+
+        // chi tiet san pham
+        public ActionResult ChiTietSanPham(int maSp) 
+        {
+            ViewBag.maSanPham = maSp;
+            return View();
         }
     }
 }

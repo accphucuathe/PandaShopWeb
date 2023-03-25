@@ -39,6 +39,16 @@ namespace BMT_DATN
                 url: "chinh-sua-thong-tin-ca-nhan",
                 defaults: new { controller = "Home", action = "EditProfile", id = UrlParameter.Optional }
             );
+            routes.MapRoute(
+                name: "DanhSachSanPham",
+                url: "danh-sach-san-pham",
+                defaults: new { controller = "Home", action = "DanhSachSanPham", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "ChiTietSanPham",
+                url: "chi-tiet-san-pham",
+                defaults: new { controller = "Home", action = "ChiTietSanPham", id = UrlParameter.Optional }
+            );
 
             // Admin + QuanLyNguoiDung View
             routes.MapRoute(

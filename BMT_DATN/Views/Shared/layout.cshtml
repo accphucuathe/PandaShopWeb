@@ -40,7 +40,55 @@
 @using BMT_DATN.Controllers;
 @using BMT_DATN.Models;
 <body>
+    <!-- Script For Navigation -->
+    <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // focus searchSanPham
+            $("#btnSearchSanPham").click(function () {
+                setTimeout(function () { $('input[id="searchSanPham"]').focus() }, 3000);
+            });
+            // nhan enter tim kiem
+            $(document).keyup(function (event) {
+                if ($("#searchSanPham").is(":focus") && event.key == "Enter") {
+                    if ($("#searchSanPham").val() == "") {
+                        alert("Trường tìm kiếm đang rỗng!");
+                    }
+                    else {
+                        var searchKey = $("#searchSanPham").val();
+                        var obj = {
+                            searchKeyword: searchKey
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("UserTimKiemSanPham", "Home")',
+                            data: JSON.stringify(obj),
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
 
+                            beforeSend: function () {
+
+                            },
+                            success: function (response) {
+                                window.location.href = response.redirectToUrl;
+                            },
+                            failure: function (response) {
+                                alert("fail");
+                            },
+                            complete: function () {
+
+                            },
+                            error: function (xhr, status, error) {
+                                var err = eval("(" + xhr.responseText + ")");
+                                alert(err.Message);
+                            },
+                        });
+                    }
+                }
+            });
+
+        });
+    </script>
     <!-- Start Main Top -->
     <header class="main-header" style="position: static">
         <!-- Start Navigation -->
@@ -61,11 +109,11 @@
                         <li class="dropdown">
                             <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">Danh mục sản phẩm <i class="fas fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Giày Patin</a></li>
-                                <li><a href="#">Giày thể thao</a></li>
-                                <li><a href="#">Ván trượt</a></li>
-                                <li><a href="#">Đồ bảo hộ</a></li>
-                                <li><a href="#">Khác</a></li>
+                                <li><a href="/danh-sach-san-pham?maDmsp=1">Giày Patin</a></li>
+                                <li><a href="/danh-sach-san-pham?maDmsp=2">Giày thể thao</a></li>
+                                <li><a href="/danh-sach-san-pham?maDmsp=3">Ván trượt</a></li>
+                                <li><a href="/danh-sach-san-pham?maDmsp=4">Đồ bảo hộ</a></li>
+                                <li><a href="/danh-sach-san-pham?maDmsp=0">Khác</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -103,7 +151,7 @@
                 <!-- Start Atribute Navigation -->
                 <div class="attr-nav">
                     <ul>
-                        <li class="search"><a href="#"><i class="fa fa-search"></i></a></li>
+                        <li class="search"><a href="#" id="btnSearchSanPham"><i class="fa fa-search"></i></a></li>
                         <li class="side-menu">
                             <a href="#">
                                 <i class="fa fa-shopping-bag"></i>
@@ -151,13 +199,12 @@
         <div class="container">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                <input type="text" class="form-control" placeholder="Tìm kiếm ...">
+                <input type="text" class="form-control" id="searchSanPham" placeholder=" ...">
                 <span class="input-group-addon close-search"><i class="fa fa-times"></i></span>
             </div>
         </div>
     </div>
     <!-- End Top Search -->
-    
     <!-- Content Container-->
     <div class="content-container">
         @RenderBody()

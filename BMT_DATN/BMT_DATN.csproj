@@ -103,6 +103,13 @@
     <Content Include="Image\layout\panda_banner_01.jpg" />
     <Content Include="Image\layout\panda_banner_02.jpg" />
     <Content Include="Image\layout\panda_banner_03.jpg" />
+    <Content Include="Image\layout\panda_banner_04.jpg" />
+    <Content Include="Image\layout\panda_category_01.jpg" />
+    <Content Include="Image\layout\panda_category_02.jpg" />
+    <Content Include="Image\layout\panda_category_03.jpg" />
+    <Content Include="Image\layout\panda_category_04.jpg" />
+    <Content Include="Image\layout\panda_category_05.jpg" />
+    <Content Include="Image\layout\panda_category_99.jpg" />
     <Content Include="Image\layout\panda_logo.png" />
     <Content Include="Image\patin.png" />
     <Content Include="Image\simson.gif" />
@@ -287,6 +294,8 @@
     <Content Include="Views\Product\ThemSanPham.cshtml" />
     <Content Include="Views\Product\XemSanPham.cshtml" />
     <Content Include="Views\Product\SuaSanPham.cshtml" />
+    <Content Include="Views\Home\DanhSachSanPham.cshtml" />
+    <Content Include="Views\Home\ChiTietSanPham.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

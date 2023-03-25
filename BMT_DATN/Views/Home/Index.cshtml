@@ -65,27 +65,33 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="index-category-box">
-                    <a href="#">@categoryList[0].TenDanhMucSanPham</a>
+                <div class="shop-cat-box">
+                    <img class="img-fluid" src="~/Image/layout/panda_category_01.jpg" alt="" />
+                    <a class="btn hvr-hover" href="/danh-sach-san-pham?maDmsp=@categoryList[0].PK_MaDanhMucSanPham">Giày Patin</a>
                 </div>
-                <div class="index-category-box">
-                    <a href="#">@categoryList[1].TenDanhMucSanPham</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="index-category-box">
-                    <a href="#">@categoryList[2].TenDanhMucSanPham</a>
-                </div>
-                <div class="index-category-box">
-                    <a href="#">@categoryList[3].TenDanhMucSanPham</a>
+                <div class="shop-cat-box">
+                    <img class="img-fluid" src="~/Image/layout/panda_category_05.jpg" alt="" />
+                    <a class="btn hvr-hover" href="/danh-sach-san-pham?maDmsp=@categoryList[4].PK_MaDanhMucSanPham">Phụ kiện</a>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="index-category-box">
-                    <a href="#">@categoryList[4].TenDanhMucSanPham</a>
+                <div class="shop-cat-box">
+                    <img class="img-fluid" src="~/Image/layout/panda_category_02.jpg" alt="" />
+                    <a class="btn hvr-hover" href="/danh-sach-san-pham?maDmsp=@categoryList[1].PK_MaDanhMucSanPham">Giày thể thao</a>
                 </div>
-                <div class="index-category-box">
-                    <a href="#">Các danh mục <br />sản phẩm khác</a>
+                <div class="shop-cat-box">
+                    <img class="img-fluid" src="~/Image/layout/panda_category_04.jpg" alt="" />
+                    <a class="btn hvr-hover" href="/danh-sach-san-pham?maDmsp=@categoryList[3].PK_MaDanhMucSanPham">Đồ bảo hộ</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="shop-cat-box">
+                    <img class="img-fluid" src="~/Image/layout/panda_category_03.jpg" alt="" />
+                    <a class="btn hvr-hover" href="/danh-sach-san-pham?maDmsp=@categoryList[2].PK_MaDanhMucSanPham">Ván trượt</a>
+                </div>
+                <div class="shop-cat-box">
+                    <img class="img-fluid" src="~/Image/layout/panda_category_99.jpg" alt="" />
+                    <a class="btn hvr-hover" href="/danh-sach-san-pham?maDmsp=0">Các danh mục khác</a>
                 </div>
             </div>
         </div>
@@ -94,7 +100,7 @@
 <!-- End Categories -->
 @{
     var top8SanPhamDauTien = (from sp in db.tblSanPhams
-                              select sp).Take(8).ToList();
+                              select sp).AsEnumerable().Reverse().Take(8).ToList();
 }
 <!-- Start Products  -->
 <div class="products-box">
@@ -123,18 +129,21 @@
             @{
                 foreach (var sp in top8SanPhamDauTien.Take(4)) { 
                     <div class="col-lg-3 col-md-6 special-grid best-seller">
-                        <div class="products-single fix">
-                            <div class="box-img-hover">
+                        <div class="products-single fix card-product-single">
+                            <div class="box-img-hover card-product-single-image">
                                 <div class="type-lb">
                                     <p class="sale">Sale</p>
                                 </div>
                                 <img src="~/Images_Data/@sp.HinhAnh" class="img-fluid" alt="Image">
-                                <div class="text-center">
-                                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff">Thêm vào giỏ hàng</button>
+                                <div class="mask-icon">
+                                    <a class="cart" href="#">Thêm vào giỏ hàng</a>
                                 </div>
+                                @*<div class="text-center">
+                                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff">Thêm vào giỏ hàng</button>
+                                </div>*@
                             </div>
-                        <div class="why-text">
-                            <h4>@sp.TenSanPham</h4>
+                        <div class="why-text card-product-single-name">
+                            <h4><a href="/chi-tiet-san-pham?maSp=@sp.PK_MaSanPham">@sp.TenSanPham</a></h4>
                             <h5>@ch.FormatToCurrency(sp.DonGia)</h5>
                         </div>
                     </div>
@@ -170,18 +179,21 @@
                 foreach (var sp in top8SanPhamDauTien.Skip(4).Take(4))
                 {
                     <div class="col-lg-3 col-md-6 special-grid top-featured">
-                        <div class="products-single fix">
-                            <div class="box-img-hover">
+                        <div class="products-single fix card-product-single">
+                            <div class="box-img-hover card-product-single-image">
                                 <div class="type-lb">
                                     <p class="hot">Hot</p>
                                 </div>
                                 <img src="~/Images_Data/@sp.HinhAnh" class="img-fluid" alt="Image">
-                                <div class="text-center">
-                                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff">Thêm vào giỏ hàng</button>
+                                <div class="mask-icon">
+                                    <a class="cart" href="#">Thêm vào giỏ hàng</a>
                                 </div>
+                                @*<div class="text-center">
+                                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff">Thêm vào giỏ hàng</button>
+                                </div>*@
                             </div>
-                            <div class="why-text">
-                                <h4>@sp.TenSanPham</h4>
+                            <div class="why-text card-product-single-name">
+                                <h4><a href="/chi-tiet-san-pham?maSp=@sp.PK_MaSanPham">@sp.TenSanPham</a></h4>
                                 <h5>@ch.FormatToCurrency(sp.DonGia)</h5>
                             </div>
                         </div>

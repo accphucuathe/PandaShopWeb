@@ -1591,7 +1591,7 @@
      opacity: 1;
 }
  .search-product button {
-     background: #010101;
+     background: #ff5050;
      color: #ffffff;
      font-size: 18px;
      position: absolute;
@@ -1750,7 +1750,7 @@
      padding-left: 15px;
 }
  .toolbar-sorter-right .btn-light{
-     background: #010101;
+     background: #ff5050;
      color: #ffffff;
 }
  .toolbar-sorter-right .btn-light:hover{
