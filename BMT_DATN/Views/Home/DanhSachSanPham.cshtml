@@ -6,33 +6,112 @@
 @using BMT_DATN.Models;
 @{
     int maDmsp = ViewBag.maDmsp;
+    string searchKeyword = ViewBag.searchKeyword == null ? "" : ViewBag.searchKeyword;
+    int sortBy = ViewBag.sortBy == null ? 0 : ViewBag.sortBy;
+    int pageNumber = ViewBag.pageNumber;
+    int pageSize = ViewBag.pageSize;
+
     BMT_DATNEntities db = new BMT_DATNEntities();
     CurrencyHelper ch = new CurrencyHelper();
 
     var listCategory = (from dmsp in db.tblDanhMucSanPhams
                         select dmsp).ToList();
-    var listProduct = (from sp in db.tblSanPhams
-                       where sp.FK_MaDanhMucSanPham == maDmsp ||
-                                maDmsp == 0
-                       select sp).ToList();
+    var query = (from sp in db.tblSanPhams
+                 where (sp.FK_MaDanhMucSanPham == maDmsp || maDmsp == 0) &&
+                          (sp.TenSanPham.Contains(searchKeyword))
+                 orderby sp.PK_MaSanPham
+                 select sp);
+
+    switch (sortBy)
+    {
+        case 1: // moi -> cu
+            query = query.OrderByDescending(p => p.PK_MaSanPham);
+            break;
+        case 2: // cu -> moi
+            query = query.OrderBy(p => p.PK_MaSanPham);
+            break;
+        case 3: // gia cao -> thap
+            query = query.OrderByDescending(p => p.DonGia);
+            break;
+        case 4: // gia thap -> cao
+            query = query.OrderBy(p => p.DonGia);
+            break;
+        default:
+            query = query.OrderBy(p => p.PK_MaSanPham);
+            break;
+    }
+    var listProduct = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
 }
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script>
     $(function () {
         $('#list-group-men a').each(function () {
-            if ($(this).prop('href') == window.location.href) {
+            //if ($(this).prop('href') == window.location.href) {
+            //    $(this).addClass('selected');
+            //}
+            if (window.location.href.indexOf($(this).prop('href')) != -1) {
                 $(this).addClass('selected');
             }
         });
     });
     $(document).ready(function () {
+        $("#selectSort").val(@sortBy).change();
         // scroll
         $('html, body').animate({
             scrollTop: $('#start-shop-page-title').offset().top
         }, 'slow');
-        // mo full width
-        $('a[name="noFullWidth"]').removeClass('full-width');
+        // click button find san pham
+        $('#btnFindSanPham').click(function () {
+            var urlParams = new URLSearchParams(window.location.search);
+            var maDm = urlParams.get('maDmsp');
+            var searchKey = $("#findSanPham").val();
+            var sort = $("#selectSort").find("option:selected").attr('value')
+            var obj = {
+                maDmsp: maDm,
+                searchKeyword: searchKey,
+                sortBy: sort
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UserTimKiemSanPham", "Home")',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+
+                beforeSend: function () {
+
+                },
+                success: function (response) {
+                    window.location.href = response.redirectToUrl;
+
+                },
+                failure: function (response) {
+                    alert("fail");
+                },
+                complete: function () {
+
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                },
+            });
+        });
+        // enter input find san pham
+        $('#findSanPham').keypress(function (e) {
+            var key = e.which;
+            if (key == 13)  // the enter key code
+            {
+                $('#btnFindSanPham').click();
+                return false;
+            }
+        });
+        // change sort san pham
+        $('#selectSort').change(function () {
+            alert($(this).find("option:selected").attr('value'));
+            $('#btnFindSanPham').click();
+        });
     });
 
 </script>
@@ -55,8 +134,8 @@
                 <div class="product-categori">
                     <div class="search-product">
                         <form action="#">
-                            <input class="form-control" placeholder="Tìm kiếm..." type="text">
-                            <button type="submit"> <i class="fa fa-search"></i> </button>
+                            <input class="form-control" placeholder="Tìm kiếm..." type="text" id="findSanPham" value="@ViewBag.searchKeyword" autocomplete="off">
+                            <button type="button" id="btnFindSanPham"> <i class="fa fa-search"></i> </button>
                         </form>
                     </div>
                     <div class="filter-sidebar-left">
@@ -82,11 +161,12 @@
                         <div class="col-12 col-sm-8 text-center text-sm-left">
                             <div class="toolbar-sorter-right">
                                 <span>Xếp theo </span>
-                                <select id="basic" class="selectpicker show-tick form-control" data-placeholder="$ USD">
-                                    <option data-display="Select">-----------</option>
+                                <select id="selectSort" class="selectpicker show-tick form-control">
+                                    <option value="0" data-display="Select">---Không xếp---</option>
                                     <option value="1">Mới → cũ</option>
-                                    <option value="2">Giá cao → thấp</option>
-                                    <option value="3">Giá thấp → cao</option>
+                                    <option value="2">Cũ → mới</option>
+                                    <option value="3">Giá cao → thấp</option>
+                                    <option value="4">Giá thấp → cao</option>
                                 </select>
                             </div>
                             <p>Hiển thị @listProduct.Count kết quả</p>
@@ -160,7 +240,39 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
+                <div class="clearfix d-flex justify-content-center">
+                    <ul class="pagination">
+                        <li class="page-item"><a href="/danh-sach-san-pham?searchKeyword=@searchKeyword&sortBy=@sortBy&pageNumber=1" class="page-link"><i class="fa fa-angle-double-left"></i></a></li>
+                        @{
+                            var allSanPham = query.ToList();
+                            double pmax = (double)allSanPham.Count / pageSize;
+                            int pageMax = (int)Math.Ceiling(pmax);
+                            int pageTemp = 0;
+                            int page3HienTai = pageNumber;
+                            for (int i = 0; i < 5; i++)
+                            {
+                                if (i != 2)     // 4 nut ben canh
+                                {
+                                    pageTemp = pageNumber - 2 + i;
+                                    if (pageTemp <= 0 || pageTemp > pageMax)
+                                    {
+                                        <li class="page-item"><a class="page-link"> </a></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="page-item"><a href="/danh-sach-san-pham?searchKeyword=@searchKeyword&sortBy=@sortBy&pageNumber=@pageTemp" class="page-link">@pageTemp</a></li>
+                                    }
+                                }
+                                else            // nut chinh giua
+                                {
+                                    <li class="page-item active"><a href="javascript:void(0)" class="page-link">@page3HienTai</a></li>
+                                }
+                            }
+                        }
+                        <li class="page-item"><a href="/danh-sach-san-pham?searchKeyword=@searchKeyword&sortBy=@sortBy&pageNumber=@pageMax" class="page-link"><i class="fa fa-angle-double-right"></i></a></li>
+                    </ul>
                 </div>
             </div>
         </div>

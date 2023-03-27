@@ -15,7 +15,7 @@
       <PropertyRef Name="FK_MaDonHang" />
       <PropertyRef Name="FK_MaSanPham" />
     </Key>
-    <Property Name="FK_MaDonHang" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="FK_MaDonHang" Type="int" Nullable="false" />
     <Property Name="FK_MaSanPham" Type="int" Nullable="false" />
     <Property Name="SoLuongMua" Type="int" Nullable="false" />
     <Property Name="DonGia" Type="int" Nullable="false" />
@@ -45,7 +45,7 @@
       <PropertyRef Name="FK_MaDonHang" />
       <PropertyRef Name="FK_MaTrangThaiDonHang" />
     </Key>
-    <Property Name="FK_MaDonHang" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="FK_MaDonHang" Type="int" Nullable="false" />
     <Property Name="FK_MaTrangThaiDonHang" Type="int" Nullable="false" />
     <Property Name="ThoiGianCapNhat" Type="datetime" Nullable="false" />
     <Property Name="FK_MaNhanVienCapNhat" Type="uniqueidentifier" Nullable="false" />
@@ -81,9 +81,9 @@
     <Key>
       <PropertyRef Name="PK_MaDonHang" />
     </Key>
-    <Property Name="PK_MaDonHang" Type="varchar" MaxLength="50" Nullable="false" />
-    <Property Name="DiaChiGiaoHang" Type="nvarchar" MaxLength="100" Nullable="false" />
-    <Property Name="SoDienThoai" Type="varchar" MaxLength="10" Nullable="false" />
+    <Property Name="PK_MaDonHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="DiaChiGiaoHang" Type="nvarchar" MaxLength="100" />
+    <Property Name="SoDienThoai" Type="varchar" MaxLength="10" />
     <Property Name="FK_MaNguoiDung" Type="uniqueidentifier" Nullable="false" />
     <Property Name="GhiChu" Type="nvarchar" MaxLength="255" />
   </EntityType>

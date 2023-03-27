@@ -175,11 +175,12 @@ namespace BMT_DATN.Controllers
         }
 
         // danh sach san pham
-        public ActionResult DanhSachSanPham(int? maDmsp, int? pageNumber, String searchKeyword)
+        public ActionResult DanhSachSanPham(int? maDmsp, int? pageNumber, String searchKeyword, int? sortBy)
         {
-            ViewBag.maDmsp = maDmsp == null ? 0 : maDmsp ;
+            ViewBag.maDmsp = maDmsp == null ? 0 : maDmsp;
             int pageSize = 9;   // set page size
             ViewBag.searchKeyword = searchKeyword;
+            ViewBag.sortBy = sortBy;
             ViewBag.pageNumber = pageNumber == null ? 1 : pageNumber;
             ViewBag.pageSize = pageSize;
             return View();
@@ -187,17 +188,51 @@ namespace BMT_DATN.Controllers
 
         // danh sach san pham - tim kiem san pham
         [HttpPost]
-        public JsonResult UserTimKiemSanPham(String searchKeyword)
+        public JsonResult UserTimKiemSanPham(int? maDmsp, String searchKeyword, int sortBy)
         {
+            int maD = (int)(maDmsp == null ? 0 : maDmsp);
             string searchK = searchKeyword;
-            return Json(new { redirectToUrl = Url.Action("DanhSachSanPham", "Home", new { searchKeyword = searchK }) });
+            int sortB = sortBy;
+            return Json(new { redirectToUrl = Url.Action("DanhSachSanPham", "Home", new { maDmsp = maD, searchKeyword = searchK, sortBy = sortB }) });
         }
 
         // chi tiet san pham
-        public ActionResult ChiTietSanPham(int maSp) 
+        public ActionResult ChiTietSanPham(int maSp)
         {
             ViewBag.maSanPham = maSp;
             return View();
+        }
+
+        // user them san pham vao gio hang
+        [HttpPost]
+        public JsonResult UserThemSanPhamVaoGioHang(int productId)
+        {
+            Guid userId = HomeController.nguoidung.maNguoiDung;
+            string result = "";
+            string redirect = "";
+            if (Session["userID"] == null)
+            {
+                result = "Vui lòng đăng nhập!";
+                redirect = "1";         // chuyen huong trang dang nhap
+            }
+            else
+            {
+                // check gio hang hien tai - chua co gio hang nao thi tao moi
+                //var checkCurrentCart = (from o in db.tblDonHangs
+                //                        join c in db.tblChiTietTrangThaiDonHangs on o.PK_MaDonHang equals c.FK_MaDonHang
+                //                        where o.FK_MaNguoiDung.Equals(userId) &&
+                //                                c.FK_MaTrangThaiDonHang 
+                //                        select o).LastOrDefault();
+                //var x = (from a in db.tblDonHangs
+                //         where a.PK_MaDonHang )                        
+            }
+            int pId = productId;
+            return Json(new
+            {
+                msg = result,
+                rdt = redirect
+            },
+            JsonRequestBehavior.AllowGet);
         }
     }
 }

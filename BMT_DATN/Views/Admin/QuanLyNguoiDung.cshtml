@@ -143,7 +143,7 @@
                 }
                 <div class="hint-text">Hiển thị kết quả từ <b>@firstResult</b> đến <b>@lastResult</b></div>
                 <ul class="pagination">
-                    <li class="page-item"><a href="/quan-ly-nguoi-dung?searchKeyword=@searchKeyword&&pageNumber=1"><i class="fa fa-angle-double-left"></i></a></li>
+                    <li class="page-item"><a href="/quan-ly-nguoi-dung?searchKeyword=@searchKeyword&&pageNumber=1" class="page-link"><i class="fa fa-angle-double-left"></i></a></li>
                     @{
                         var allNguoiDung = query.ToList();
                         double pmax = (double)allNguoiDung.Count / pageSize;

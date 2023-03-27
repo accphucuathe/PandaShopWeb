@@ -145,7 +145,6 @@ E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\bin\System.Web.W
 E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\bin\System.Web.Helpers.xml
 E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\bin\System.Web.Mvc.xml
 E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\obj\Debug\BMT_DATN.csproj.AssemblyReference.cache
 E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\obj\Debug\BMT_DATN.csproj.CoreCompileInputs.cache
 E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\obj\Debug\BMT_DATN.csproj.CopyComplete
 E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\obj\Debug\BMT_DATN.dll

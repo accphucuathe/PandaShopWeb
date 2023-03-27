@@ -21,7 +21,7 @@ namespace BMT_DATN.Models
             this.tblChiTietTrangThaiDonHangs = new HashSet<tblChiTietTrangThaiDonHang>();
         }
     
-        public string PK_MaDonHang { get; set; }
+        public int PK_MaDonHang { get; set; }
         public string DiaChiGiaoHang { get; set; }
         public string SoDienThoai { get; set; }
         public System.Guid FK_MaNguoiDung { get; set; }

@@ -14,7 +14,7 @@ namespace BMT_DATN.Models
     
     public partial class tblChiTietDonHang
     {
-        public string FK_MaDonHang { get; set; }
+        public int FK_MaDonHang { get; set; }
         public int FK_MaSanPham { get; set; }
         public int SoLuongMua { get; set; }
         public int DonGia { get; set; }

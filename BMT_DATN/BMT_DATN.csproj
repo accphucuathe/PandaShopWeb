@@ -189,6 +189,7 @@
     </Compile>
     <Compile Include="Models\EncodingHelper.cs" />
     <Compile Include="Models\EnumQuyen.cs" />
+    <Compile Include="Models\EnumTrangThaiDonHang.cs" />
     <Compile Include="Models\sp_dangnhap_Result.cs">
       <DependentUpon>DbPanda.tt</DependentUpon>
     </Compile>

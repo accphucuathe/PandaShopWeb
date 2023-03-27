@@ -45,10 +45,10 @@
     <EntitySetMapping Name="tblChiTietTrangThaiDonHangs">
       <EntityTypeMapping TypeName="BMT_DATNModel.tblChiTietTrangThaiDonHang">
         <MappingFragment StoreEntitySet="tblChiTietTrangThaiDonHang">
-          <ScalarProperty Name="FK_MaNhanVienCapNhat" ColumnName="FK_MaNhanVienCapNhat" />
           <ScalarProperty Name="FK_MaDonHang" ColumnName="FK_MaDonHang" />
           <ScalarProperty Name="FK_MaTrangThaiDonHang" ColumnName="FK_MaTrangThaiDonHang" />
           <ScalarProperty Name="ThoiGianCapNhat" ColumnName="ThoiGianCapNhat" />
+          <ScalarProperty Name="FK_MaNhanVienCapNhat" ColumnName="FK_MaNhanVienCapNhat" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -76,20 +76,20 @@
     <EntitySetMapping Name="tblDanhMucSanPhams">
       <EntityTypeMapping TypeName="BMT_DATNModel.tblDanhMucSanPham">
         <MappingFragment StoreEntitySet="tblDanhMucSanPham">
-          <ScalarProperty Name="MoTa" ColumnName="MoTa" />
           <ScalarProperty Name="PK_MaDanhMucSanPham" ColumnName="PK_MaDanhMucSanPham" />
           <ScalarProperty Name="TenDanhMucSanPham" ColumnName="TenDanhMucSanPham" />
+          <ScalarProperty Name="MoTa" ColumnName="MoTa" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="tblDonHangs">
       <EntityTypeMapping TypeName="BMT_DATNModel.tblDonHang">
         <MappingFragment StoreEntitySet="tblDonHang">
-          <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
           <ScalarProperty Name="PK_MaDonHang" ColumnName="PK_MaDonHang" />
           <ScalarProperty Name="DiaChiGiaoHang" ColumnName="DiaChiGiaoHang" />
           <ScalarProperty Name="SoDienThoai" ColumnName="SoDienThoai" />
           <ScalarProperty Name="FK_MaNguoiDung" ColumnName="FK_MaNguoiDung" />
+          <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

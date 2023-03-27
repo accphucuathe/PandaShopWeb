@@ -46,7 +46,7 @@
         $(document).ready(function () {
             // focus searchSanPham
             $("#btnSearchSanPham").click(function () {
-                setTimeout(function () { $('input[id="searchSanPham"]').focus() }, 3000);
+                setTimeout(function () { $('input[id="searchSanPham"]').focus() }, 1000);
             });
             // nhan enter tim kiem
             $(document).keyup(function (event) {
@@ -57,6 +57,7 @@
                     else {
                         var searchKey = $("#searchSanPham").val();
                         var obj = {
+                            maDmsp = 0,
                             searchKeyword: searchKey
                         }
                         $.ajax({
@@ -195,7 +196,7 @@
     </header>
     <!-- End Main Top -->
     <!-- Start Top Search -->
-    <div class="top-search" style="background-color:#666666">
+    <div class="top-search" style="background-color: #F3655E">
         <div class="container">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-search"></i></span>

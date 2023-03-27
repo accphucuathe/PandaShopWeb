@@ -137,6 +137,46 @@ a.selected {
     padding: 0 !important;
     color: #1f1f1f !important;
 }
+
+.pagination {
+    float: right;
+    margin: 0 0 5px;
+}
+
+    .pagination li a {
+        font-size: 95%;
+        width: 30px;
+        height: 30px;
+        color: #999;
+        margin: 0 2px;
+        line-height: 30px;
+        border-radius: 30px !important;
+        text-align: center;
+        padding: 0;
+    }
+
+        .pagination li a:hover {
+            color: #666;
+        }
+
+    .pagination li.active a {
+        background: #d33b33 !important;
+        border-color: #d33b33 !important;
+    }
+
+        .pagination li.active a:hover {
+            background: #0397d6;
+        }
+
+    .pagination li.disabled i {
+        color: #ccc;
+    }
+
+    .pagination li i {
+        font-size: 16px;
+        padding-top: 6px
+    }
+
 /*end DanhSachSanPham css*/
 @media only screen and (max-width: 768px) {
     .loginTitle {
