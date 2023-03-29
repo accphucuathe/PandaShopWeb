@@ -149,3 +149,4 @@ E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\obj\Debug\BMT_DA
 E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\obj\Debug\BMT_DATN.csproj.CopyComplete
 E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\obj\Debug\BMT_DATN.dll
 E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\obj\Debug\BMT_DATN.pdb
+E:\TheBM_DoAnTotNghiep\source_with_github\PandaShopWeb\BMT_DATN\obj\Debug\BMT_DATN.csproj.AssemblyReference.cache

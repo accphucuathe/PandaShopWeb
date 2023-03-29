@@ -130,7 +130,6 @@ namespace BMT_DATN.Controllers
         {
             string result = "";
             string redirect = "";
-            var x = 0;
             var sanPhamDuocSua = (from sp in db.tblSanPhams
                                 where sp.PK_MaSanPham == productId
                                 select sp).FirstOrDefault();

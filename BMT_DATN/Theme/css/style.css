@@ -1849,7 +1849,8 @@
      animation: bounceY 0.9s linear;
 }
  .cart-box-main{
-     padding: 70px 0px;
+     /*padding: 70px 0px;*/
+     padding-bottom: 70px;
 }
  .table-main table thead{
      background: #d33b33;
@@ -1875,7 +1876,7 @@
 }
  .name-pr a{
      font-weight: 700;
-     font-size: 18px;
+     /*font-size: 18px;*/
      color: #010101;
 }
  .remove-pr{
@@ -1903,7 +1904,8 @@
      background: #d33b33;
 }
  .update-box input[type="submit"]{
-     background: #010101;
+     /*background: #010101;*/
+     background: #ff5050;
      border: medium none;
      border-radius: 0;
      -webkit-box-shadow: none;
@@ -2255,7 +2257,8 @@
      color: #fff;
 }
  .shop-detail-box-main{
-     padding: 70px 0px;
+     /*padding: 70px 0px;*/
+     padding-bottom: 70px;
 }
  .single-product-slider .carousel-control-prev {
      bottom: auto;

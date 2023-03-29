@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewBag.Title = "Giỏ Hàng";
+    Layout = "~/Views/Shared/layout.cshtml";
+}
+@using BMT_DATN.Models;
+@using BMT_DATN.Controllers;
+@{
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var ch = new CurrencyHelper();
+    int maGioHang = !HomeController.nguoidung.maGioHang.HasValue ? 0 : HomeController.nguoidung.maGioHang.Value;
+
+    var currentProductsInCart = (from sp in db.tblChiTietDonHangs
+                                 where sp.FK_MaDonHang == maGioHang
+                                 select sp.FK_MaSanPham).ToList();
+    var infoCurrentProductsInCart = db.tblSanPhams.Where(isp => currentProductsInCart.Contains(isp.PK_MaSanPham)).ToList();
+    var totalPrice = infoCurrentProductsInCart.Sum(s => s.DonGia);
+}
+
+<div class="title-all text-center mt-5">
+    <h1>GIỎ HÀNG</h1>
+</div>
+<!-- Start Cart  -->
+<div class="cart-box-main">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-main table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th style="width:200px;">Số lượng</th>
+                                <th>Tổng</th>
+                                <th>Bỏ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (var isp in infoCurrentProductsInCart)
+                                {
+                                    <tr>
+                                        <td class="thumbnail-img">
+                                            <img class="img-fluid" src="~/Images_Data/@isp.HinhAnh" alt="" />
+                                        </td>
+                                        <td class="name-pr">
+                                            <a href="#">
+                                                @isp.TenSanPham
+                                            </a>
+                                        </td>
+                                        <td class="price-pr">
+                                            <p>@ch.FormatToCurrency(isp.DonGia)</p>
+                                        </td>
+                                        <td class="quantity-box">
+                                            <input type="number" value="1" min="0" step="1" class="c-input-text qty text" />
+                                        </td>
+                                        <td class="total-pr">
+                                            <p>@ch.FormatToCurrency(isp.DonGia)</p>
+                                        </td>
+                                        <td class="remove-pr">
+                                            <a href="">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-1">
+            <div class="col-lg-12">
+                <h3 class="price-pr text-right w-100">Tổng cộng: @ch.FormatToCurrency(totalPrice)</h3>
+            </div>
+        </div>
+
+        <div class="row my-5">
+            <div class="col-lg-6 col-sm-6">
+            </div>
+            <div class="col-lg-6 col-sm-6">
+                <div class="update-box">
+                    <input value="Tiếp tục mua hàng" type="submit" id="btnContinueShopping">
+                    <input value="Thanh toán" type="submit" id="btnCheckout">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- End Cart -->
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#btnContinueShopping").click(function () {
+            window.location.href = '@Url.Action("Index", "Home")';
+        });
+        $("#btnCheckout").click(function () {
+            var countCheck = @totalPrice;
+            if (countCheck == 0) {
+                alert("Không có sản phẩm nào trong giỏ hàng!");
+            }
+            else {
+                window.location.href = '@Url.Action("ThanhToan", "Home")';
+            }
+        });
+    });
+</script>

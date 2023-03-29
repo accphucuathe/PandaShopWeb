@@ -297,6 +297,8 @@
     <Content Include="Views\Product\SuaSanPham.cshtml" />
     <Content Include="Views\Home\DanhSachSanPham.cshtml" />
     <Content Include="Views\Home\ChiTietSanPham.cshtml" />
+    <Content Include="Views\Home\GioHang.cshtml" />
+    <Content Include="Views\Home\ThanhToan.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

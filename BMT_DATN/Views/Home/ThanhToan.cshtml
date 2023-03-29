@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewBag.Title = "Thanh Toán";
+    Layout = "~/Views/Shared/layout.cshtml";
+}
+
+@using BMT_DATN.Models;
+@using BMT_DATN.Controllers;
+@{
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var ch = new CurrencyHelper();
+    int maGioHang = !HomeController.nguoidung.maGioHang.HasValue ? 0 : HomeController.nguoidung.maGioHang.Value;
+
+    var currentProductsInCart = (from sp in db.tblChiTietDonHangs
+                                 where sp.FK_MaDonHang == maGioHang
+                                 select sp.FK_MaSanPham).ToList();
+    var infoCurrentProductsInCart = db.tblSanPhams.Where(isp => currentProductsInCart.Contains(isp.PK_MaSanPham)).ToList();
+    var totalPrice = infoCurrentProductsInCart.Sum(s => s.DonGia);
+}
+
+<div class="title-all text-center mt-5">
+    <h1>THANH TOÁN</h1>
+</div>
+<!-- Start Checkout  -->
+<div class="cart-box-main">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-main table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th>Số lượng</th>
+                                <th>Tổng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (var isp in infoCurrentProductsInCart)
+                                {
+                                    <tr>
+                                        <td class="thumbnail-img">
+                                            <img class="img-fluid" src="~/Images_Data/@isp.HinhAnh" alt="" />
+                                        </td>
+                                        <td class="name-pr">
+                                            <a href="#">
+                                                @isp.TenSanPham
+                                            </a>
+                                        </td>
+                                        <td class="price-pr">
+                                            <p>@ch.FormatToCurrency(isp.DonGia)</p>
+                                        </td>
+                                        <td class="quantity-pr">
+                                            <p>@isp.SoLuong</p>
+                                        </td>
+                                        <td class="total-pr">
+                                            <p>@ch.FormatToCurrency(isp.DonGia)</p>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-1">
+            <div class="col-lg-12">
+                <h3 class="price-pr text-right w-100">Tổng cộng: @ch.FormatToCurrency(totalPrice)</h3>
+            </div>
+        </div>
+
+        <div class="row my-3 choose-shipment-details">
+            <div class="col-md-12">
+                <input type="radio" name="chooseShipmentDetails" id="rdShipmentDetailsOfAccount" value="No" checked />
+                <label for="rdShipmentDetailsOfAccount">Sử dụng địa chỉ và số điện thoại theo tài khoản của bạn</label>
+                <br />
+                <label>hoặc</label>
+            </div>
+            <div class="col-md-12">
+                <input type="radio" name="chooseShipmentDetails" id="rdOptionalShipmentDetails" value="Yes" />
+                <label for="rdOptionalShipmentDetails" style="padding-right:42px;">Địa chỉ: </label>
+                <input type="text" style="width:550px;" autocomplete="off" />
+                <br />
+                <label style="margin-left:15px;">Số điện thoại: </label>
+                <input type="tel" style="width:550px;" autocomplete="off" pattern="[0-9]{10}" />
+            </div>
+        </div>
+
+        <div class="row my-5">
+            <div class="col-lg-6 col-sm-6">
+            </div>
+            <div class="col-lg-6 col-sm-6">
+                <div class="update-box">
+                    <input value="Quay lại" type="submit" id="btnBackToCart">
+                    <input value="Đặt hàng" type="submit" id="btnOrder">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- End Checkout -->
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#btnBackToCart").click(function () {
+            window.location.href = '@Url.Action("GioHang", "Home")';
+        });
+        $("#btnOrder").click(function () {
+            var countCheck = @totalPrice;
+            if (countCheck == 0) {
+                alert("Không có sản phẩm nào trong giỏ hàng!");
+            }
+            else {
+                window.location.href = '@Url.Action("ThanhToan", "Home")';
+            }
+        });
+    });
+</script>

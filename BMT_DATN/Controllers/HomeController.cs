@@ -13,6 +13,8 @@ namespace BMT_DATN.Controllers
             public static string tenNguoiDung = "";
             public static string tenDangNhap;
             public static int quyenNguoiDung;
+            // gio hang hien tai
+            public static int? maGioHang;
         }
 
         BMT_DATNEntities db = new BMT_DATNEntities();
@@ -84,6 +86,22 @@ namespace BMT_DATN.Controllers
                 HomeController.nguoidung.tenNguoiDung = nguoidungdangnhap.TenNguoiDung;
                 HomeController.nguoidung.tenDangNhap = nguoidungdangnhap.TenDangNhap;
                 HomeController.nguoidung.quyenNguoiDung = nguoidungdangnhap.FK_MaQuyen;
+                // lay gio hang hien tai
+                var listOrder = (from o in db.tblDonHangs
+                                 join c in db.tblChiTietTrangThaiDonHangs on o.PK_MaDonHang equals c.FK_MaDonHang
+                                 where o.FK_MaNguoiDung.Equals(nguoidungdangnhap.PK_MaNguoiDung)
+                                 orderby c.FK_MaTrangThaiDonHang
+                                 group c by c.FK_MaDonHang
+                                 into gr
+                                 select new
+                                 {
+                                     maDonHang = gr.Key,
+                                     soTrangThai = gr.Select(g => g.FK_MaTrangThaiDonHang).Count()
+                                 }
+                                 ).ToList();
+                var currentCart = listOrder.Where(o => o.soTrangThai == 1).LastOrDefault();
+                HomeController.nguoidung.maGioHang = currentCart?.maDonHang;
+
                 return Redirect("/trang-chu");
             }
 
@@ -203,28 +221,95 @@ namespace BMT_DATN.Controllers
             return View();
         }
 
+        // gio hang
+        public ActionResult GioHang()
+        {
+            if (Session["userID"] == null)
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+
         // user them san pham vao gio hang
         [HttpPost]
         public JsonResult UserThemSanPhamVaoGioHang(int productId)
         {
-            Guid userId = HomeController.nguoidung.maNguoiDung;
             string result = "";
             string redirect = "";
-            if (Session["userID"] == null)
+            Guid userId = nguoidung.maNguoiDung;
+            int maDonHang = !nguoidung.maGioHang.HasValue ? 0 : nguoidung.maGioHang.Value;
+            var sanPhamDuocThem = (from sp in db.tblSanPhams
+                                   where sp.PK_MaSanPham == productId
+                                   select sp).FirstOrDefault();
+            if (Session["userID"] == null)         // chua dang nhap
             {
                 result = "Vui lòng đăng nhập!";
                 redirect = "1";         // chuyen huong trang dang nhap
             }
             else
             {
-                // check gio hang hien tai - chua co gio hang nao thi tao moi
-                //var checkCurrentCart = (from o in db.tblDonHangs
-                //                        join c in db.tblChiTietTrangThaiDonHangs on o.PK_MaDonHang equals c.FK_MaDonHang
-                //                        where o.FK_MaNguoiDung.Equals(userId) &&
-                //                                c.FK_MaTrangThaiDonHang 
-                //                        select o).LastOrDefault();
-                //var x = (from a in db.tblDonHangs
-                //         where a.PK_MaDonHang )                        
+                if (maDonHang == 0)   //chua co gio hang thi tao gio hang moi
+                {
+                    // insert tblDonHang
+                    var donHangMoi = new tblDonHang();
+                    donHangMoi.DiaChiGiaoHang = "";
+                    donHangMoi.SoDienThoai = "";
+                    donHangMoi.GhiChu = "";
+                    donHangMoi.FK_MaNguoiDung = userId;
+                    db.tblDonHangs.Add(donHangMoi);
+
+                    // insert tblChiTietTrangThaiDonHang
+                    var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
+                    trangThaiDonHangMoi.FK_MaDonHang = donHangMoi.PK_MaDonHang;
+                    trangThaiDonHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.GioHang;
+                    trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
+                    trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
+                    db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
+
+                    // insert tblChiTietDonHang
+                    var chiTietDonHangMoi = new tblChiTietDonHang();
+                    chiTietDonHangMoi.FK_MaDonHang = donHangMoi.PK_MaDonHang;
+                    chiTietDonHangMoi.FK_MaSanPham = sanPhamDuocThem.PK_MaSanPham;
+                    chiTietDonHangMoi.SoLuongMua = 1;
+                    chiTietDonHangMoi.DonGia = sanPhamDuocThem.DonGia;
+                    db.tblChiTietDonHangs.Add(chiTietDonHangMoi);
+
+                    // save
+                    db.SaveChanges();
+                    HomeController.nguoidung.maGioHang = donHangMoi.PK_MaDonHang;
+
+                    result = "Thêm sản phẩm vào giỏ hàng thành công!";
+                    redirect = "0";
+                }
+                else
+                {
+                    // check san pham da co trong gio hang chua
+                    var checkDuplicateProduct = (from sp in db.tblChiTietDonHangs
+                                                 where sp.FK_MaDonHang == maDonHang &&
+                                                        sp.FK_MaSanPham == sanPhamDuocThem.PK_MaSanPham
+                                                 select sp).FirstOrDefault();
+                    if (checkDuplicateProduct == null)      // chua co sp nay trong gio hang
+                    {
+                        // insert tblChiTietDonHang
+                        var chiTietDonHangMoi = new tblChiTietDonHang();
+                        chiTietDonHangMoi.FK_MaDonHang = maDonHang;
+                        chiTietDonHangMoi.FK_MaSanPham = sanPhamDuocThem.PK_MaSanPham;
+                        chiTietDonHangMoi.SoLuongMua = 1;
+                        chiTietDonHangMoi.DonGia = sanPhamDuocThem.DonGia;
+                        db.tblChiTietDonHangs.Add(chiTietDonHangMoi);
+                        // save
+                        db.SaveChanges();
+
+                        result = "Thêm sản phẩm vào giỏ hàng thành công!";
+                        redirect = "0";
+                    }
+                    else
+                    {
+                        result = "Đã có sản phẩm này trong giỏ hàng!";
+                        redirect = "0";
+                    }                  
+                }            
             }
             int pId = productId;
             return Json(new
@@ -233,6 +318,16 @@ namespace BMT_DATN.Controllers
                 rdt = redirect
             },
             JsonRequestBehavior.AllowGet);
+        }
+
+        // trang thanh toan
+        public ActionResult ThanhToan()
+        {
+            if (Session["userID"] == null)
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
         }
     }
 }
