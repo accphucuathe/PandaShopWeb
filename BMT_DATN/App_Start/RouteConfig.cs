@@ -59,6 +59,11 @@ namespace BMT_DATN
                 url: "thanh-toan",
                 defaults: new { controller = "Home", action = "ThanhToan", id = UrlParameter.Optional }
             );
+            routes.MapRoute(
+                name: "DanhSachDonHang",
+                url: "danh-sach-don-hang",
+                defaults: new { controller = "Home", action = "DanhSachDonHang", id = UrlParameter.Optional }
+            );
 
             // Admin + QuanLyNguoiDung View
             routes.MapRoute(

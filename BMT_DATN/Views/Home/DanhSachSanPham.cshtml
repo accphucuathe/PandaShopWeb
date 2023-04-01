@@ -59,7 +59,7 @@
         $("#selectSort").val(@sortBy).change();
         // scroll
         $('html, body').animate({
-            scrollTop: $('#start-shop-page-title').offset().top
+            scrollTop: 250 /*$('#after-banner').offset().top*/
         }, 'slow');
         // click button find san pham
         $('#btnFindSanPham').click(function () {
@@ -112,6 +112,44 @@
             alert($(this).find("option:selected").attr('value'));
             $('#btnFindSanPham').click();
         });
+
+        // them sp vao gio hang
+        $('a[name="addToCart"]').click(function () {
+            var idOfAddToCart = $(this).attr('id');
+            var splitedIdOfAddToCart = idOfAddToCart.toString().split('_');
+            var prodId = splitedIdOfAddToCart[1];
+            var obj = {
+                productId: prodId
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UserThemSanPhamVaoGioHang", "Home")',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+
+                beforeSend: function () {
+
+                },
+                success: function (response) {
+                    var valueReturn = response;
+                    alert(valueReturn.msg);
+                    if (valueReturn.rdt == "1") {
+                        window.location.href = '@Url.Action("Login", "Home")';
+                    }
+                },
+                failure: function (response) {
+                    alert("fail");
+                },
+                complete: function () {
+
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                },
+            });
+        });
     });
 
 </script>
@@ -122,7 +160,9 @@
 
     </div>
 </div>
+<div style="padding-bottom: 70px;" id="after-banner">
 
+</div>
 <!-- Start Shop Page  -->
 <div class="shop-box-inner">
     <div class="container">
@@ -162,12 +202,14 @@
                             <div class="toolbar-sorter-right">
                                 <span>Xếp theo </span>
                                 <select id="selectSort" class="selectpicker show-tick form-control">
+                                @*<select id="selectSort" class="select-sort-pr show-tick form-control" onfocus="this.size = 5;" onblur="this.size = 0;" onchange="this.size = 1; this.blur()">*@
                                     <option value="0" data-display="Select">---Không xếp---</option>
                                     <option value="1">Mới → cũ</option>
                                     <option value="2">Cũ → mới</option>
                                     <option value="3">Giá cao → thấp</option>
                                     <option value="4">Giá thấp → cao</option>
                                 </select>
+
                             </div>
                             <p>Hiển thị @listProduct.Count kết quả</p>
                         </div>
@@ -195,7 +237,7 @@
                                                     <div class="box-img-hover card-product-single-image">
                                                         <img src="~/Images_Data/@product.HinhAnh" class="img-fluid img-product" alt="Image">
                                                         <div class="mask-icon">
-                                                            <a class="cart" href="#">Thêm vào giỏ hàng</a>
+                                                            <a class="cart" name="addToCart" id="product_@product.PK_MaSanPham" href="#" onclick="return false;">Thêm vào giỏ hàng</a>
                                                         </div>
                                                     </div>
                                                     <div class="why-text card-product-single-name">
@@ -229,7 +271,7 @@
                                                         <p>
                                                             @product.MoTa
                                                         </p>
-                                                        <a class="btn hvr-hover" href="#">Thêm vào giỏ hàng</a>
+                                                        <a class="btn hvr-hover" name="addToCart" id="product_@product.PK_MaSanPham" href="#" onclick="return false;">Thêm vào giỏ hàng</a>
                                                     </div>
                                                 </div>
                                             </div>

@@ -49,16 +49,16 @@ namespace BMT_DATN.Controllers
             return View();
         }
 
-        public ActionResult ViewProfile(Guid maNguoiDung)
+        public ActionResult ViewProfile()
         {
-            ViewBag.userId = maNguoiDung;
+            ViewBag.userId = nguoidung.maNguoiDung;
             return View();
         }
 
-        public ActionResult EditProfile(Guid maNguoiDung, String editNotification)
+        public ActionResult EditProfile(String editNotification)
         {
             ViewBag.checkEdit = editNotification;
-            ViewBag.userId = maNguoiDung;
+            ViewBag.userId = nguoidung.maNguoiDung;
             return View();
         }
 
@@ -285,11 +285,11 @@ namespace BMT_DATN.Controllers
                 else
                 {
                     // check san pham da co trong gio hang chua
-                    var checkDuplicateProduct = (from sp in db.tblChiTietDonHangs
+                    var productInCurrentCart = (from sp in db.tblChiTietDonHangs
                                                  where sp.FK_MaDonHang == maDonHang &&
                                                         sp.FK_MaSanPham == sanPhamDuocThem.PK_MaSanPham
                                                  select sp).FirstOrDefault();
-                    if (checkDuplicateProduct == null)      // chua co sp nay trong gio hang
+                    if (productInCurrentCart == null)      // chua co sp nay trong gio hang
                     {
                         // insert tblChiTietDonHang
                         var chiTietDonHangMoi = new tblChiTietDonHang();
@@ -306,12 +306,15 @@ namespace BMT_DATN.Controllers
                     }
                     else
                     {
-                        result = "Đã có sản phẩm này trong giỏ hàng!";
+                        productInCurrentCart.SoLuongMua++;
+                        // save
+                        db.SaveChanges();
+
+                        result = "Đã tăng số lượng sản phẩm trong giỏ hàng!";
                         redirect = "0";
                     }                  
                 }            
             }
-            int pId = productId;
             return Json(new
             {
                 msg = result,
@@ -320,13 +323,77 @@ namespace BMT_DATN.Controllers
             JsonRequestBehavior.AllowGet);
         }
 
+        // user xoa san pham khoi gio hang
+        [HttpPost]
+        public JsonResult UserXoaSanPhamKhoiGioHang(int productId)
+        {
+            string result = "";
+            string success = "";
+            int maDonHang = !nguoidung.maGioHang.HasValue ? 0 : nguoidung.maGioHang.Value;
+            var checkProductInCart = (from sp in db.tblChiTietDonHangs
+                                      where sp.FK_MaDonHang == maDonHang &&
+                                             sp.FK_MaSanPham == productId
+                                      select sp).FirstOrDefault();
+            if (checkProductInCart != null) {
+                db.tblChiTietDonHangs.Remove(checkProductInCart);
+                // save
+                db.SaveChanges();
+
+                result = "Đã xóa sản phẩm khỏi giỏ hàng";
+                success = "1";
+            }
+            return Json(new
+            {
+                msg = result,
+                scs = success
+            },
+            JsonRequestBehavior.AllowGet);
+        }
+
         // trang thanh toan
-        public ActionResult ThanhToan()
+        public ActionResult ThanhToan(int[] idProduct, int[] quantityProduct)
         {
             if (Session["userID"] == null)
             {
                 return RedirectToAction("Login");
             }
+            // luu thay doi so luong san pham
+            int maDonHang = !nguoidung.maGioHang.HasValue ? 0 : nguoidung.maGioHang.Value;
+            int[] idProd = idProduct;
+            int[] quantityProd = quantityProduct;
+            var productsInCurrentCart = (from ctdh in db.tblChiTietDonHangs
+                                         where ctdh.FK_MaDonHang == maDonHang
+                                         select ctdh).ToList();
+            for (int i = 0; i < productsInCurrentCart.Count; i++)
+            {
+                var prd = productsInCurrentCart.Where(p => p.FK_MaSanPham == idProd[i]).FirstOrDefault();
+                if (prd != null)
+                {
+                    prd.SoLuongMua = quantityProd[i];
+                }
+            }
+            // save
+            db.SaveChanges();
+
+            ViewBag.userId = nguoidung.maNguoiDung;
+            return View();
+        }
+
+        // Action khi user thanh toan
+        public ActionResult UserThanhToan() 
+        {
+
+            return RedirectToAction("DanhSachDonHang");
+        }
+
+        // trang danh sach don hang cua user
+        public ActionResult DanhSachDonHang()
+        {
+            if (Session["userID"] == null)
+            {
+                return RedirectToAction("Login");
+            }
+
             return View();
         }
     }

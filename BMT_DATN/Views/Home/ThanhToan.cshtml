@@ -9,13 +9,28 @@
 @{
     BMT_DATNEntities db = new BMT_DATNEntities();
     var ch = new CurrencyHelper();
+    Guid maND = ViewBag.userId;
     int maGioHang = !HomeController.nguoidung.maGioHang.HasValue ? 0 : HomeController.nguoidung.maGioHang.Value;
 
-    var currentProductsInCart = (from sp in db.tblChiTietDonHangs
-                                 where sp.FK_MaDonHang == maGioHang
-                                 select sp.FK_MaSanPham).ToList();
-    var infoCurrentProductsInCart = db.tblSanPhams.Where(isp => currentProductsInCart.Contains(isp.PK_MaSanPham)).ToList();
-    var totalPrice = infoCurrentProductsInCart.Sum(s => s.DonGia);
+    var infoCurrentProductsInCart = (from sp in db.tblChiTietDonHangs
+                                     where sp.FK_MaDonHang == maGioHang
+                                     select new
+                                     {
+                                         FK_MaDonHang = sp.FK_MaDonHang,
+                                         FK_MaSanPham = sp.FK_MaSanPham,
+                                         SoLuongMua = sp.SoLuongMua,
+                                         DonGia = sp.DonGia,
+                                         TenSanPham = sp.tblSanPham.TenSanPham,
+                                         KichCo = sp.tblSanPham.KichCo,
+                                         SoLuong = sp.tblSanPham.SoLuong,
+                                         HinhAnh = sp.tblSanPham.HinhAnh,
+                                         TongTienSanPham = sp.DonGia * sp.SoLuongMua
+                                     }
+                                 ).ToList();
+    var totalPrice = infoCurrentProductsInCart.Sum(s => s.TongTienSanPham);
+    var userInfo = (from nd in db.tblNguoiDungs
+                       where nd.PK_MaNguoiDung.Equals(maND)
+                       select nd).FirstOrDefault();
 }
 
 <div class="title-all text-center mt-5">
@@ -32,16 +47,16 @@
                             <tr>
                                 <th>Hình ảnh</th>
                                 <th>Tên sản phẩm</th>
-                                <th>Đơn giá</th>
-                                <th>Số lượng</th>
-                                <th>Tổng</th>
+                                <th class="text-center">Đơn giá</th>
+                                <th style="width:100px;">Số lượng</th>
+                                <th class="text-center" style="width:150px;">Tổng</th>
                             </tr>
                         </thead>
                         <tbody>
                             @{
                                 foreach (var isp in infoCurrentProductsInCart)
                                 {
-                                    <tr>
+                                    <tr style="border-bottom: 1px solid gray">
                                         <td class="thumbnail-img">
                                             <img class="img-fluid" src="~/Images_Data/@isp.HinhAnh" alt="" />
                                         </td>
@@ -50,14 +65,14 @@
                                                 @isp.TenSanPham
                                             </a>
                                         </td>
-                                        <td class="price-pr">
+                                        <td class="price-pr text-right">
                                             <p>@ch.FormatToCurrency(isp.DonGia)</p>
                                         </td>
-                                        <td class="quantity-pr">
-                                            <p>@isp.SoLuong</p>
+                                        <td class="quantity-pr text-right">
+                                            <p>@isp.SoLuongMua</p>
                                         </td>
-                                        <td class="total-pr">
-                                            <p>@ch.FormatToCurrency(isp.DonGia)</p>
+                                        <td class="total-pr text-right">
+                                            <p>@ch.FormatToCurrency(isp.TongTienSanPham)</p>
                                         </td>
                                     </tr>
                                 }
@@ -71,35 +86,49 @@
 
         <div class="row my-1">
             <div class="col-lg-12">
-                <h3 class="price-pr text-right w-100">Tổng cộng: @ch.FormatToCurrency(totalPrice)</h3>
+                <h3 class="all-price-pr text-right w-100" style="padding-right: 11px;">Tổng cộng: @ch.FormatToCurrency(totalPrice)</h3>
             </div>
         </div>
 
-        <div class="row my-3 choose-shipment-details">
-            <div class="col-md-12">
-                <input type="radio" name="chooseShipmentDetails" id="rdShipmentDetailsOfAccount" value="No" checked />
-                <label for="rdShipmentDetailsOfAccount">Sử dụng địa chỉ và số điện thoại theo tài khoản của bạn</label>
-                <br />
-                <label>hoặc</label>
+        <div class="row">
+            <div class="col-sm-6 col-lg-6 mb-3">
+                <div class="checkout-address">
+                    <div class="title-left">
+                        <h3>Thông tin giao hàng</h3>
+                    </div>
+                    <form class="needs-validation" id="formInfoShipping" action="/Home/UserThanhToan" method="post">
+                        <div class="mb-3">
+                            <input type="checkbox" id="chkInfoShipping" />
+                            <label>Sử dụng địa chỉ và số điện thoại của tài khoản</label>
+                            <input type="text" name="addressTemp" value="@userInfo.DiaChi" hidden />
+                            <input type="text" name="phoneTemp" value="@userInfo.SoDienThoai" hidden />
+                        </div>
+                        <div class="mb-3">
+                            <label>Địa chỉ *</label>
+                            <input type="text" name="addressShipping" class="form-control" autocomplete="off" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Số điện thoại *</label>
+                            <input type="tel" name="phoneShipping" class="form-control" autocomplete="off" pattern="[0-9]{10}" required>
+                        </div>
+                        <hr class="mb-1">
+                    </form>
+                </div>
             </div>
-            <div class="col-md-12">
-                <input type="radio" name="chooseShipmentDetails" id="rdOptionalShipmentDetails" value="Yes" />
-                <label for="rdOptionalShipmentDetails" style="padding-right:42px;">Địa chỉ: </label>
-                <input type="text" style="width:550px;" autocomplete="off" />
-                <br />
-                <label style="margin-left:15px;">Số điện thoại: </label>
-                <input type="tel" style="width:550px;" autocomplete="off" pattern="[0-9]{10}" />
+            <div class="col-sm-6 col-lg-6 mb-3">
+                
             </div>
         </div>
 
-        <div class="row my-5">
+        <div class="row mb-5 mt-2">
             <div class="col-lg-6 col-sm-6">
+                <div class="continue-shopping">
+                    <p><a href="\gio-hang"><u>Về giỏ hàng</u></a></p>
+                </div>
             </div>
             <div class="col-lg-6 col-sm-6">
                 <div class="update-box">
-                    <input value="Quay lại" type="submit" id="btnBackToCart">
-                    <input value="Đặt hàng" type="submit" id="btnOrder">
-
+                    <input value="Đặt hàng" type="submit" form="formInfoShipping" id="btnOrder">
                 </div>
             </div>
         </div>
@@ -114,13 +143,12 @@
         $("#btnBackToCart").click(function () {
             window.location.href = '@Url.Action("GioHang", "Home")';
         });
-        $("#btnOrder").click(function () {
-            var countCheck = @totalPrice;
-            if (countCheck == 0) {
-                alert("Không có sản phẩm nào trong giỏ hàng!");
-            }
-            else {
-                window.location.href = '@Url.Action("ThanhToan", "Home")';
+        $("#chkInfoShipping").change(function () {
+            var uAddress = $("input[name='addressTemp']").val();
+            var uPhone = $("input[name='phoneTemp']").val();
+            if (this.checked) {
+                $("input[name='addressShipping']").val(uAddress);
+                $("input[name='phoneShipping']").val(uPhone);
             }
         });
     });

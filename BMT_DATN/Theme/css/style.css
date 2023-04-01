@@ -1564,7 +1564,8 @@
      border-bottom: 2px solid #d33b33;
 }
  .shop-box-inner{
-     padding: 70px 0px;
+     /*padding: 70px 0px;*/
+     padding-bottom: 70px;
 }
  .search-product {
      position: relative;
@@ -1611,7 +1612,8 @@
 }
  .title-left{
      font-size: 16px;
-     border-bottom: 3px solid #010101;
+     /*border-bottom: 3px solid #010101;*/
+     border-bottom: 1px solid #010101;
      margin-bottom: 20px;
 }
  .title-left h3{
@@ -1759,10 +1761,12 @@
      border: none;
 }
  .toolbar-sorter-right .show > .btn-light.dropdown-toggle{
-     background-color: #d33b33;
+     /*background-color: #d33b33;*/
+     background-color: #ff5050;
 }
  .toolbar-sorter-right .bootstrap-select .dropdown-toggle:focus{
-     background: #d33b33;
+     /*background: #d33b33;*/
+     background: #ff5050;
 }
  .toolbar-sorter-right .dropup .dropdown-toggle::after{
      position: absolute;
@@ -1790,7 +1794,8 @@
      padding: 4px 12px;
 }
  .product-item-filter li .nav-link.active {
-     background: #d33b33;
+     /*background: #d33b33;*/
+     background: #ff5050;
      border: none;
      color: #ffffff;
 }
@@ -1983,7 +1988,8 @@
      border-radius: 0px;
      border: 1px solid #e8e8e8;
      box-shadow: none !important;
-     font-size: 14px;
+     /*font-size: 14px;*/
+     font-size: 16px;
 }
  .needs-validation .form-control:focus {
      border: 1px solid #d33b33 !important;

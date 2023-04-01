@@ -88,6 +88,34 @@ a.selected {
     font-weight: 700;
 }
 
+.select-sort-pr {
+    width: 270px;
+    background: #ff5050;
+    color: #ffffff;
+    border-radius: 0;
+    border: none;
+}
+
+    .select-sort-pr:focus {
+        background-color: #ff5050;
+        color: #ffffff;
+    }
+
+        .select-sort-pr option {
+            background-color: #ffffff !important;
+            color: #000000;
+        }
+div.bootstrap-select::after {
+    content: "\e5c5";
+    font-family: "Material Icons";
+    font-size: 40px;
+    color: white;
+    z-index: 1000;
+    position: absolute;
+    top: -8px;
+    right: 0;
+}
+
 .img-product {
     max-width: 100%;
     /*height: 250px;*/
@@ -187,12 +215,24 @@ a.selected {
     font-weight: 600;
     color: #d33b33;
 }
+.all-price-pr {
+    font-weight: 600;
+    color: #ff5050;
+}
 .quantity-pr {
     font-weight: 600;
     color: #d33b33;
     text-align: center;
 }
 .remove-pr a:hover {
+    color: #d33b33;
+}
+.continue-shopping {
+    margin: 0;
+    position: absolute;
+    top: 25%;
+}
+.continue-shopping a {
     color: #d33b33;
 }
 /*end gio hang*/

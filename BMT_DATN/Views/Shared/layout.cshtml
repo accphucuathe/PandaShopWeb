@@ -44,6 +44,8 @@
     <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
     <script>
         $(document).ready(function () {
+            //scroll
+            //$("header").addClass("fixed-menu");
             // focus searchSanPham
             $("#btnSearchSanPham").click(function () {
                 setTimeout(function () { $('input[id="searchSanPham"]').focus() }, 1000);
@@ -57,7 +59,7 @@
                     else {
                         var searchKey = $("#searchSanPham").val();
                         var obj = {
-                            maDmsp = 0,
+                            maDmsp: 0,
                             searchKeyword: searchKey
                         }
                         $.ajax({
@@ -91,7 +93,7 @@
         });
     </script>
     <!-- Start Main Top -->
-    <header class="main-header" style="position: static">
+    <header class="main-header" @*style="position: static"*@>
         <!-- Start Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
             <div class="container header-bar">
@@ -135,7 +137,7 @@
                                                 <li><a href="/trang-chu-admin">Quản lý của ADMIN</a></li>
                                             }
                                         }
-                                        <li><a href="/thong-tin-ca-nhan?maNguoiDung=@(HomeController.nguoidung.maNguoiDung)">Thông tin tài khoản</a></li>
+                                        <li><a href="/thong-tin-ca-nhan">Thông tin tài khoản</a></li>
                                         <li>@Html.ActionLink("Đăng xuất", "UserLogout", "Home")</li>
                                     </ul>
                                 </li>

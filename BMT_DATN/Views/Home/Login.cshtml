@@ -4,6 +4,16 @@
     Layout = "~/Views/Shared/layout.cshtml";
 }
 
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // scroll
+        $('html, body').animate({
+            scrollTop: 0
+        }, 'slow');
+    });
+</script>
+
 <div class="loginAll d-flex flex-column">
     <form class="loginForm m-md-auto" action="/Home/UserLogin" method="post">
         <span class="h4 mb-0">ĐĂNG NHẬP TÀI KHOẢN</span>
