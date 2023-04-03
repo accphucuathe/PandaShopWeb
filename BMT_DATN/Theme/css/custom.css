@@ -243,6 +243,18 @@ div.bootstrap-select::after {
     font-size: 16px;
 }
 /* end thanh toan*/
+
+/*chi tiet don hang*/
+.status-order {
+    width: fit-content;
+    margin: 0 auto;
+    padding: 10px;
+    background: #ff5050;
+    color: #f1f1f1;
+    font-size: 20px;
+    font-weight: 700;
+}
+/*end chi tiet don hang*/
 @media only screen and (max-width: 768px) {
     .loginTitle {
         padding: 10px 0px;

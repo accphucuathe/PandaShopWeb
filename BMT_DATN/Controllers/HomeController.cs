@@ -87,20 +87,7 @@ namespace BMT_DATN.Controllers
                 HomeController.nguoidung.tenDangNhap = nguoidungdangnhap.TenDangNhap;
                 HomeController.nguoidung.quyenNguoiDung = nguoidungdangnhap.FK_MaQuyen;
                 // lay gio hang hien tai
-                var listOrder = (from o in db.tblDonHangs
-                                 join c in db.tblChiTietTrangThaiDonHangs on o.PK_MaDonHang equals c.FK_MaDonHang
-                                 where o.FK_MaNguoiDung.Equals(nguoidungdangnhap.PK_MaNguoiDung)
-                                 orderby c.FK_MaTrangThaiDonHang
-                                 group c by c.FK_MaDonHang
-                                 into gr
-                                 select new
-                                 {
-                                     maDonHang = gr.Key,
-                                     soTrangThai = gr.Select(g => g.FK_MaTrangThaiDonHang).Count()
-                                 }
-                                 ).ToList();
-                var currentCart = listOrder.Where(o => o.soTrangThai == 1).LastOrDefault();
-                HomeController.nguoidung.maGioHang = currentCart?.maDonHang;
+                LayGioHangHienTai();
 
                 return Redirect("/trang-chu");
             }
@@ -229,6 +216,25 @@ namespace BMT_DATN.Controllers
                 return RedirectToAction("Login");
             }
             return View();
+        }
+
+        // lay gio hang hien tai
+        public void LayGioHangHienTai()
+        {
+            var listOrder = (from o in db.tblDonHangs
+                             join c in db.tblChiTietTrangThaiDonHangs on o.PK_MaDonHang equals c.FK_MaDonHang
+                             where o.FK_MaNguoiDung.Equals(nguoidung.maNguoiDung)
+                             orderby c.FK_MaTrangThaiDonHang
+                             group c by c.FK_MaDonHang
+                                 into gr
+                             select new
+                             {
+                                 maDonHang = gr.Key,
+                                 soTrangThai = gr.Select(g => g.FK_MaTrangThaiDonHang).Count()
+                             }
+                                 ).ToList();
+            var currentCart = listOrder.Where(o => o.soTrangThai == 1).LastOrDefault();
+            HomeController.nguoidung.maGioHang = currentCart?.maDonHang;
         }
 
         // user them san pham vao gio hang
@@ -380,8 +386,26 @@ namespace BMT_DATN.Controllers
         }
 
         // Action khi user thanh toan
-        public ActionResult UserThanhToan() 
+        public ActionResult UserThanhToan(String addressShipping, String phoneShipping) 
         {
+            Guid userId = nguoidung.maNguoiDung;
+            int maDonHang = !nguoidung.maGioHang.HasValue ? 0 : nguoidung.maGioHang.Value;
+            // ghi nhan trang thai moi cua don hang
+            var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
+            trangThaiDonHangMoi.FK_MaDonHang = maDonHang;
+            trangThaiDonHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.DatHangChoXacNhan;
+            trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
+            trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
+            db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
+            // luu sdt va dia chi giao hang
+            var donHangHienTai = (from dh in db.tblDonHangs
+                                  where dh.PK_MaDonHang == maDonHang
+                                  select dh).FirstOrDefault();
+            donHangHienTai.DiaChiGiaoHang = addressShipping;
+            donHangHienTai.SoDienThoai = phoneShipping;
+            // save
+            db.SaveChanges();
+            LayGioHangHienTai();
 
             return RedirectToAction("DanhSachDonHang");
         }
@@ -393,6 +417,18 @@ namespace BMT_DATN.Controllers
             {
                 return RedirectToAction("Login");
             }
+
+            return View();
+        }
+
+        // trang chi tiet don hang cua user
+        public ActionResult ChiTietDonHang(int maDh)
+        {
+            if (Session["userID"] == null)
+            {
+                return RedirectToAction("Login");
+            }
+            ViewBag.maDonHang = maDh;
 
             return View();
         }

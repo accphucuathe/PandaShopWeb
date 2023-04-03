@@ -3,6 +3,136 @@
     ViewBag.Title = "Đơn hàng của tôi";
     Layout = "~/Views/Shared/layout.cshtml";
 }
+@using BMT_DATN.Models;
+@using BMT_DATN.Controllers;
+@{
+    //string searchKeyword = ViewBag.searchKeyword == null ? "" : ViewBag.searchKeyword;
+    //int pageNumber = ViewBag.pageNumber;
+    //int pageSize = ViewBag.pageSize;
+    Guid userId = HomeController.nguoidung.maNguoiDung;
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    CurrencyHelper ch = new CurrencyHelper();
+    //var query = from dh in db.tblDonHangs
+    //            join ctdh in db.tblChiTietDonHangs on dh.PK_MaDonHang equals ctdh.FK_MaDonHang
+    //            join ctttdh in db.tblChiTietTrangThaiDonHangs on dh.PK_MaDonHang equals ctttdh.FK_MaDonHang
+    //            where dh.FK_MaNguoiDung.Equals(userId)
+    //            orderby dh.PK_MaDonHang descending, ctttdh.FK_MaTrangThaiDonHang descending
+    //            select new
+    //            {
+    //                PK_MaDonHang = dh.PK_MaDonHang,
+    //                FK_MaSanPham = ctdh.FK_MaSanPham,
+    //                SoLuongMua = ctdh.SoLuongMua,
+    //                DonGia = ctdh.DonGia,
+    //                FK_MaTrangThaiDonHang = ctttdh.FK_MaTrangThaiDonHang
+    //            };
+    var query = from dh in db.tblDonHangs
+                    //join ctttdh in db.tblChiTietTrangThaiDonHangs on dh.PK_MaDonHang equals ctttdh.FK_MaDonHang
+                join ctdh in db.tblChiTietDonHangs on dh.PK_MaDonHang equals ctdh.FK_MaDonHang
+                where dh.FK_MaNguoiDung.Equals(userId)
+                //orderby ctttdh.FK_MaTrangThaiDonHang descending
+                select new {
+                    MaDonHang = ctdh.FK_MaDonHang,
+                    SoLuongMua = ctdh.SoLuongMua,
+                    DonGia = ctdh.DonGia,
+                    MaTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().FK_MaTrangThaiDonHang,
+                    TenTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().tblTrangThaiDonHang.TenTrangThaiDonHang
+                }
+                into infoDonHang
+                group infoDonHang by infoDonHang.MaDonHang into gr
+                orderby gr.Key descending
+                select new
+                {
+                    MaDonHang = gr.Key,
+                    TongTienDonHang = gr.Sum(d => d.DonGia * d.SoLuongMua),
+                    MaTrangThaiHienTai = gr.FirstOrDefault().MaTrangThaiDonHang,
+                    TrangThaiDonHangHienTai = gr.FirstOrDefault().TenTrangThaiDonHang
+                };
+    // khong lay trang thai gio hang
+    var listDonHang = query.Where(dh => dh.MaTrangThaiHienTai != (int)EnumTrangThaiDonHang.GioHang).ToList();
+    var x = 0;
+    }
 
-<h2>DanhSachDonHang</h2>
+<link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 
+<div class="title-all text-center mt-5">
+    <h1>DANH SÁCH ĐƠN HÀNG</h1>
+</div>
+
+<div class="container">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+
+            </div>
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr style="background: #d33b33; color: #f1f1f1;">
+                        @*<th style="width: 30px">STT</th>*@
+                        <th style="width: 150px; text-align:center;">Mã đơn hàng</th>
+                        <th class="text-center">Tổng tiền</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Xem chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+
+                        foreach (var donHang in listDonHang)
+                        {
+                            <tr style="color: #101010">
+                                @*<td style="text-align: center;">@stt</td>*@
+                                <td class="text-center">@donHang.MaDonHang</td>
+                                <td class="text-center">@ch.FormatToCurrency(donHang.TongTienDonHang)</td>
+                                <td class="text-center">@donHang.TrangThaiDonHangHienTai</td>
+                                <td class="text-center">
+                                    <a href="/chi-tiet-don-hang?maDh=@donHang.MaDonHang" class="view" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            @*<div class="clearfix">
+            @{
+                int firstResult = stt == 0 ? 0 : pageSize * (pageNumber - 1) + 1;
+                int lastResult = stt == 0 ? 0 : stt - 1;
+            }
+            <div class="hint-text">Hiển thị kết quả từ <b>@firstResult</b> đến <b>@lastResult</b></div>
+            <ul class="pagination">
+                <li class="page-item"><a href="/quan-ly-nguoi-dung?searchKeyword=@searchKeyword&&pageNumber=1" class="page-link"><i class="fa fa-angle-double-left"></i></a></li>
+                @{
+                    var allNguoiDung = query.ToList();
+                    double pmax = (double)allNguoiDung.Count / pageSize;
+                    int pageMax = (int)Math.Ceiling(pmax);
+                    int pageTemp = 0;
+                    int page3HienTai = pageNumber;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (i != 2)     // 4 nut ben canh
+                        {
+                            pageTemp = pageNumber - 2 + i;
+                            if (pageTemp <= 0 || pageTemp > pageMax)
+                            {
+                                <li class="page-item"><a class="page-link"> </a></li>
+                            }
+                            else
+                            {
+                                <li class="page-item"><a href="/quan-ly-nguoi-dung?searchKeyword=@searchKeyword&pageNumber=@pageTemp" class="page-link">@pageTemp</a></li>
+                            }
+                        }
+                        else            // nut chinh giua
+                        {
+                            <li class="page-item active"><a href="javascript:void(0)" class="page-link">@page3HienTai</a></li>
+                        }
+                    }
+                }
+                <li class="page-item"><a href="/quan-ly-nguoi-dung?searchKeyword=@searchKeyword&&pageNumber=@pageMax" class="page-link"><i class="fa fa-angle-double-right"></i></a></li>
+            </ul>
+        </div>*@
+            <div>
+                <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Quay lại</button>
+            </div>
+        </div>
+    </div>
+</div>

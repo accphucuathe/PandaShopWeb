@@ -1,0 +1,142 @@
+﻿
+@{
+    ViewBag.Title = "ChiTietDonHang";
+    Layout = "~/Views/Shared/layout.cshtml";
+}
+@using BMT_DATN.Models;
+@{
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var ch = new CurrencyHelper();
+    int maDh = ViewBag.maDonHang;
+
+    var infoOrder = (from sp in db.tblChiTietDonHangs
+                     where sp.FK_MaDonHang == maDh
+                     select new
+                     {
+                         FK_MaDonHang = sp.FK_MaDonHang,
+                         FK_MaSanPham = sp.FK_MaSanPham,
+                         SoLuongMua = sp.SoLuongMua,
+                         DonGia = sp.DonGia,
+                         TenSanPham = sp.tblSanPham.TenSanPham,
+                         KichCo = sp.tblSanPham.KichCo,
+                         SoLuong = sp.tblSanPham.SoLuong,
+                         HinhAnh = sp.tblSanPham.HinhAnh,
+                         TongTienSanPham = sp.DonGia * sp.SoLuongMua
+                     }
+                    ).ToList();
+    var totalPrice = infoOrder.Sum(s => s.TongTienSanPham);
+    var listStatusOrder = (from cttdh in db.tblChiTietTrangThaiDonHangs
+                           where cttdh.FK_MaDonHang == maDh &&
+                                 cttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
+                           select new
+                           {
+                               MaDonHang = cttdh.FK_MaDonHang,
+                               MaTrangThaiDonHang = cttdh.FK_MaTrangThaiDonHang,
+                               TenTrangThaiDonHang = cttdh.tblTrangThaiDonHang.TenTrangThaiDonHang,
+                               ThoiGianCapNhat = cttdh.ThoiGianCapNhat
+                           }
+                           ).ToList();
+}
+
+<div class="title-all text-center mt-5">
+    <h1>CHI TIẾT ĐƠN HÀNG</h1>
+</div>
+<!-- Start Order Detail  -->
+<div class="cart-box-main">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-main table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th class="text-center">Đơn giá</th>
+                                <th style="width:100px;">Số lượng</th>
+                                <th class="text-center" style="width:150px;">Tổng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (var isp in infoOrder)
+                                {
+                                    <tr style="border-bottom: 1px solid gray">
+                                        <td class="thumbnail-img">
+                                            <img class="img-fluid" src="~/Images_Data/@isp.HinhAnh" alt="" />
+                                        </td>
+                                        <td class="name-pr">
+                                            <a href="#">
+                                                @isp.TenSanPham
+                                            </a>
+                                        </td>
+                                        <td class="price-pr text-right">
+                                            <p>@ch.FormatToCurrency(isp.DonGia)</p>
+                                        </td>
+                                        <td class="quantity-pr text-right">
+                                            <p>@isp.SoLuongMua</p>
+                                        </td>
+                                        <td class="total-pr text-right">
+                                            <p>@ch.FormatToCurrency(isp.TongTienSanPham)</p>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-2">
+            <div class="col-lg-12">
+                <h3 class="all-price-pr text-center w-100">Tổng cộng: @ch.FormatToCurrency(totalPrice)</h3>
+            </div>
+            <div class="col-lg-12 my-2">
+                <p class="status-order">@listStatusOrder.OrderByDescending(tt => tt.MaTrangThaiDonHang).FirstOrDefault().TenTrangThaiDonHang</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4 col-lg-4 mb-3">
+                <div class="checkout-address">
+                    <div class="title-left">
+                        <h4>Lịch sử trạng thái đơn hàng:</h4>
+                    </div>
+                    <div style="color: #101010;">
+                        <ul>
+                        @{
+                            foreach (var chiTietTrangThai in listStatusOrder)
+                            {
+                                <li>
+                                    @chiTietTrangThai.ThoiGianCapNhat.ToString("dd-MM-yyyy HH:mm:ss") : @chiTietTrangThai.TenTrangThaiDonHang
+                                </li>
+                            }
+                        }
+                        </ul>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+            <div class="col-sm-8 col-lg-8 mb-3">
+
+            </div>
+        </div>
+
+        <div class="row mb-5 mt-2">
+            <div class="col-lg-6 col-sm-6">
+                <div class="continue-shopping">
+                    <p><a href="\trang-chu"><u>Tiếp tục mua hàng</u></a></p>
+                </div>
+            </div>
+            <div class="col-lg-6 col-sm-6">
+                <div class="update-box">
+                    @*<input value="Đặt hàng" type="submit" form="formInfoShipping" id="btnOrder">*@
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- End Order Detail -->
