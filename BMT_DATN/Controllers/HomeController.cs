@@ -386,23 +386,24 @@ namespace BMT_DATN.Controllers
         }
 
         // Action khi user thanh toan
-        public ActionResult UserThanhToan(String addressShipping, String phoneShipping) 
+        public ActionResult UserThanhToan(String addressShipping, String phoneShipping, String noteShipping) 
         {
             Guid userId = nguoidung.maNguoiDung;
             int maDonHang = !nguoidung.maGioHang.HasValue ? 0 : nguoidung.maGioHang.Value;
             // ghi nhan trang thai moi cua don hang
             var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
             trangThaiDonHangMoi.FK_MaDonHang = maDonHang;
-            trangThaiDonHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.DatHangChoXacNhan;
+            trangThaiDonHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.ChoXacNhan;
             trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
             trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
             db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
-            // luu sdt va dia chi giao hang
+            // luu sdt + dia chi giao hang + ghi chu
             var donHangHienTai = (from dh in db.tblDonHangs
                                   where dh.PK_MaDonHang == maDonHang
                                   select dh).FirstOrDefault();
             donHangHienTai.DiaChiGiaoHang = addressShipping;
             donHangHienTai.SoDienThoai = phoneShipping;
+            donHangHienTai.GhiChu = noteShipping;
             // save
             db.SaveChanges();
             LayGioHangHienTai();
@@ -431,6 +432,48 @@ namespace BMT_DATN.Controllers
             ViewBag.maDonHang = maDh;
 
             return View();
+        }
+
+        // user huy don hang "cho xac nhan"
+        [HttpPost]
+        public JsonResult UserHuyDonHang(int cancelOrderId)
+        {
+            string result = "";
+            string redirect = "";
+            Guid userId = nguoidung.maNguoiDung;
+            var currentOrderStatus = (from ctttdh in db.tblChiTietTrangThaiDonHangs
+                                      where ctttdh.FK_MaDonHang == cancelOrderId &&
+                                            ctttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
+                                      orderby ctttdh.FK_MaTrangThaiDonHang descending
+                                      select ctttdh).FirstOrDefault();
+            // chi cho phep khach hang huy khi don hang "cho xac nhan"
+            if (currentOrderStatus.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.ChoXacNhan)
+            {
+                // ghi nhan trang thai "Da huy" cua don hang
+                var trangThaiHuyDonHang = new tblChiTietTrangThaiDonHang();
+                trangThaiHuyDonHang.FK_MaDonHang = cancelOrderId;
+                trangThaiHuyDonHang.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.DaHuy;
+                trangThaiHuyDonHang.ThoiGianCapNhat = DateTime.Now;
+                trangThaiHuyDonHang.FK_MaNhanVienCapNhat = userId;
+                db.tblChiTietTrangThaiDonHangs.Add(trangThaiHuyDonHang);
+                // save
+                db.SaveChanges();
+
+                result = "Đã hủy đơn hàng :(";
+                redirect = "1";
+            }
+            else
+            {
+                result = "Đơn hàng đã ở trạng thái không thể hủy \n Bạn cần liên hệ shop để hủy đơn hàng";
+                redirect = "1";
+            }
+
+            return Json(new
+            {
+                msg = result,
+                rdt = redirect
+            },
+            JsonRequestBehavior.AllowGet);
         }
     }
 }

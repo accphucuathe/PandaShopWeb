@@ -36,6 +36,10 @@
                                ThoiGianCapNhat = cttdh.ThoiGianCapNhat
                            }
                            ).ToList();
+    var currentStatusOrder = listStatusOrder.OrderByDescending(tt => tt.MaTrangThaiDonHang).FirstOrDefault();
+    var infoShipping = (from dh in db.tblDonHangs
+                        where dh.PK_MaDonHang == maDh
+                        select dh).FirstOrDefault();
 }
 
 <div class="title-all text-center mt-5">
@@ -94,7 +98,10 @@
                 <h3 class="all-price-pr text-center w-100">Tổng cộng: @ch.FormatToCurrency(totalPrice)</h3>
             </div>
             <div class="col-lg-12 my-2">
-                <p class="status-order">@listStatusOrder.OrderByDescending(tt => tt.MaTrangThaiDonHang).FirstOrDefault().TenTrangThaiDonHang</p>
+                <p class="status-order">@currentStatusOrder.TenTrangThaiDonHang</p>
+            </div>
+            <div class="col-lg-12 text-center" id="divHuyDonHang" style="display: none;">
+                <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" id="btnHuyDonHang">Hủy đặt hàng</button>
             </div>
         </div>
 
@@ -102,18 +109,37 @@
             <div class="col-sm-4 col-lg-4 mb-3">
                 <div class="checkout-address">
                     <div class="title-left">
+                        <h4>Thông tin giao hàng:</h4>
+                    </div>
+                    <div style="color: #101010;">
+                        <ul>
+                            <li>Địa chỉ giao hàng: @infoShipping.DiaChiGiaoHang</li>
+                            <li>SĐT: @infoShipping.SoDienThoai</li>
+                            <li>Ghi chú đơn hàng: @infoShipping.GhiChu</li>
+                        </ul>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+            <div class="col-sm-8 col-lg-8 mb-3">
+
+            </div>
+
+            <div class="col-sm-4 col-lg-4 mb-3">
+                <div class="checkout-address">
+                    <div class="title-left">
                         <h4>Lịch sử trạng thái đơn hàng:</h4>
                     </div>
                     <div style="color: #101010;">
                         <ul>
-                        @{
-                            foreach (var chiTietTrangThai in listStatusOrder)
-                            {
-                                <li>
-                                    @chiTietTrangThai.ThoiGianCapNhat.ToString("dd-MM-yyyy HH:mm:ss") : @chiTietTrangThai.TenTrangThaiDonHang
-                                </li>
+                            @{
+                                foreach (var chiTietTrangThai in listStatusOrder)
+                                {
+                                    <li>
+                                        @chiTietTrangThai.ThoiGianCapNhat.ToString("dd-MM-yyyy HH:mm:ss") : @chiTietTrangThai.TenTrangThaiDonHang
+                                    </li>
+                                }
                             }
-                        }
                         </ul>
                     </div>
                     <hr />
@@ -127,12 +153,12 @@
         <div class="row mb-5 mt-2">
             <div class="col-lg-6 col-sm-6">
                 <div class="continue-shopping">
-                    <p><a href="\trang-chu"><u>Tiếp tục mua hàng</u></a></p>
+                    @*<p><a href="\trang-chu"><u>Tiếp tục mua hàng</u></a></p>*@
+                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Quay lại</button>
                 </div>
             </div>
             <div class="col-lg-6 col-sm-6">
                 <div class="update-box">
-                    @*<input value="Đặt hàng" type="submit" form="formInfoShipping" id="btnOrder">*@
                 </div>
             </div>
         </div>
@@ -140,3 +166,56 @@
     </div>
 </div>
 <!-- End Order Detail -->
+
+<link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        checkAllowCancelOrder();
+        // nhan xoa sp
+        $('#btnHuyDonHang').click(function () {
+            var cancelOrdId = @ViewBag.maDonHang;
+            var obj = {
+                cancelOrderId: cancelOrdId
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UserHuyDonHang", "Home")',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+
+                beforeSend: function () {
+                    return confirm("Bạn chắc chắn muốn hủy đơn hàng này chứ?");
+                },
+                success: function (response) {
+                    var valueReturn = response;
+                    alert(valueReturn.msg);
+                    if (valueReturn.rdt == "1") {
+                        window.location.href = '@Url.Action("DanhSachDonHang", "Home")';
+                    }
+                },
+                failure: function (response) {
+                    alert("fail");
+                },
+                complete: function () {
+
+                },
+                error: function (xhr, status, error) {
+                    var err = xhr.responseText;
+                    alert(err);
+                },
+            });
+        });
+    });
+    var trangThaiHienTai = @currentStatusOrder.MaTrangThaiDonHang;
+    function checkAllowCancelOrder() {
+        var trangThaiChoXacNhan = 2;
+        if (trangThaiHienTai == trangThaiChoXacNhan) {
+            $("#divHuyDonHang").show();
+        }
+        else {
+            $("#divHuyDonHang").hide();
+        }
+    }
+</script>

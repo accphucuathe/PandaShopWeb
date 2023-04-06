@@ -1,0 +1,163 @@
+﻿
+@{
+    ViewBag.Title = "Cập nhật trạng thái đơn hàng";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+@using BMT_DATN.Models;
+@{
+    int maDh = ViewBag.maDonHang;
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    CurrencyHelper ch = new CurrencyHelper();
+    var infoDonHang = (from dh in db.tblDonHangs
+                       where dh.PK_MaDonHang == maDh
+                       select new
+                       {
+                           MaDonHang = dh.PK_MaDonHang,
+                           NguoiMua = dh.tblNguoiDung.TenNguoiDung,
+                           DiaChiGiaoHang = dh.DiaChiGiaoHang,
+                           SoDienThoai = dh.SoDienThoai,
+                           GhiChu = dh.GhiChu,
+                           CacSanPhamDatMua = dh.tblChiTietDonHangs.ToList(),
+                           CacTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.ToList()
+                       }
+                      ).FirstOrDefault();
+    var totalPrice = infoDonHang.CacSanPhamDatMua.Sum(sp => sp.DonGia * sp.SoLuongMua);
+    var allStatusAvailable = db.tblTrangThaiDonHangs
+                                           .Where(tt => tt.PK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang &&
+                                                    tt.PK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.DaHuy)
+                                           .OrderBy(tt => tt.PK_MaTrangThaiDonHang)
+                                           .ToList();
+    var currentOrderStatus = infoDonHang.CacTrangThaiDonHang.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang)
+                                                            .FirstOrDefault().tblTrangThaiDonHang.PK_MaTrangThaiDonHang;
+}
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $('a[name="qldh_menu"]').html("<b>>>ĐƠN HÀNG</b>");
+    $('a[name="qldh_menu"]').css("color", "red");
+    $(document).ready(function () {
+        $("#orderStatus").val(@currentOrderStatus);
+        $('#btnLuuTrangThai').click(function () {
+            var ordId = $("#orderId").val();
+            var ordStatusId = $("#orderStatus").val();
+            var obj = {
+                orderId: ordId,
+                newOrderStatusId: ordStatusId
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AdminCapNhatTrangThaiDonHang", "Order")',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+
+                beforeSend: function () {
+                    return checkOrderStatusChange();
+                },
+                success: function (response) {
+                    var valueReturn = response;
+                    alert(valueReturn.msg);
+                    if (valueReturn.rdt == "0") {
+                        //window.location.reload();
+                    }
+                    if (valueReturn.rdt == "1") {
+                        window.location.href = document.referrer;
+                    }
+                },
+                failure: function (response) {
+                    alert("fail");
+                },
+                complete: function () {
+
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                },
+            });
+        });
+    });
+    function checkOrderStatusChange() {
+        var statusBefore = @currentOrderStatus;
+        var statusAfter = $("#orderStatus").val();
+        if (statusBefore == statusAfter) {
+            alert("Trạng thái đơn hàng không thay đổi");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    function GoBackWithRefresh(event) {
+        if ('referrer' in document) {
+            window.location = document.referrer;
+            /* OR */
+            //location.replace(document.referrer);
+        } else {
+            window.history.back();
+        }
+    }
+</script>
+
+<div class="admin_content_area">
+    <h2>QUẢN LÝ ĐƠN HÀNG - CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG</h2>
+    <div>
+        <form class="AdminForm m-md-auto">
+            <span class="h4 mb-0">Cập nhật cho đơn hàng</span>
+            @*<div class="form-group">
+            <input hidden value="@infoDonHang.MaDonHang" name="orderId" />
+        </div>*@
+            <div class="form-group">
+                <label for="orderId">Mã đơn hàng:</label>
+                <input type="text" class="form-control" name="orderId" id="orderId" value="@infoDonHang.MaDonHang" disabled>
+            </div>
+            <div class="form-group">
+                <label for="userName">Tên khách hàng:</label>
+                <input type="text" class="form-control" name="userName" id="userName" value="@infoDonHang.NguoiMua" disabled>
+            </div>
+            <div class="form-group">
+                <label for="addressShipping">Địa chỉ giao hàng:</label>
+                <input type="text" class="form-control" name="addressShipping" id="addressShipping" value="@infoDonHang.DiaChiGiaoHang" disabled>
+            </div>
+            <div class="form-group">
+                <label for="phoneShipping">Số điện thoại:</label>
+                <input type="text" class="form-control" name="phoneShipping" id="phoneShipping" value="@infoDonHang.SoDienThoai" disabled>
+            </div>
+            <div class="form-group">
+                <label for="noteShipping">Ghi chú:</label>
+                <input type="text" class="form-control" name="noteShipping" id="noteShipping" value="@infoDonHang.GhiChu" disabled>
+            </div>
+            <div class="form-group">
+                <label for="totalPrice">Tổng tiền thanh toán:</label>
+                <input type="text" class="form-control" name="totalPrice" id="totalPrice" value="@ch.FormatToCurrency(totalPrice)" disabled>
+            </div>
+
+            <div class="form-group">
+                <label for="orderStatus">Trạng thái đơn hàng:</label>
+                <select name="orderStatus" id="orderStatus" required>
+                    @{
+                        foreach (var status in allStatusAvailable)
+                        {
+                            if (status.PK_MaTrangThaiDonHang < currentOrderStatus || status.PK_MaTrangThaiDonHang > currentOrderStatus + 1)
+                            {
+                                <option value="@status.PK_MaTrangThaiDonHang" disabled>@status.TenTrangThaiDonHang</option>
+                            }
+                            else
+                            {
+                                <option value="@status.PK_MaTrangThaiDonHang">@status.TenTrangThaiDonHang</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+                <div>
+                    <button type="button" class="ml-auto btn hvr-hover mr-2" style="color:#ffffff" name="btnLuuTrangThai" id="btnLuuTrangThai">Lưu trạng thái</button>
+                </div>
+                <div>
+                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="location.replace(document.referrer);">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

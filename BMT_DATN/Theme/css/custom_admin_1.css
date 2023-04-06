@@ -90,6 +90,14 @@ table.table td a {
         color: #E34724;
     }
 
+    table.table td a.giveback {
+        color: #09DF19;
+    }
+
+        table.table td a.giveback i {
+            transform: rotate(90deg);
+        }
+
 table.table td i {
     font-size: 19px;
 }
@@ -141,8 +149,7 @@ table.table td i {
 
 .add_user_button {
     margin-top: 1px;
-    border: groove lightgreen;
-    background-color: #89ff96;
+    border: groove lightgray;
 }
 
     .add_user_button :hover {

@@ -19,13 +19,14 @@ namespace BMT_DATN.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            return View();
+            return RedirectToAction("Index", "Admin");
         }
 
         // quan ly don hang
         public ActionResult QuanLyDonHang(int? pageNumber, String searchKeyword)
         {
-            if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.ChuCuaHang)
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang &&
+                HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.NhanVien)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -35,6 +36,88 @@ namespace BMT_DATN.Controllers
             ViewBag.pageSize = pageSize;
 
             return View();
+        }
+
+        // QL don hang - admin xem don hang
+        public ActionResult XemDonHang(int maDh)
+        {
+            ViewBag.maDonHang = maDh;
+
+            return View();
+        }
+
+        // QL don hang - trang cap nhat trang thai don hang
+        public ActionResult CapNhatTrangThaiDonHang(int maDh)
+        {
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang &&
+                HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.NhanVien)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            ViewBag.maDonHang = maDh;
+
+            return View();
+        }
+
+        // QL don hang - admin cap nhat trang thai don hang
+        public JsonResult AdminCapNhatTrangThaiDonHang(int orderId, int newOrderStatusId)
+        {
+            string result = "";
+            string redirect = "";
+            Guid userId = HomeController.nguoidung.maNguoiDung;
+            var checkTrangThaiDonHang = (from ctttdh in db.tblChiTietTrangThaiDonHangs
+                                         where ctttdh.FK_MaDonHang == orderId &&
+                                                ctttdh.FK_MaTrangThaiDonHang == newOrderStatusId
+                                         select ctttdh).FirstOrDefault();
+            if (checkTrangThaiDonHang != null)
+            {
+                result = "Đơn hàng đã có trạng thái này";
+                redirect = "0";
+            }
+            else
+            {
+                // cap nhat trang thai don hang moi
+                var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
+                trangThaiDonHangMoi.FK_MaDonHang = orderId;
+                trangThaiDonHangMoi.FK_MaTrangThaiDonHang = newOrderStatusId;
+                trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
+                trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
+                db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
+                // neu trang thai moi la "Dang giao" thi se giam tru so luong sp trong kho
+                if (newOrderStatusId == (int)EnumTrangThaiDonHang.DangGiao)
+                {
+                    var productsOfOrder = (from  ctdh in db.tblChiTietDonHangs
+                                           where ctdh.FK_MaDonHang == orderId
+                                           select ctdh).ToList();
+                    foreach (var product in productsOfOrder)
+                    {
+                        var quantityProductOfOrder = product.SoLuongMua;
+                        var productOfStore = (from sp in db.tblSanPhams
+                                              where sp.PK_MaSanPham == product.FK_MaSanPham
+                                              select sp).FirstOrDefault();
+                        // check so luong dat mua va so luong con lai trong kho
+                        if (quantityProductOfOrder > productOfStore.SoLuong)
+                        {
+                            return Json(new { msg = "Số lượng trong kho không đủ để vận đơn", rdt = "0" }, JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                        {
+                            productOfStore.SoLuong -= quantityProductOfOrder;
+                        }
+                    }
+                }
+                // save
+                db.SaveChanges();
+                result = "Đã cập nhật trạng thái cho đơn hàng này";
+                redirect = "1";
+            }
+
+            return Json(new
+            {
+                msg = result,
+                rdt = redirect
+            },
+            JsonRequestBehavior.AllowGet);
         }
     }
 }

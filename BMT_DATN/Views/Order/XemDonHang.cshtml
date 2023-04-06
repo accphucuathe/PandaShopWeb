@@ -1,0 +1,130 @@
+﻿
+@{
+    ViewBag.Title = "Xem đơn hàng";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+@using BMT_DATN.Models;
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $('a[name="qldh_menu"]').html("<b>>>ĐƠN HÀNG</b>");
+    $('a[name="qldh_menu"]').css("color", "red");
+    $(document).ready(function () {
+    });
+    function GoBackWithRefresh(event) {
+        if ('referrer' in document) {
+            window.location = document.referrer;
+            /* OR */
+            //location.replace(document.referrer);
+        } else {
+            window.history.back();
+        }
+    }
+</script>
+<div class="admin_content_area">
+    <h2>QUẢN LÝ ĐƠN HÀNG - XEM THÔNG TIN ĐƠN HÀNG</h2>
+    <div>
+        @{
+            int maDh = ViewBag.maDonHang;
+            BMT_DATNEntities db = new BMT_DATNEntities();
+            CurrencyHelper ch = new CurrencyHelper();
+            var infoDonHang = (from dh in db.tblDonHangs
+                               where dh.PK_MaDonHang == maDh
+                               select new
+                               {
+                                   MaDonHang = dh.PK_MaDonHang,
+                                   NguoiMua = dh.tblNguoiDung.TenNguoiDung,
+                                   DiaChiGiaoHang = dh.DiaChiGiaoHang,
+                                   SoDienThoai = dh.SoDienThoai,
+                                   GhiChu = dh.GhiChu,
+                                   CacSanPhamDatMua = dh.tblChiTietDonHangs.ToList()
+                               }
+                              ).FirstOrDefault();
+            var totalPrice = infoDonHang.CacSanPhamDatMua.Sum(sp => sp.DonGia * sp.SoLuongMua);
+            var listStatusOrder = (from ctttdh in db.tblChiTietTrangThaiDonHangs
+                                   where ctttdh.FK_MaDonHang == maDh &&
+                                         ctttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
+                                   select ctttdh).ToList();
+        }
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Nội dung</th>
+                    <th>Thông tin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Mã đơn hàng</td>
+                    <td>@infoDonHang.MaDonHang</td>
+                </tr>
+                <tr>
+                    <td>Người mua</td>
+                    <td>@infoDonHang.NguoiMua</td>
+                </tr>
+                <tr>
+                    <td>Địa chỉ giao hàng</td>
+                    <td>@infoDonHang.DiaChiGiaoHang</td>
+                </tr>
+                <tr>
+                    <td>Số điện thoại</td>
+                    <td>@infoDonHang.SoDienThoai</td>
+                </tr>
+                <tr>
+                    <td>Ghi chú</td>
+                    <td>@infoDonHang.GhiChu</td>
+                </tr>
+                <tr>
+                    <td rowspan="@infoDonHang.CacSanPhamDatMua.Count">Các sản phẩm đặt mua</td>
+                    <td>
+                        <ul>
+                            <li>Tên sản phẩm: @infoDonHang.CacSanPhamDatMua.FirstOrDefault().tblSanPham.TenSanPham</li>
+                            <li>Đơn giá: @ch.FormatToCurrency(infoDonHang.CacSanPhamDatMua.FirstOrDefault().DonGia)</li>
+                            <li>Số lượng mua: @infoDonHang.CacSanPhamDatMua.FirstOrDefault().SoLuongMua</li>
+                        </ul>
+                    </td>
+                </tr>
+                @{
+                    if (infoDonHang.CacSanPhamDatMua.Count > 1)
+                    {
+                        foreach (var sp in infoDonHang.CacSanPhamDatMua.Skip(1))
+                        {
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li>Tên sản phẩm: @sp.tblSanPham.TenSanPham</li>
+                                        <li>Đơn giá: @ch.FormatToCurrency(sp.DonGia)</li>
+                                        <li>Số lượng mua: @sp.SoLuongMua</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                <tr>
+                    <td>Tổng tiền thanh toán của đơn hàng</td>
+                    <td>@ch.FormatToCurrency(totalPrice)</td>
+                </tr>
+                <tr>
+                    <td>Lịch sử trạng thái của đơn hàng</td>
+                    <td>
+                        <ul>
+                            @{
+                                foreach (var chiTietTrangThai in listStatusOrder)
+                                {
+                                    <li>
+                                        @chiTietTrangThai.ThoiGianCapNhat.ToString("dd-MM-yyyy HH:mm:ss") - @chiTietTrangThai.tblTrangThaiDonHang.TenTrangThaiDonHang - @chiTietTrangThai.tblNguoiDung.TenNguoiDung
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="GoBackWithRefresh();return false;">Quay lại</button>
+    </div>
+</div>
