@@ -305,6 +305,7 @@
     <Content Include="Views\Order\QuanLyDonHang.cshtml" />
     <Content Include="Views\Order\XemDonHang.cshtml" />
     <Content Include="Views\Order\CapNhatTrangThaiDonHang.cshtml" />
+    <Content Include="Views\Order\ThemDonHang.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

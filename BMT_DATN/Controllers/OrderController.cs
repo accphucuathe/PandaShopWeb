@@ -64,6 +64,7 @@ namespace BMT_DATN.Controllers
         {
             string result = "";
             string redirect = "";
+            string refresh = "";
             Guid userId = HomeController.nguoidung.maNguoiDung;
             var checkTrangThaiDonHang = (from ctttdh in db.tblChiTietTrangThaiDonHangs
                                          where ctttdh.FK_MaDonHang == orderId &&
@@ -73,17 +74,19 @@ namespace BMT_DATN.Controllers
             {
                 result = "Đơn hàng đã có trạng thái này";
                 redirect = "0";
+                refresh = "1";
             }
             else
             {
-                // cap nhat trang thai don hang moi
-                var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
-                trangThaiDonHangMoi.FK_MaDonHang = orderId;
-                trangThaiDonHangMoi.FK_MaTrangThaiDonHang = newOrderStatusId;
-                trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
-                trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
-                db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
-                // neu trang thai moi la "Dang giao" thi se giam tru so luong sp trong kho
+                // lay trang thai hien tai cua don hang
+                var currentOrderStatus = (from ctttdh in db.tblChiTietTrangThaiDonHangs
+                                          where ctttdh.FK_MaDonHang == orderId &&
+                                                ctttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
+                                          orderby ctttdh.FK_MaTrangThaiDonHang descending
+                                          select ctttdh).FirstOrDefault();
+                result = "Đã cập nhật trạng thái cho đơn hàng này";
+                redirect = "1";
+                // neu trang thai moi la "Dang Giao" thi se giam tru so luong sp trong kho
                 if (newOrderStatusId == (int)EnumTrangThaiDonHang.DangGiao)
                 {
                     var productsOfOrder = (from  ctdh in db.tblChiTietDonHangs
@@ -106,18 +109,70 @@ namespace BMT_DATN.Controllers
                         }
                     }
                 }
+                // neu trang thai moi la "Da Huy"
+                if (newOrderStatusId == (int)EnumTrangThaiDonHang.DaHuy)
+                {
+                    result = "Đã hủy đơn hàng này";
+                    redirect = "0";
+                    refresh = "1";
+                }
+                // neu trang thai moi la "Dang Hoan Tra"
+                if (newOrderStatusId == (int)EnumTrangThaiDonHang.DangHoanTra)
+                {
+                    result = "Bắt đầu hoàn đơn hàng này";
+                    redirect = "0";
+                    refresh = "1";
+                }
+                // neu trang thai moi la "Da Hoan Tra" thi se cong lai so luong sp trong kho
+                if (newOrderStatusId == (int)EnumTrangThaiDonHang.DaHoanTra)
+                {
+                    var productsOfOrder = (from ctdh in db.tblChiTietDonHangs
+                                           where ctdh.FK_MaDonHang == orderId
+                                           select ctdh).ToList();
+                    foreach (var product in productsOfOrder)
+                    {
+                        var quantityProductOfOrder = product.SoLuongMua;
+                        var productOfStore = (from sp in db.tblSanPhams
+                                              where sp.PK_MaSanPham == product.FK_MaSanPham
+                                              select sp).FirstOrDefault();
+                        // cong lai so luong sp trong kho
+                        productOfStore.SoLuong += quantityProductOfOrder;
+                    }
+                    result = "Hoàn tất hoàn trả đơn hàng này \n Số lượng sản phẩm trong kho đã cập nhật lại";
+                    redirect = "1";
+                    refresh = "1";
+                }
+
+                // cap nhat trang thai don hang moi
+                var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
+                trangThaiDonHangMoi.FK_MaDonHang = orderId;
+                trangThaiDonHangMoi.FK_MaTrangThaiDonHang = newOrderStatusId;
+                trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
+                trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
+                db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
                 // save
                 db.SaveChanges();
-                result = "Đã cập nhật trạng thái cho đơn hàng này";
-                redirect = "1";
             }
 
             return Json(new
             {
                 msg = result,
-                rdt = redirect
+                rdt = redirect,
+                rfr = refresh
             },
             JsonRequestBehavior.AllowGet);
+        }
+
+        // QL don hang - them don hang
+        public ActionResult ThemDonHang()
+        {
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang &&
+                HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.NhanVien)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
         }
     }
 }

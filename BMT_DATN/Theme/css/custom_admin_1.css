@@ -93,10 +93,13 @@ table.table td a {
     table.table td a.giveback {
         color: #09DF19;
     }
-
         table.table td a.giveback i {
             transform: rotate(90deg);
         }
+
+    table.table td a.giveback2 {
+        color: #09DF19;
+    }
 
 table.table td i {
     font-size: 19px;

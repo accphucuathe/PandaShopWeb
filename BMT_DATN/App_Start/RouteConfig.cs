@@ -169,7 +169,6 @@ namespace BMT_DATN
                 url: "quan-ly-don-hang",
                 defaults: new { controller = "Order", action = "QuanLyDonHang", id = UrlParameter.Optional }
             );
-
             routes.MapRoute(
                 name: "XemDonHang",
                 url: "xem-don-hang",
@@ -179,6 +178,11 @@ namespace BMT_DATN
                 name: "CapNhatTrangThaiDonHang",
                 url: "cap-nhat-trang-thai-don-hang",
                 defaults: new { controller = "Order", action = "CapNhatTrangThaiDonHang", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "ThemDonHang",
+                url: "them-don-hang",
+                defaults: new { controller = "Order", action = "ThemDonHang", id = UrlParameter.Optional }
             );
 
             // mac dinh

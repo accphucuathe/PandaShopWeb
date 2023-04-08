@@ -14,19 +14,160 @@
         $('[data-toggle="tooltip"]').tooltip({
             trigger: 'hover'
         });
-
+        $('a[name="cancelOrder"]').click(function () {
+            var splitCancelOrderId = $(this).attr('id').split('_');
+            var idDh = splitCancelOrderId[1];   // id don hang
+            var idTtdh = splitCancelOrderId[2];   // id trang thai don hang
+            if (idTtdh == 2 || idTtdh == 3) {       // 2: ChoXacNhan, 3: DaXacNhan
+                var cfm = confirm("Bạn chắc chắn muốn hủy đơn hàng này?");
+                if (cfm) {
+                    adminHuyDonHang(idDh, idTtdh);
+                }
+            }
+            else {
+                alert("Đơn hàng đang ở trạng thái không thể hủy :(");
+            }
+        });
+        $('a[name="giveBackOrder"]').click(function () {
+            var splitGivebackOrderId = $(this).attr('id').split('_');
+            var idDh = splitGivebackOrderId[1];   // id don hang
+            var idTtdh = splitGivebackOrderId[2];   // id trang thai don hang
+            if (idTtdh == 5) {       // 5: DaGiao
+                var cfm = confirm("Bạn chắc chắn muốn hoàn đơn hàng này?");
+                if (cfm) {
+                    adminHoanDonHang(idDh, idTtdh);
+                }
+            }
+            else {
+                alert("Đơn hàng chỉ được hoàn khi ở trạng thái 'Đã giao' :(");
+            }
+        });
+        $('a[name="giveBackOrder2"]').click(function () {
+            var splitGivebackOrder2Id = $(this).attr('id').split('_');
+            var idDh = splitGivebackOrder2Id[1];   // id don hang
+            var idTtdh = splitGivebackOrder2Id[2];   // id trang thai don hang
+            if (idTtdh == 8) {       // 5: DangHoanTra
+                var cfm = confirm("Bạn chắc chắn muốn xác nhận đã hoàn đơn hàng này về shop?");
+                if (cfm) {
+                    adminXacNhanHoanDonHang(idDh, idTtdh);
+                }
+            }
+            else {
+                alert("Đơn hàng chỉ được hoàn khi ở trạng thái 'Đã giao' :(");
+            }
+        });
     });
     function checkAllowUpdateStatus(ele) {
         var statusId = ele.name;
-        var trangThaiDaNhan_HoanTat = 6;
+        var trangThaiDaNhan = 6;        //6: DaNhan, 7: DaHuy, 9: DaHoanTra
         var trangThaiDaHuy = 7;
-        if (statusId == trangThaiDaNhan_HoanTat || statusId == trangThaiDaHuy) {
+        var trangThaiDaHoanTra = 9;
+        if (statusId == trangThaiDaNhan || statusId == trangThaiDaHuy || statusId == trangThaiDaHoanTra) {
             alert("Đơn hàng đã kết thúc! \n Bạn không thể cập nhật trạng thái cho đơn hàng này");
             return false;
         }
         else {
             return true;
         }
+    }
+    function adminHuyDonHang(idDonHang, idTrangThaiDonHang) {
+        var obj = {
+            orderId: idDonHang,
+            //newOrderStatusId: idTrangThaiDonHang
+            newOrderStatusId: 7     //7: DaHuy
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AdminCapNhatTrangThaiDonHang", "Order")',
+            data: JSON.stringify(obj),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+
+            beforeSend: function () {
+            },
+            success: function (response) {
+                var valueReturn = response;
+                alert(valueReturn.msg);
+                if (valueReturn.rfr == "1") {
+                    window.location.reload();
+                }
+            },
+            failure: function (response) {
+                alert("fail");
+            },
+            complete: function () {
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                alert(err.Message);
+            },
+        });
+    }
+    function adminHoanDonHang(idDonHang, idTrangThaiDonHang) {
+        var obj = {
+            orderId: idDonHang,
+            //newOrderStatusId: idTrangThaiDonHang
+            newOrderStatusId: 8     //8: DangHoanTra
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AdminCapNhatTrangThaiDonHang", "Order")',
+            data: JSON.stringify(obj),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+
+            beforeSend: function () {
+            },
+            success: function (response) {
+                var valueReturn = response;
+                alert(valueReturn.msg);
+                if (valueReturn.rfr == "1") {
+                    window.location.reload();
+                }
+            },
+            failure: function (response) {
+                alert("fail");
+            },
+            complete: function () {
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                alert(err.Message);
+            },
+        });
+    }
+    function adminXacNhanHoanDonHang(idDonHang, idTrangThaiDonHang) {
+        var obj = {
+            orderId: idDonHang,
+            //newOrderStatusId: idTrangThaiDonHang
+            newOrderStatusId: 9     //9: DaHoanTra
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AdminCapNhatTrangThaiDonHang", "Order")',
+            data: JSON.stringify(obj),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+
+            beforeSend: function () {
+            },
+            success: function (response) {
+                var valueReturn = response;
+                alert(valueReturn.msg);
+                if (valueReturn.rfr == "1") {
+                    window.location.reload();
+                }
+            },
+            failure: function (response) {
+                alert("fail");
+            },
+            complete: function () {
+            },
+            error: function (xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                alert(err.Message);
+            },
+        });
     }
 </script>
 
@@ -43,7 +184,7 @@
                         </div>
                     </div>
                     <div class="col-sm-1" title="Thêm" data-toggle="tooltip">
-                        <a href="#"><i class="material-icons add_user_button">add</i></a>
+                        <a href="/them-don-hang"><i class="material-icons add_user_button">add</i></a>
                     </div>
                 </div>
             </div>
@@ -92,8 +233,17 @@
                                     <a href="#" class="edit" title="Cập nhật trạng thái" data-toggle="tooltip"><i class="material-icons">&#xef4c;</i></a>
                                     <a href="#" class="edit" title="Cập nhật trạng thái" data-toggle="tooltip"><i class="material-icons">&#xe6b3;</i></a>
                                     <a href="#" class="edit" title="Cập nhật trạng thái" data-toggle="tooltip"><i class="material-icons">&#xe862;</i></a>*@
-                                    <a href="javascript:void(0)" class="giveback" title="Hoàn trả hàng" data-toggle="tooltip" name="deleteProvider" id="@donhang.MaDonHang"><i class="material-icons">&#xeba1;</i></a>
-                                    <a href="javascript:void(0)" class="delete" title="Hủy đơn hàng" data-toggle="tooltip" name="deleteProvider" id="@donhang.MaDonHang"><i class="material-icons">&#xe14c;</i></a>
+                                    @{
+                                        if (donhang.MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DangHoanTra)
+                                        {
+                                            <a href="javascript:void(0)" class="giveback2" title="Xác nhận hoàn tất hoàn trả đơn hàng" data-toggle="tooltip" name="giveBackOrder2" id="@("giveback2_" + donhang.MaDonHang + "_" + donhang.MaTrangThaiDonHang)"><i class="material-icons">&#xef4c;</i></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)" class="giveback" title="Hoàn trả đơn hàng" data-toggle="tooltip" name="giveBackOrder" id="@("giveback_" + donhang.MaDonHang + "_" + donhang.MaTrangThaiDonHang)"><i class="material-icons">&#xeba1;</i></a>
+                                        }
+                                    }
+                                    <a href="javascript:void(0)" class="delete" title="Hủy đơn hàng" data-toggle="tooltip" name="cancelOrder" id="@("cancel_" + donhang.MaDonHang + "_" + donhang.MaTrangThaiDonHang)"><i class="material-icons">&#xe14c;</i></a>
                                 </td>
                             </tr>
                             stt++;
