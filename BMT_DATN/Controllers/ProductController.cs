@@ -15,7 +15,7 @@ namespace BMT_DATN.Controllers
         public ActionResult Index()
         {
             // check permission
-            if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.ChuCuaHang)
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -248,6 +248,14 @@ namespace BMT_DATN.Controllers
                 rf = refresh
             },
             JsonRequestBehavior.AllowGet);
+        }
+
+        // QL san pham - tim kiem san pham
+        [HttpPost]
+        public JsonResult AdminTimKiemSanPham(int? pageNumber, String searchKeyword)
+        {
+            string searchK = searchKeyword;
+            return Json(new { redirectToUrl = Url.Action("QuanLySanPham", "Product", new { searchKeyword = searchK }) });
         }
     }
 }

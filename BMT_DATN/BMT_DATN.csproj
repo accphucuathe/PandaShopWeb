@@ -166,6 +166,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
@@ -306,6 +307,7 @@
     <Content Include="Views\Order\XemDonHang.cshtml" />
     <Content Include="Views\Order\CapNhatTrangThaiDonHang.cshtml" />
     <Content Include="Views\Order\ThemDonHang.cshtml" />
+    <Content Include="Views\Import\QuanLyNhapHang.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

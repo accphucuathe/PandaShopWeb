@@ -53,18 +53,18 @@
         });
         // nhan enter tim kiem
         $(document).keyup(function (event) {
-            if ($("#searchNhaCungCap").is(":focus") && event.key == "Enter") {
-                if ($("#searchNhaCungCap").val() == "") {
+            if ($("#searchSanPham").is(":focus") && event.key == "Enter") {
+                if ($("#searchSanPham").val() == "") {
                     alert("Trường tìm kiếm đang rỗng!");
                 }
                 else {
-                    var searchKey = $("#searchNhaCungCap").val();
+                    var searchKey = $("#searchSanPham").val();
                     var obj = {
                         searchKeyword: searchKey
                     }
                     $.ajax({
                         type: 'POST',
-                        url: '@Url.Action("AdminTimKiemNhaCungCap", "Provider")',
+                        url: '@Url.Action("AdminTimKiemSanPham", "Product")',
                         data: JSON.stringify(obj),
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',

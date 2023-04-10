@@ -14,6 +14,41 @@
         $('[data-toggle="tooltip"]').tooltip({
             trigger: 'hover'
         });
+        // nhan enter tim kiem
+        $(document).keyup(function (event) {
+            if ($("#searchDonHang").is(":focus") && event.key == "Enter") {
+                if ($("#searchDonHang").val() == "") {
+                    alert("Trường tìm kiếm đang rỗng!");
+                }
+                else {
+                    var searchKey = $("#searchDonHang").val();
+                    var obj = {
+                        searchKeyword: searchKey
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("AdminTimKiemDonHang", "Order")',
+                        data: JSON.stringify(obj),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+
+                        beforeSend: function () { },
+                        success: function (response) {
+                            window.location.href = response.redirectToUrl;
+                        },
+                        failure: function (response) {
+                            alert("fail");
+                        },
+                        complete: function () { },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            alert(err.Message);
+                        },
+                    });
+                }
+            }
+        });
+        // huy don hang
         $('a[name="cancelOrder"]').click(function () {
             var splitCancelOrderId = $(this).attr('id').split('_');
             var idDh = splitCancelOrderId[1];   // id don hang
@@ -28,6 +63,7 @@
                 alert("Đơn hàng đang ở trạng thái không thể hủy :(");
             }
         });
+        // hoan tra don hang
         $('a[name="giveBackOrder"]').click(function () {
             var splitGivebackOrderId = $(this).attr('id').split('_');
             var idDh = splitGivebackOrderId[1];   // id don hang
@@ -42,6 +78,7 @@
                 alert("Đơn hàng chỉ được hoàn khi ở trạng thái 'Đã giao' :(");
             }
         });
+        // xac nhan hoan tat hoan tra don hang
         $('a[name="giveBackOrder2"]').click(function () {
             var splitGivebackOrder2Id = $(this).attr('id').split('_');
             var idDh = splitGivebackOrder2Id[1];   // id don hang
@@ -62,7 +99,8 @@
         var trangThaiDaNhan = 6;        //6: DaNhan, 7: DaHuy, 9: DaHoanTra
         var trangThaiDaHuy = 7;
         var trangThaiDaHoanTra = 9;
-        if (statusId == trangThaiDaNhan || statusId == trangThaiDaHuy || statusId == trangThaiDaHoanTra) {
+        var trangThaiMuaTaiCuaHang = 10;
+        if (statusId == trangThaiDaNhan || statusId == trangThaiDaHuy || statusId == trangThaiDaHoanTra || statusId == trangThaiMuaTaiCuaHang) {
             alert("Đơn hàng đã kết thúc! \n Bạn không thể cập nhật trạng thái cho đơn hàng này");
             return false;
         }
@@ -193,7 +231,7 @@
                     <tr>
                         <th style="width: 50px;">STT</th>
                         <th>Mã đơn hàng</th>
-                        <th>Người mua</th>
+                        <th>Người tạo đơn</th>
                         <th>Trạng thái</th>
                         <th>Thao tác</th>
                     </tr>
@@ -213,7 +251,8 @@
                                         MaTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().FK_MaTrangThaiDonHang,
                                         TenTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().tblTrangThaiDonHang.TenTrangThaiDonHang
                                     };
-                        var listDonHang = query.Where(dh => dh.MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang)
+                        var listDonHang = query.Where(dh => dh.MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang &&
+                                                        dh.TenNguoiDung.Contains(searchKeyword))
                                                .OrderBy(dh => dh.MaTrangThaiDonHang)
                                                .Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
 

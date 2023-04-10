@@ -14,7 +14,7 @@ namespace BMT_DATN.Controllers
         public ActionResult Index()
         {
             // check permission
-            if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.ChuCuaHang)
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -171,8 +171,99 @@ namespace BMT_DATN.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            ViewBag.userId = HomeController.nguoidung.maNguoiDung;
 
             return View();
+        }
+
+        // QL don hang - admin them don hang moi
+        [HttpPost]
+        public JsonResult AdminThemDonHang(String noteShipping, int[] productIds, int[] productQuantitys)
+        {
+            string result = "";
+            string redirect = "";
+            Guid userId = HomeController.nguoidung.maNguoiDung;
+            int[] idProd = productIds;
+            int[] quantityProd = productQuantitys;
+            int[] priceProd = new int[idProd.Length];
+            int checkValidQuantity = 0;
+            for (int i = 0; i < idProd.Length; i++)
+            {
+                var productIdTemp = idProd[i];
+                var productQuantityTemp = quantityProd[i];
+                var prd = db.tblSanPhams.Where(p => p.PK_MaSanPham == productIdTemp && p.SoLuong >= productQuantityTemp).FirstOrDefault();
+                if (prd == null)
+                {
+                    checkValidQuantity++;
+                }
+                else
+                {
+                    priceProd[i] = prd.DonGia;
+                }
+            }
+            if (checkValidQuantity != 0)
+            {
+                result = "Số lượng sản phẩm trong kho không đủ!";
+                redirect = "0";
+            }
+            else
+            {
+                // insert tblDonHang
+                var donHangMoi = new tblDonHang();
+                donHangMoi.DiaChiGiaoHang = "Mua tại cửa hàng";
+                donHangMoi.SoDienThoai = "";
+                donHangMoi.GhiChu = noteShipping;
+                donHangMoi.FK_MaNguoiDung = userId;
+                db.tblDonHangs.Add(donHangMoi);
+
+                // insert tblChiTietTrangThaiDonHang
+                var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
+                trangThaiDonHangMoi.FK_MaDonHang = donHangMoi.PK_MaDonHang;
+                trangThaiDonHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.MuaTaiCuaHang;
+                trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
+                trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
+                db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
+
+                // insert tblChiTietDonHang
+                List<tblChiTietDonHang> listCtdh = new List<tblChiTietDonHang>();
+                for (int i = 0; i < idProd.Length; i++)
+                {
+                    var idProduct = idProd[i];
+                    var chiTietDonHangMoi = new tblChiTietDonHang();
+                    chiTietDonHangMoi.FK_MaDonHang = donHangMoi.PK_MaDonHang;
+                    chiTietDonHangMoi.FK_MaSanPham = idProduct;
+                    chiTietDonHangMoi.SoLuongMua = quantityProd[i];
+                    chiTietDonHangMoi.DonGia = priceProd[i];
+                    listCtdh.Add(chiTietDonHangMoi);
+                    // giam tru so luong sp trong kho
+                    var productOfStore = (from sp in db.tblSanPhams
+                                          where sp.PK_MaSanPham == idProduct
+                                          select sp).FirstOrDefault();
+                    productOfStore.SoLuong -= quantityProd[i];
+                }
+                db.tblChiTietDonHangs.AddRange(listCtdh);
+
+                // save
+                db.SaveChanges();
+
+                result = "Thêm mới đơn hàng thành công!";
+                redirect = "0";
+            }
+
+            return Json(new
+            {
+                msg = result,
+                rdt = redirect
+            },
+            JsonRequestBehavior.AllowGet);
+        }
+
+        // QL don hang - tim kiem don hang
+        [HttpPost]
+        public JsonResult AdminTimKiemDonHang(int? pageNumber, String searchKeyword)
+        {
+            string searchK = searchKeyword;
+            return Json(new { redirectToUrl = Url.Action("QuanLyDonHang", "Order", new { searchKeyword = searchK }) });
         }
     }
 }

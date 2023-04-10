@@ -3,6 +3,185 @@
     ViewBag.Title = "ThemDonHang";
     Layout = "~/Views/Shared/layout_admin.cshtml";
 }
+@using BMT_DATN.Models;
+@{
+    Guid maND = ViewBag.userId;
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    CurrencyHelper ch = new CurrencyHelper();
+    var infoNguoiLapHoaDon = (from nd in db.tblNguoiDungs
+                              where nd.PK_MaNguoiDung.Equals(maND)
+                              select nd).FirstOrDefault();
+    var allProduct = (from sp in db.tblSanPhams
+                      select sp).ToList();
+    var allProductId = allProduct.Select(p => p.PK_MaSanPham).ToArray();
+    var allProductName = allProduct.Select(p => p.TenSanPham).ToArray();
+    var allProductQuantity = allProduct.Select(p => p.SoLuong).ToArray();
+}
 
-<h2>ThemDonHang</h2>
+<div class="admin_content_area">
+    <h2>QUẢN LÝ ĐƠN HÀNG - THÊM ĐƠN HÀNG</h2>
+    <div>
+        <form class="AdminForm m-md-auto" id="formThemDonHang">
+            <span class="h4 mb-0">Nhập các thông tin</span>
+            @*<div class="form-group">
+                    <label for="orderId">Mã đơn hàng:</label>
+                    <input type="text" class="form-control" name="orderId" id="orderId" value="@infoDonHang.MaDonHang" disabled>
+                </div>*@
+            <div class="form-group">
+                <label for="userName">Người tạo đơn:</label>
+                <input type="text" class="form-control" name="userName" id="userName" value="@infoNguoiLapHoaDon.TenNguoiDung" disabled>
+            </div>
+            <div class="form-group">
+                <label for="addressShipping">Địa chỉ giao hàng:</label>
+                <input type="text" class="form-control" name="addressShipping" id="addressShipping" value="Bán tại cửa hàng" disabled>
+            </div>
+            <div class="form-group">
+                <label for="phoneShipping">Số điện thoại:</label>
+                <input type="text" class="form-control" name="phoneShipping" id="phoneShipping" value="" disabled>
+            </div>
+            <div class="form-group">
+                <label for="noteShipping">Ghi chú:</label>
+                <textarea type="text" rows="3" class="form-control" name="noteShipping" id="noteShipping"></textarea>
+            </div>
 
+            <div class="form-group">
+                <label for="orderProduct">Chọn sản phẩm:</label>
+                <div class="col-12 d-flex flex-column" id="listProduct">
+
+                </div>
+                <button type="button" onclick="addOneProduct()">+ SP</button>
+            </div>
+
+            <div class="col-12 d-flex justify-content-end">
+                <div>
+                    <button type="button" class="ml-auto btn hvr-hover mr-2" style="color:#ffffff" name="btnThemDonHang" id="btnThemDonHang">Thêm mới</button>
+                </div>
+                <div>
+                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back();">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $('a[name="qldh_menu"]').html("<b>>>ĐƠN HÀNG</b>");
+    $('a[name="qldh_menu"]').css("color", "red");
+    $(document).ready(function () {
+        $('#btnThemDonHang').click(function () {
+            var formData = new FormData($('#formThemDonHang')[0]);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AdminThemDonHang", "Order")',
+                cache: false,
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
+                data: formData,
+
+                beforeSend: function () {
+                    return beforeCallAddOrderAction();
+                },
+                success: function (response) {
+                    var valueReturn = response;
+                    alert(valueReturn.msg);
+                    if (valueReturn.rdt == "1") {
+                        window.location.href = '@Url.Action("QuanLyDonHang", "Order")';
+                    }
+                },
+                failure: function (response) { alert("fail"); },
+                complete: function () {},
+                error: function (xhr, status, error) {
+                    var err = xhr.responseText;
+                    console.log(err);
+                },
+            });
+        });
+
+    });
+
+    var countProduct = 0;
+    var arrayProductIdSelected = new Array();
+    function addOneProduct() {
+        var divOfProductSelect = document.getElementById("listProduct");
+        var divLv1 = document.createElement("div");     // divLv1 = divLv2 + X button
+        divLv1.classList.add("row", "mb-3");
+        divLv1.id = "divSelect_" + countProduct
+        divOfProductSelect.appendChild(divLv1);
+        //Create array of options to be added
+        var arrayProductName = @Html.Raw(Json.Encode(allProductName));
+        var arrayProductId = @Html.Raw(Json.Encode(allProductId));
+        var arrayProductQuantity = @Html.Raw(Json.Encode(allProductQuantity));
+
+        //Create and append select list in divLv2
+        var divLv2 = document.createElement("div");
+        divLv2.classList.add("col-11", "mb-1", "pr-3");
+        var selectList = document.createElement("select");
+        selectList.classList.add("mb-1", "h-50", "w-100");
+        selectList.name = "productIds";
+        divLv2.appendChild(selectList);
+        //Create and append the options
+        for (var i = 0; i < arrayProductName.length; i++) {
+            var option = document.createElement("option");
+            option.value = arrayProductId[i];
+            option.text = arrayProductName[i] + "- Kho: " + arrayProductQuantity[i];
+            selectList.appendChild(option);
+        }
+
+        //Create and append quantity input in divLv2
+        var quantityLabel = document.createElement("label");
+        quantityLabel.innerHTML = "Số lượng mua: ";
+        divLv2.appendChild(quantityLabel);
+        var quantityInput = document.createElement("input");
+        quantityInput.name = "productQuantitys";
+        quantityInput.setAttribute("type", "number");
+        quantityInput.setAttribute("min", "1");
+        quantityInput.setAttribute("value", "1");
+        quantityInput.style.width = "50px";
+        divLv2.appendChild(quantityInput);
+
+        divLv1.appendChild(divLv2);
+
+        //Create X button on right
+        var removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.classList.add("col-1", "mb-1");
+        removeButton.id = "removeSelect_" + countProduct;
+        removeButton.innerHTML = "X";
+        removeButton.setAttribute("onclick", "removeOneProduct(this.id)");
+        divLv1.appendChild(removeButton);
+
+        //
+        countProduct = countProduct + 1;
+    }
+
+    function removeOneProduct(idBtn) {
+        var idButton = idBtn.toString().split("_");
+        var idNeeded = idButton[1];
+        const removedDiv = document.getElementById("divSelect_" + idNeeded);
+        removedDiv.remove();
+    }
+
+    function hasDuplicateProducts(arr) {
+        return new Set(arr).size !== arr.length;
+    }
+
+    function beforeCallAddOrderAction() {
+        arrayProductIdSelected.length = 0;
+        $('select[name="productIds"]').each(function (index) {
+            console.log($(this).val());
+            arrayProductIdSelected.push($(this).val());
+        });
+        if (arrayProductIdSelected.length == 0) {
+            alert("Chưa chọn sản phẩm");
+            return false;
+        }
+        if (hasDuplicateProducts(arrayProductIdSelected)) {
+            alert("Trùng sản phẩm");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+</script>

@@ -10,6 +10,7 @@
         DaNhan = 6,
         DaHuy = 7,
         DangHoanTra = 8,
-        DaHoanTra = 9
+        DaHoanTra = 9,
+        MuaTaiCuaHang = 10
     }
 }
