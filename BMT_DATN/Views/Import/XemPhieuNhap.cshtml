@@ -1,0 +1,112 @@
+﻿
+@{
+    ViewBag.Title = "XemPhieuNhap";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+@using BMT_DATN.Models;
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $('a[name="qlpn_menu"]').html("<b>>>PHIẾU NHẬP</b>");
+    $('a[name="qlpn_menu"]').css("color", "red");
+    $(document).ready(function () {
+    });
+    function GoBackWithRefresh(event) {
+        if ('referrer' in document) {
+            window.location = document.referrer;
+            /* OR */
+            //location.replace(document.referrer);
+        } else {
+            window.history.back();
+        }
+    }
+</script>
+
+<div class="admin_content_area">
+    <h2>QUẢN LÝ PHIẾU NHẬP - XEM THÔNG TIN PHIẾU NHẬP</h2>
+    <div>
+        @{
+            int maPn = ViewBag.maPhieuNhap;
+            BMT_DATNEntities db = new BMT_DATNEntities();
+            CurrencyHelper ch = new CurrencyHelper();
+            var infoPhieuNhap = (from pn in db.tblPhieuNhaps
+                               where pn.PK_MaPhieuNhap == maPn
+                               select new
+                               {
+                                   MaPhieuNhap = pn.PK_MaPhieuNhap,
+                                   TenNguoiTaoPhieu = pn.tblNguoiDung.TenNguoiDung,
+                                   NgayNhap = pn.NgayNhap,
+                                   TenNhaCungCap = pn.tblNhaCungCap.TenNhaCungCap,
+                                   GhiChu = pn.GhiChu,
+                                   CacSanPhamDaNhap = pn.tblChiTietNhapHangs.ToList()
+                               }
+                              ).FirstOrDefault();
+            var totalImportPrice = infoPhieuNhap.CacSanPhamDaNhap.Sum(sp => sp.GiaNhap * sp.SoLuongNhap);
+        }
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Nội dung</th>
+                    <th>Thông tin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Mã phiếu nhập</td>
+                    <td>@infoPhieuNhap.MaPhieuNhap</td>
+                </tr>
+                <tr>
+                    <td>Người tạo phiếu</td>
+                    <td>@infoPhieuNhap.TenNguoiTaoPhieu</td>
+                </tr>
+                <tr>
+                    <td>Ngày nhập</td>
+                    <td>@infoPhieuNhap.NgayNhap.ToString("dd-MM-yyyy hh:mm:ss")</td>
+                </tr>
+                <tr>
+                    <td>Nhà cung cấp</td>
+                    <td>@infoPhieuNhap.TenNhaCungCap</td>
+                </tr>
+                <tr>
+                    <td>Ghi chú</td>
+                    <td>@infoPhieuNhap.GhiChu</td>
+                </tr>
+                <tr>
+                    <td rowspan="@infoPhieuNhap.CacSanPhamDaNhap.Count">Các sản phẩm đã nhập</td>
+                    <td>
+                        <ul>
+                            <li>Tên sản phẩm: @infoPhieuNhap.CacSanPhamDaNhap.FirstOrDefault().tblSanPham.TenSanPham</li>
+                            <li>Số lượng nhập: @infoPhieuNhap.CacSanPhamDaNhap.FirstOrDefault().SoLuongNhap</li>
+                            <li>Giá nhập: @ch.FormatToCurrency(infoPhieuNhap.CacSanPhamDaNhap.FirstOrDefault().GiaNhap)</li>
+                        </ul>
+                    </td>
+                </tr>
+                @{
+                    if (infoPhieuNhap.CacSanPhamDaNhap.Count > 1)
+                    {
+                        foreach (var sp in infoPhieuNhap.CacSanPhamDaNhap.Skip(1))
+                        {
+                            <tr>
+                                <td>
+                                    <ul>
+                                        <li>Tên sản phẩm: @sp.tblSanPham.TenSanPham</li>
+                                        <li>Số lượng nhập: @sp.SoLuongNhap</li>
+                                        <li>Giá nhập: @ch.FormatToCurrency(sp.GiaNhap)</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                <tr>
+                    <td>Tổng tiền thanh toán của phiếu nhập</td>
+                    <td>@ch.FormatToCurrency(totalImportPrice)</td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Quay lại</button>
+    </div>
+</div>

@@ -1,0 +1,283 @@
+﻿
+@{
+    ViewBag.Title = "ThemPhieuNhap";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+@using BMT_DATN.Models;
+@{
+    Guid maND = ViewBag.userId;
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var infoNguoiLapPhieuNhap = (from nd in db.tblNguoiDungs
+                                 where nd.PK_MaNguoiDung.Equals(maND)
+                                 select nd).FirstOrDefault();
+    var allProvider = (from ncc in db.tblNhaCungCaps
+                       select ncc).ToList();
+}
+
+<link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
+
+<div class="admin_content_area">
+    <h2>QUẢN LÝ PHIẾU NHẬP - THÊM PHIẾU NHẬP</h2>
+    <div>
+        <form class="AdminForm m-md-auto" id="formThemPhieuNhap">
+            <span class="h4">Nhập các thông tin</span>
+            <div class="form-group">
+                <label for="userName">Người tạo phiếu:</label>
+                <input type="text" class="form-control" name="userName" id="userName" value="@infoNguoiLapPhieuNhap.TenNguoiDung" disabled>
+            </div>
+            <div class="form-group">
+                <label for="productProvider">Chọn nhà cung cấp:</label>
+                <select class="form-control" style="color: #666666" name="productProvider" id="productProvider" required>
+                    @{
+                        foreach (var provider in allProvider)
+                        {
+                            <option style="color: #666666" value="@provider.PK_MaNhaCungCap">@provider.TenNhaCungCap</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div id="allSelectImportProduct">
+                <div class="form-group divOfSelectImportProduct" id="divOfSelectImportProduct_0">
+                    <label for="productName">Chọn sản phẩm:</label>
+                    <select class="form-control" name="selectImportProduct" onchange="displayProductPrice(this)">
+                        <option>123</option>
+                    </select>
+                    <label>Số lượng nhập:</label>
+                    <input type="number" class="form-control" name="importProductQuantity" min="1" step="1" value="1" required />
+                    <label>Đơn giá nhập:</label>
+                    <input type="text" class="form-control" name="importProductPrice" maxlength="12" onkeyup="formatCurrency(this)" autocomplete="off" required>
+                    <label>Đơn giá bán:</label>
+                    <input type="text" class="form-control" name="productPrice" maxlength="12" onkeyup="formatCurrency(this)" autocomplete="off" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="importProduct">Chọn thêm sản phẩm:</label>
+                <div class="col-12 d-flex flex-column" id="listImportProduct">
+
+                </div>
+                <button type="button" onclick="addOneImportProduct()">+ SP</button>
+            </div>
+
+            <div class="form-group">
+                <label for="noteImport">Ghi chú:</label>
+                <textarea type="text" rows="3" class="form-control" name="noteImport"></textarea>
+            </div>
+
+            <div class="col-12 d-flex justify-content-end">
+                <div>
+                    <button type="submit" class="ml-auto btn hvr-hover mr-2" style="color:#ffffff" id="btnThemPhieuNhap">Thêm mới</button>
+                </div>
+                <div>
+                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Hủy</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+    $('a[name="qlpn_menu"]').html("<b>>>PHIẾU NHẬP</b>");
+    $('a[name="qlpn_menu"]').css("color", "red");
+    $(document).ready(function () {
+        getListProductByProvider();
+        $('#productProvider').change(function () {
+            getListProductByProvider();     // get list provider + init first select
+            removeAllImportProductExceptFirst();
+        });
+        $('#formThemPhieuNhap').submit(function (e) {
+            if (!beforeCallAddImportAction()) {
+                e.preventDefault();
+            }
+            else {
+                e.preventDefault();
+                themPhieuNhapMoi();
+            }
+        });
+    });
+    var countImportProduct = 0;
+    var arrayProductIdSelected = new Array();
+    var arrayProductName = new Array();
+    var arrayProductId = new Array();
+    var arrayProductPrice = new Array();
+    function getListProductByProvider() {
+        var provId = $("#productProvider").val();
+        var obj = {
+            providerId: provId
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LayDanhSachSanPhamTheoNhaCungCap", "Import")',
+            data: JSON.stringify(obj),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+
+            beforeSend: function () {
+
+            },
+            success: function (response) {
+                var valueReturn = response;
+                arrayProductId = valueReturn.arrId;
+                arrayProductName = valueReturn.arrName;
+                arrayProductPrice = valueReturn.arrPrice;
+                initFirstSelectImportProduct();
+            },
+            failure: function (response) {
+                alert("fail");
+            },
+            complete: function () {
+
+            },
+            error: function (xhr, status, error) {
+                var err = xhr.responseText;
+                console.log(err);
+            },
+        });
+    }
+
+    function initFirstSelectImportProduct() {
+        var sIP = document.getElementsByName("selectImportProduct")[0];
+        sIP.innerHTML = "";
+        for (var i = 0; i < arrayProductId.length; i++) {
+            var option = document.createElement("option");
+            option.value = arrayProductId[i];
+            option.text = arrayProductName[i];
+            sIP.appendChild(option);
+        }
+        var divOfFirstSelectImportProduct = document.getElementById("divOfSelectImportProduct_0");
+        var selectTagOfClone = divOfFirstSelectImportProduct.querySelector('select[name="selectImportProduct"]');
+        selectTagOfClone.value = arrayProductId[0];
+        var inputQuantityTagOfClone = divOfFirstSelectImportProduct.querySelector('input[name="importProductQuantity"]');
+        inputQuantityTagOfClone.value = 1;
+        var inputPriceTagOfClone = divOfFirstSelectImportProduct.querySelector('input[name="productPrice"]');
+        inputPriceTagOfClone.value = quickFormatCurrency(arrayProductPrice[0]);
+    }
+
+    function addOneImportProduct() {
+        countImportProduct = countImportProduct + 1;
+
+        var allSelectElement = document.getElementById("allSelectImportProduct");
+        var firstSelectElement = document.getElementById("divOfSelectImportProduct_0");
+        var cloneSelectElement = firstSelectElement.cloneNode(true);
+        cloneSelectElement.id = "divOfSelectImportProduct_" + countImportProduct;
+        // Create X button on right
+        var removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.classList.add("mt-1");
+        removeButton.id = "removeSelect_" + countImportProduct;
+        removeButton.innerHTML = "Xóa";
+        removeButton.setAttribute("onclick", "removeOneImportProduct(this.id)");
+        cloneSelectElement.appendChild(removeButton);
+
+        allSelectElement.appendChild(cloneSelectElement);
+
+        // set init value of selectImportProduct + input productPrice
+        var newCloneSelectElement = document.querySelector("#divOfSelectImportProduct_" + countImportProduct);
+        var selectTagOfClone = newCloneSelectElement.querySelector('select[name="selectImportProduct"]');
+        selectTagOfClone.value = arrayProductId[0];
+        var inputQuantityTagOfClone = newCloneSelectElement.querySelector('input[name="importProductQuantity"]');
+        inputQuantityTagOfClone.value = 1;
+        var inputQuantityTagOfClone = newCloneSelectElement.querySelector('input[name="importProductPrice"]');
+        inputQuantityTagOfClone.value = null;
+        var inputPriceTagOfClone = newCloneSelectElement.querySelector('input[name="productPrice"]');
+        inputPriceTagOfClone.value = quickFormatCurrency(arrayProductPrice[0]);
+    }
+
+    function removeOneImportProduct(idBtn) {
+        var idButton = idBtn.toString().split("_");
+        var idNeeded = idButton[1];
+        const removedDiv = document.getElementById("divOfSelectImportProduct_" + idNeeded);
+        removedDiv.remove();
+    }
+
+    function removeAllImportProductExceptFirst() {
+        $('.divOfSelectImportProduct').not(':first').remove();
+    }
+
+    function displayProductPrice(selectEle) {
+        var valueOption = selectEle.value;
+        var priceNeeded = 0;
+        for (var i = 0; i < arrayProductId.length; i++) {
+            if (arrayProductId[i] == valueOption) {
+                priceNeeded = arrayProductPrice[i];
+                break;
+            }
+        }
+        var priceInput = $(selectEle).siblings('input[name="productPrice"]');
+        var formatedPrice = quickFormatCurrency(priceNeeded);
+        priceInput.val(quickFormatCurrency(priceNeeded));
+    }
+
+    function formatCurrency(num) {
+        // '' -> comma
+        let price = ($(num).val());
+        let price1 = parseInt(price.toString().replace(/,/g, ''), 10);
+        if (isNaN(price1)) {
+            price1 = 0;
+        }
+        // comma -> ''
+        obj1 = new Intl.NumberFormat('en-US');
+        output1 = obj1.format(price1);
+        $(num).val(output1);
+    }
+
+    function quickFormatCurrency(qNum) {
+        obj1 = new Intl.NumberFormat('en-US');
+        output1 = obj1.format(qNum);
+        return output1;
+    }
+
+    function hasDuplicateProducts(arr) {
+        return new Set(arr).size !== arr.length;
+    }
+
+    function beforeCallAddImportAction() {
+        arrayProductIdSelected.length = 0;
+        $('select[name="selectImportProduct"]').each(function (index) {
+            console.log($(this).val());
+            arrayProductIdSelected.push($(this).val());
+        });
+        if (arrayProductIdSelected.length == 0) {
+            alert("Chưa chọn sản phẩm");
+            return false;
+        }
+        if (hasDuplicateProducts(arrayProductIdSelected)) {
+            alert("Trùng sản phẩm");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    function themPhieuNhapMoi() {
+        var formData = new FormData($('#formThemPhieuNhap')[0]);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AdminThemPhieuNhap", "Import")',
+                cache: false,
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
+                data: formData,
+
+                beforeSend: function () {
+                    return beforeCallAddImportAction();
+                },
+                success: function (response) {
+                    var valueReturn = response;
+                    alert(valueReturn.msg);
+                    if (valueReturn.rdt == "1") {
+                        window.location.href = '@Url.Action("QuanLyPhieuNhap","Import")';
+                    }
+                },
+                failure: function (response) { alert("fail"); },
+                complete: function () {},
+                error: function (xhr, status, error) {
+                    var err = xhr.responseText;
+                    console.log(err);
+                },
+            });
+    }
+</script>

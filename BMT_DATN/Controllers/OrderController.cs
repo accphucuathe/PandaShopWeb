@@ -247,7 +247,7 @@ namespace BMT_DATN.Controllers
                 db.SaveChanges();
 
                 result = "Thêm mới đơn hàng thành công!";
-                redirect = "0";
+                redirect = "1";
             }
 
             return Json(new

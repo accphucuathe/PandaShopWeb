@@ -187,9 +187,19 @@ namespace BMT_DATN
 
             // QuanLyNhapHang View
             routes.MapRoute(
-                name: "QuanLyNhapHang",
-                url: "quan-ly-nhap-hang",
-                defaults: new { controller = "Import", action = "QuanLyNhapHang", id = UrlParameter.Optional }
+                name: "QuanLyPhieuNhap",
+                url: "quan-ly-phieu-nhap",
+                defaults: new { controller = "Import", action = "QuanLyPhieuNhap", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "ThemPhieuNhap",
+                url: "them-phieu-nhap",
+                defaults: new { controller = "Import", action = "ThemPhieuNhap", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "XemPhieuNhap",
+                url: "Xem-phieu-nhap",
+                defaults: new { controller = "Import", action = "XemPhieuNhap", id = UrlParameter.Optional }
             );
 
             // mac dinh

@@ -44,7 +44,7 @@ namespace BMT_DATN.Controllers
             // check permission
             if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang)
             {
-                //return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home");
             }
 
             if (duplicateProductCheck != "")
