@@ -27,7 +27,7 @@
             </div>
             <div class="form-group">
                 <label for="productProvider">Chọn nhà cung cấp:</label>
-                <select class="form-control" style="color: #666666" name="productProvider" id="productProvider" required>
+                <select class="form-control" style="color: #1f1f1f" name="productProvider" id="productProvider" required>
                     @{
                         foreach (var provider in allProvider)
                         {
@@ -45,9 +45,9 @@
                     </select>
                     <label>Số lượng nhập:</label>
                     <input type="number" class="form-control" name="importProductQuantity" min="1" step="1" value="1" required />
-                    <label>Đơn giá nhập:</label>
+                    <label>Đơn giá nhập (vnđ):</label>
                     <input type="text" class="form-control" name="importProductPrice" maxlength="12" onkeyup="formatCurrency(this)" autocomplete="off" required>
-                    <label>Đơn giá bán:</label>
+                    <label>Đơn giá bán (vnđ):</label>
                     <input type="text" class="form-control" name="productPrice" maxlength="12" onkeyup="formatCurrency(this)" autocomplete="off" required>
                 </div>
             </div>
@@ -79,7 +79,7 @@
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
-    $('a[name="qlpn_menu"]').html("<b>>>PHIẾU NHẬP</b>");
+    $('a[name="qlpn_menu"]').html("<b> &#9205; PHIẾU NHẬP</b>");
     $('a[name="qlpn_menu"]').css("color", "red");
     $(document).ready(function () {
         getListProductByProvider();

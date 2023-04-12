@@ -18,7 +18,7 @@
                            KichCo = sp.KichCo,
                            HinhAnh = sp.HinhAnh,
                            MoTa = sp.MoTa,
-                           DonVi = sp.DonVi,
+                           DonVi = sp.DonVi.ToString(),
                            SoLuong = sp.SoLuong,
                            DonGia = sp.DonGia,
                            FK_MaDanhMucSanPham = sp.FK_MaDanhMucSanPham,
@@ -36,7 +36,7 @@
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
-    $('a[name="qlsp_menu"]').html("<b>>>SẢN PHẨM</b>");
+    $('a[name="qlsp_menu"]').html("<b> &#9205; SẢN PHẨM</b>");
     $('a[name="qlsp_menu"]').css("color", "red");
     $(document).ready(function () {
 
@@ -53,8 +53,10 @@
             $(this).val(output1);
         });
 
-        // load productCategory
+        // load productCategory + productUnit
         $('#productCategory').val(@infoSanPham.FK_MaDanhMucSanPham);
+        $('#productUnit').val("@Html.Raw(infoSanPham.DonVi)");
+
         // load productProvider
         loadProvider();
 
@@ -172,10 +174,10 @@
     {
         <div>
             <span class="h4">Sửa các thông tin</span>
-            <div class="form-group col-12 mt-3 p-0 d-flex">
+            <div class="form-group">
                 <input hidden value="@infoSanPham.PK_MaSanPham" name="productId" id="productId" />
-                <label class="col-5 p-0" for="productCategory">Sản phẩm thuộc danh mục:</label>
-                <select class="col-7" style="color: #666666" name="productCategory" id="productCategory" required>
+                <label for="productCategory">Sản phẩm thuộc danh mục:</label>
+                <select class="form-control" style="color: #1f1f1f" name="productCategory" id="productCategory" required>
                     @{
                         foreach (var category in allCategory)
                         {
@@ -194,10 +196,16 @@
             </div>
             <div class="form-group">
                 <label for="productUnit">Đơn vị tính:</label>
-                <input type="text" class="form-control" name="productUnit" id="productUnit" autocomplete="off" value="@infoSanPham.DonVi" required>
+                <select class="form-control" name="productUnit" id="productUnit" required>
+                    <option value="Đôi">Đôi</option>
+                    <option value="Chiếc">Chiếc</option>
+                    <option value="Bộ">Bộ</option>
+                    <option value="Hộp">Hộp</option>
+                    <option value="Lọ">Lọ</option>
+                </select>
             </div>
             <div class="form-group">
-                <label for="productPrice">Đơn giá:</label>
+                <label for="productPrice">Đơn giá (vnđ):</label>
                 <input type="text" class="form-control" name="productPrice" id="productPrice" maxlength="12" autocomplete="off" value="@ch.FormatWithComma(infoSanPham.DonGia)" required>
             </div>
             <div class="form-group">

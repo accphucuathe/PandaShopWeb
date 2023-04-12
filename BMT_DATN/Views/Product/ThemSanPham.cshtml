@@ -17,7 +17,7 @@
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
-    $('a[name="qlsp_menu"]').html("<b>>>SẢN PHẨM</b>");
+    $('a[name="qlsp_menu"]').html("<b> &#9205; SẢN PHẨM</b>");
     $('a[name="qlsp_menu"]').css("color", "red");
     $(document).ready(function () {
         $('#productPrice').on('keyup', function () {
@@ -108,9 +108,20 @@
     {
         <div>
             <span class="h4">Nhập các thông tin</span>
-            <div class="form-group col-12 mt-3 p-0 d-flex">
+            @*<div class="form-group col-12 mt-3 p-0 d-flex">
                 <label class="col-5 p-0" for="productCategory">Sản phẩm thuộc danh mục:</label>
                 <select class="col-7" style="color: #666666" name="productCategory" id="productCategory" required>
+                    @{
+                        foreach (var category in allCategory)
+                        {
+                            <option style="color: #666666" value="@category.PK_MaDanhMucSanPham">@category.TenDanhMucSanPham</option>
+                        }
+                    }
+                </select>
+            </div>*@
+            <div class="form-group">
+                <label for="productCategory">Sản phẩm thuộc danh mục:</label>
+                <select class="form-control" style="color: #1f1f1f" name="productCategory" id="productCategory" required>
                     @{
                         foreach (var category in allCategory)
                         {
@@ -129,10 +140,16 @@
             </div>
             <div class="form-group">
                 <label for="productUnit">Đơn vị tính:</label>
-                <input type="text" class="form-control" name="productUnit" id="productUnit" autocomplete="off" required>
+                <select class="form-control" name="productUnit" id="productUnit" required>
+                    <option value="Đôi">Đôi</option>
+                    <option value="Chiếc">Chiếc</option>
+                    <option value="Bộ">Bộ</option>
+                    <option value="Hộp">Hộp</option>
+                    <option value="Lọ">Lọ</option>
+                </select>
             </div>
             <div class="form-group">
-                <label for="productPrice">Đơn giá:</label>
+                <label for="productPrice">Đơn giá (vnđ):</label>
                 <input type="text" class="form-control" name="productPrice" id="productPrice" maxlength="12" autocomplete="off" required>
             </div>
             <div class="form-group">

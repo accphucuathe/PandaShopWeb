@@ -61,7 +61,7 @@ namespace BMT_DATN.Controllers
                 return RedirectToAction("ThemSanPham", new { duplicateProductCheck = "Thông tin đơn giá không hợp lệ" });
             }
             var checkProduct = (from sp in db.tblSanPhams
-                                where sp.TenSanPham.Equals(productName) && sp.KichCo.Equals(productSize)
+                                where sp.TenSanPham.Equals(productName.Trim()) && sp.KichCo.Equals(productSize.Trim())
                                 select sp).FirstOrDefault();
             if (checkProduct != null)
             {
@@ -76,7 +76,9 @@ namespace BMT_DATN.Controllers
             sanPhamMoi.SoLuong = 0;
             sanPhamMoi.FK_MaDanhMucSanPham = productCategory;
 
-            string fileName = Path.GetFileName(productImage.FileName);
+            long unixTimestamp = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(productImage.FileName);
+            string fileName = fileNameWithoutExtension + "_" + unixTimestamp + ".png";
             string path = Path.Combine(Server.MapPath("~/Images_Data"), fileName);
             productImage.SaveAs(path);
             sanPhamMoi.HinhAnh = fileName;

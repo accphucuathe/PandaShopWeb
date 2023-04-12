@@ -8,7 +8,7 @@
 <link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
-    $('a[name="qlpn_menu"]').html("<b>>>PHIẾU NHẬP</b>");
+    $('a[name="qlpn_menu"]').html("<b> &#9205; PHIẾU NHẬP</b>");
     $('a[name="qlpn_menu"]').css("color", "red");
 </script>
 
@@ -58,10 +58,10 @@
                                 <td style="text-align:center;">@stt</td>
                                 <td>@phieunhap.PK_MaPhieuNhap</td>
                                 <td>@phieunhap.tblNguoiDung.TenNguoiDung</td>
-                                <td>@phieunhap.NgayNhap</td>
+                                <td>@phieunhap.NgayNhap.ToString("dd-MM-yyyy HH:mm:ss")</td>
                                 <td>
                                     <a href="/xem-phieu-nhap?maPn=@phieunhap.PK_MaPhieuNhap" class="view" title="Xem phiếu nhập" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
-
+                                    <a href="/sua-phieu-nhap?maPn=@phieunhap.PK_MaPhieuNhap" class="edit" title="Sửa phiếu nhập" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
                                     <a href="javascript:void(0)" class="delete" title="Xóa phiếu nhập" data-toggle="tooltip" name="deleteImport" id="@phieunhap.PK_MaPhieuNhap"><i class="material-icons">&#xE872;</i></a>
                                 </td>
                             </tr>
