@@ -141,5 +141,55 @@ namespace BMT_DATN.Controllers
 
             return View();
         }
+
+        // QL phieu nhap - admin xoa phieu nhap
+        [HttpPost]
+        public JsonResult AdminXoaPhieuNhap(int importId)
+        {
+            string result = "";
+            string refresh = "";
+            var phieuNhapBiXoa = (from pn in db.tblPhieuNhaps
+                                where pn.PK_MaPhieuNhap == importId
+                                select pn).FirstOrDefault();
+            var productsOfImport = (from ctnh in db.tblChiTietNhapHangs
+                                    where ctnh.FK_MaPhieuNhap == importId
+                                    select ctnh).ToList();
+            // kiem tra so luong trong kho co hop le khi xoa phieu nhap hay ko 
+            foreach (var product in productsOfImport)
+            {
+                var quantityProductOfImport = product.SoLuongNhap;
+                var productOfStore = (from sp in db.tblSanPhams
+                                      where sp.PK_MaSanPham == product.FK_MaSanPham
+                                      select sp).FirstOrDefault();
+                // check so luong da nhap va so luong con lai trong kho
+                if (quantityProductOfImport > productOfStore.SoLuong)
+                {
+                    return Json(new { msg = "Số lượng trong kho thấp hơn số lượng trong phiếu nhập \n Không thể xóa phiếu nhập này", rfr = "0" }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    productOfStore.SoLuong -= quantityProductOfImport;
+                }
+            }
+            // delete phieu nhap + chi tiet nhap hang
+            db.tblChiTietNhapHangs.RemoveRange(productsOfImport);
+            db.tblPhieuNhaps.Remove(phieuNhapBiXoa);
+            db.SaveChanges();
+            result = "Đã xóa thành công phiếu nhập!";
+            refresh = "1";
+
+            return Json(new
+            {
+                msg = result,
+                rfr = refresh
+            },
+            JsonRequestBehavior.AllowGet);
+        }
+
+        // QL phieu nhap - sua phieu nhap
+        public ActionResult SuaPhieuNhap()
+        {
+            return View();
+        }
     }
 }

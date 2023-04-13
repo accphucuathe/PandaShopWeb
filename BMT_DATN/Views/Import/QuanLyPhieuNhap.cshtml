@@ -10,6 +10,47 @@
 <script type="text/javascript">
     $('a[name="qlpn_menu"]').html("<b> &#9205; PHIẾU NHẬP</b>");
     $('a[name="qlpn_menu"]').css("color", "red");
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip({
+            trigger: 'hover'
+        });
+        // xoa phieu nhap
+        $('a[name="deleteImport"]').click(function () {
+            alert("123");
+            var deleteImportId = this.id;
+            var obj = {
+                importId: deleteImportId
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AdminXoaPhieuNhap", "Import")',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+
+                beforeSend: function () {
+
+                },
+                success: function (response) {
+                    var valueReturn = response;
+                    alert(valueReturn.msg);
+                    if (valueReturn.rfr == "1") {
+                        window.location.reload(true);
+                    }
+                },
+                failure: function (response) {
+                    alert("fail");
+                },
+                complete: function () {
+
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                },
+            });
+        });
+    });
 </script>
 
 <div class="container">

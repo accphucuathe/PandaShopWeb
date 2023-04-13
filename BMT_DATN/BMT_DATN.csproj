@@ -310,6 +310,7 @@
     <Content Include="Views\Import\QuanLyPhieuNhap.cshtml" />
     <Content Include="Views\Import\ThemPhieuNhap.cshtml" />
     <Content Include="Views\Import\XemPhieuNhap.cshtml" />
+    <Content Include="Views\Import\SuaPhieuNhap.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

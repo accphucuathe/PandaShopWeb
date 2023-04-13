@@ -234,13 +234,13 @@ namespace BMT_DATN.Controllers
                     db.tblNguonCungCaps.RemoveRange(nguonCungCapCu);
 
                     db.SaveChanges();
-                    result = "Đã xóa thành công danh mục sản phẩm!";
+                    result = "Đã xóa thành công sản phẩm!";
                     refresh = "1";
                 }
             }
             else
             {
-                result = "Xóa danh mục sản phẩm thất bại!";
+                result = "Xóa sản phẩm thất bại!";
                 refresh = "0";
             }
 
