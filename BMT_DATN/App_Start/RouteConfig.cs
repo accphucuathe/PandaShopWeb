@@ -198,8 +198,13 @@ namespace BMT_DATN
             );
             routes.MapRoute(
                 name: "XemPhieuNhap",
-                url: "Xem-phieu-nhap",
+                url: "xem-phieu-nhap",
                 defaults: new { controller = "Import", action = "XemPhieuNhap", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "SuaPhieuNhap",
+                url: "sua-phieu-nhap",
+                defaults: new { controller = "Import", action = "SuaPhieuNhap", id = UrlParameter.Optional }
             );
 
             // mac dinh

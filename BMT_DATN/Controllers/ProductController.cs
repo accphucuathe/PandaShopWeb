@@ -128,6 +128,31 @@ namespace BMT_DATN.Controllers
         }
 
         [HttpPost]
+        public JsonResult KiemTraTonTaiSanPhamVaNhaCungCapTrongPhieuNhap(int productId, int providerId)
+        {
+            string result = "";
+            // kiem tra co phieu nhap cua ncc + sp nay hay ko
+            var checkImport = (from pn in db.tblPhieuNhaps
+                               join ctnh in db.tblChiTietNhapHangs on pn.PK_MaPhieuNhap equals ctnh.FK_MaPhieuNhap
+                               where pn.FK_MaNhaCungCap == providerId && ctnh.FK_MaSanPham == productId
+                               select ctnh).FirstOrDefault();
+            if (checkImport != null)    // tim dc phieu nhap cua ncc + sp
+            {
+                result = "1";
+            }
+            else
+            {
+                result = "0";
+            }
+
+            return Json(new
+            {
+                res = result
+            },
+            JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
         public JsonResult AdminSuaSanPham(int productId, int productCategory, String productName, String productSize, String productUnit, String productPrice, String productDescription, HttpPostedFileBase productImage, int[] providerIds)
         {
             string result = "";

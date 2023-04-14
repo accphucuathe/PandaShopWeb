@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "ThemPhieuNhap";
+    ViewBag.Title = "Thêm phiếu nhập";
     Layout = "~/Views/Shared/layout_admin.cshtml";
 }
 @using BMT_DATN.Models;
@@ -14,8 +14,6 @@
                        select ncc).ToList();
 }
 
-<link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
-
 <div class="admin_content_area">
     <h2>QUẢN LÝ PHIẾU NHẬP - THÊM PHIẾU NHẬP</h2>
     <div>
@@ -24,6 +22,10 @@
             <div class="form-group">
                 <label for="userName">Người tạo phiếu:</label>
                 <input type="text" class="form-control" name="userName" id="userName" value="@infoNguoiLapPhieuNhap.TenNguoiDung" disabled>
+            </div>
+            <div class="form-group">
+                <label for="importDate">Ngày nhập:</label>
+                <input type="date" class="form-control" name="importDate" id="importDate" onchange="importDateChange()">
             </div>
             <div class="form-group">
                 <label for="productProvider">Chọn nhà cung cấp:</label>
@@ -39,7 +41,7 @@
 
             <div id="allSelectImportProduct">
                 <div class="form-group divOfSelectImportProduct" id="divOfSelectImportProduct_0">
-                    <label for="productName">Chọn sản phẩm:</label>
+                    <label for="productName" id="lblProductNumber_0">Chọn sản phẩm 1:</label>
                     <select class="form-control" name="selectImportProduct" onchange="displayProductPrice(this)">
                         <option>123</option>
                     </select>
@@ -82,6 +84,7 @@
     $('a[name="qlpn_menu"]').html("<b> &#9205; PHIẾU NHẬP</b>");
     $('a[name="qlpn_menu"]').css("color", "red");
     $(document).ready(function () {
+        loadToday();
         getListProductByProvider();
         $('#productProvider').change(function () {
             getListProductByProvider();     // get list provider + init first select
@@ -97,6 +100,27 @@
             }
         });
     });
+    // xu ly ngay nhap hang
+    function loadToday() {
+        var date = new Date();
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+        var today = year + "-" + month + "-" + day;
+        document.getElementById('importDate').value = today;
+    }
+    function importDateChange() {
+        var d = new Date();
+        var date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        var mydate = new Date(document.getElementById('importDate').value);
+        if (date < mydate) {
+            alert("Ngày không hợp lệ");
+            loadToday();
+        }
+    }
+
     var countImportProduct = 0;
     var arrayProductIdSelected = new Array();
     var arrayProductName = new Array();
@@ -175,6 +199,8 @@
 
         // set init value of selectImportProduct + input productPrice
         var newCloneSelectElement = document.querySelector("#divOfSelectImportProduct_" + countImportProduct);
+        var labelTagOfClone = newCloneSelectElement.querySelector('#lblProductNumber_0');
+        labelTagOfClone.id = "lblProductNumber_" + countImportProduct;
         var selectTagOfClone = newCloneSelectElement.querySelector('select[name="selectImportProduct"]');
         selectTagOfClone.value = arrayProductId[0];
         var inputQuantityTagOfClone = newCloneSelectElement.querySelector('input[name="importProductQuantity"]');
@@ -183,6 +209,7 @@
         inputQuantityTagOfClone.value = null;
         var inputPriceTagOfClone = newCloneSelectElement.querySelector('input[name="productPrice"]');
         inputPriceTagOfClone.value = quickFormatCurrency(arrayProductPrice[0]);
+        setAllLabelNumberImportProduct();
     }
 
     function removeOneImportProduct(idBtn) {
@@ -190,6 +217,7 @@
         var idNeeded = idButton[1];
         const removedDiv = document.getElementById("divOfSelectImportProduct_" + idNeeded);
         removedDiv.remove();
+        setAllLabelNumberImportProduct();
     }
 
     function removeAllImportProductExceptFirst() {
@@ -206,8 +234,19 @@
             }
         }
         var priceInput = $(selectEle).siblings('input[name="productPrice"]');
-        var formatedPrice = quickFormatCurrency(priceNeeded);
         priceInput.val(quickFormatCurrency(priceNeeded));
+        // clear input import quantity + import price
+        var importPriceInput = $(selectEle).siblings('input[name="importProductQuantity"]');
+        importPriceInput.val(1);
+        var importPriceInput = $(selectEle).siblings('input[name="importProductPrice"]');
+        importPriceInput.val(null);
+    }
+
+    // set label numberImportProduct
+    function setAllLabelNumberImportProduct() {
+        $('#allSelectImportProduct').find('div').each(function (index) {
+            var x = $(this).find('label:first').text("Chọn sản phẩm " + (index + 1) + ":");
+        });
     }
 
     function formatCurrency(num) {
@@ -254,30 +293,30 @@
 
     function themPhieuNhapMoi() {
         var formData = new FormData($('#formThemPhieuNhap')[0]);
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Action("AdminThemPhieuNhap", "Import")',
-                cache: false,
-                contentType: false, // Not to set any content header
-                processData: false, // Not to process data
-                data: formData,
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AdminThemPhieuNhap", "Import")',
+            cache: false,
+            contentType: false, // Not to set any content header
+            processData: false, // Not to process data
+            data: formData,
 
-                beforeSend: function () {
-                    return beforeCallAddImportAction();
-                },
-                success: function (response) {
-                    var valueReturn = response;
-                    alert(valueReturn.msg);
-                    if (valueReturn.rdt == "1") {
-                        window.location.href = '@Url.Action("QuanLyPhieuNhap","Import")';
-                    }
-                },
-                failure: function (response) { alert("fail"); },
-                complete: function () {},
-                error: function (xhr, status, error) {
-                    var err = xhr.responseText;
-                    console.log(err);
-                },
-            });
+            beforeSend: function () {
+                return beforeCallAddImportAction();
+            },
+            success: function (response) {
+                var valueReturn = response;
+                alert(valueReturn.msg);
+                if (valueReturn.rdt == "1") {
+                    window.location.href = '@Url.Action("QuanLyPhieuNhap","Import")';
+                }
+            },
+            failure: function (response) { alert("fail"); },
+            complete: function () {},
+            error: function (xhr, status, error) {
+                var err = xhr.responseText;
+                console.log(err);
+            },
+        });
     }
 </script>

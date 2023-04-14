@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "SuaSanPham";
+    ViewBag.Title = "Sửa sản phẩm";
     Layout = "~/Views/Shared/layout_admin.cshtml";
 }
 
@@ -67,8 +67,8 @@
                 type: 'POST',
                 url: '@Url.Action("AdminSuaSanPham", "Product")',
                 cache: false,
-                contentType: false, // Not to set any content header  
-                processData: false, // Not to process data  
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
                 data: formData,
 
                 beforeSend: function () {},
@@ -133,7 +133,7 @@
         removeButton.classList.add("col-1", "mb-1");
         removeButton.id = "removeSelect_" + countProvider;
         removeButton.innerHTML = "X";
-        removeButton.setAttribute("onclick", "removeOneProvider(this.id)");
+        removeButton.setAttribute("onclick", "checkExistProductAndProviderInImport(this.id)");
         divOfDivProviderSelect.appendChild(removeButton);
 
         //
@@ -145,6 +145,45 @@
         var idNeeded = idButton[1];
         const removedDiv = document.getElementById("divSelect_" + idNeeded);
         removedDiv.remove();
+    }
+
+    function checkExistProductAndProviderInImport(xBtn) {
+        var prodId = $("#productId").val();
+        var provId = $('#' + xBtn).prev('select[name="providerIds"]').val();
+        var obj = {
+            productId: prodId,
+            providerId: provId
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("KiemTraTonTaiSanPhamVaNhaCungCapTrongPhieuNhap", "Product")',
+            data: JSON.stringify(obj),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+
+            beforeSend: function () {
+
+            },
+            success: function (response) {
+                var valueReturn = response;
+                if (valueReturn.res == "1") {
+                    alert("Tồn tại phiếu nhập của nhà cung cấp này với sản phẩm hiện tại \n Không thể xóa!");
+                }
+                else {
+                    removeOneProvider(xBtn);
+                }
+            },
+            failure: function (response) {
+                alert("fail");
+            },
+            complete: function () {
+
+            },
+            error: function (xhr, status, error) {
+                var err = xhr.responseText;
+                console.log(err);
+            },
+        });
     }
 
     function hasDuplicateProviders(arr) {

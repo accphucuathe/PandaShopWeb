@@ -72,7 +72,7 @@ namespace BMT_DATN.Controllers
 
         // QL phieu nhap - admin them phieu nhap moi
         [HttpPost]
-        public JsonResult AdminThemPhieuNhap(int productProvider, int[] selectImportProduct, int[] importProductQuantity, String[] importProductPrice, String[] productPrice, String noteImport)
+        public JsonResult AdminThemPhieuNhap(DateTime importDate, int productProvider, int[] selectImportProduct, int[] importProductQuantity, String[] importProductPrice, String[] productPrice, String noteImport)
         {
             string result = "";
             string redirect = "";
@@ -85,7 +85,7 @@ namespace BMT_DATN.Controllers
 
             // insert tblPhieuNhap
             var phieuNhapMoi = new tblPhieuNhap();
-            phieuNhapMoi.NgayNhap = DateTime.Now;
+            phieuNhapMoi.NgayNhap = importDate;
             phieuNhapMoi.GhiChu = noteImport;
             phieuNhapMoi.FK_MaNguoiDung = userId;
             phieuNhapMoi.FK_MaNhaCungCap = idProvider;
@@ -169,6 +169,19 @@ namespace BMT_DATN.Controllers
                 else
                 {
                     productOfStore.SoLuong -= quantityProductOfImport;
+                    // check rollback price
+                    var importsOfProduct = (from pn in db.tblPhieuNhaps
+                                         join ctnh in db.tblChiTietNhapHangs on pn.PK_MaPhieuNhap equals ctnh.FK_MaPhieuNhap
+                                         where ctnh.FK_MaSanPham == productOfStore.PK_MaSanPham
+                                         orderby pn.NgayNhap descending
+                                         select ctnh).ToList();
+                    var currentImportOfProduct = importsOfProduct.Where(i => i.FK_MaPhieuNhap == phieuNhapBiXoa.PK_MaPhieuNhap).FirstOrDefault();
+                    var lastProd = importsOfProduct[0];
+                    var ifLastImportOfProduct = currentImportOfProduct.Equals(lastProd);
+                    if (importsOfProduct.Count >= 2 && ifLastImportOfProduct)       // neu ChiTietNhapHang hien tai la lan nhap hang cuoi cua sp
+                    {
+                        productOfStore.DonGia = importsOfProduct[1].GiaBan;
+                    }
                 }
             }
             // delete phieu nhap + chi tiet nhap hang
@@ -187,9 +200,123 @@ namespace BMT_DATN.Controllers
         }
 
         // QL phieu nhap - sua phieu nhap
-        public ActionResult SuaPhieuNhap()
+        public ActionResult SuaPhieuNhap(int maPn)
         {
+            // check permission
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            ViewBag.maPhieuNhap = maPn;
+
             return View();
+        }
+
+        // QL phieu nhap - admin sua phieu nhap
+        public JsonResult AdminSuaPhieuNhap(int importId, DateTime importDate, int productProviderId, int[] selectImportProduct, int[] importProductQuantity, String[] importProductPrice, String[] productPrice, String noteImport)
+        {
+            string result = "";
+            string redirect = "";
+            int idProvider = productProviderId;
+            int idImport = importId;
+            int[] idProd = selectImportProduct.Skip(1).ToArray();
+            int[] importQuantityProd = importProductQuantity.Skip(1).ToArray();
+            String[] importPriceProd = importProductPrice.Skip(1).ToArray();
+            String[] priceProd = productPrice.Skip(1).ToArray();
+            var ch = new CurrencyHelper();
+            // phieu nhap duoc sua
+            var phieuNhapDuocSua = (from pn in db.tblPhieuNhaps
+                                    where pn.PK_MaPhieuNhap == idImport
+                                    select pn).FirstOrDefault();
+            // get old ChiTietNhapHang
+            var oldListImportDetail = (from ctnh in db.tblChiTietNhapHangs
+                                       where ctnh.FK_MaPhieuNhap == idImport
+                                       select ctnh).ToList();
+            // create new ChiTietNhapHang
+            List<tblChiTietNhapHang> newListImportDetail = new List<tblChiTietNhapHang>();
+            for (int i = 0; i < idProd.Length; i++)
+            {
+                var newImportDetail = new tblChiTietNhapHang();
+                newImportDetail.FK_MaPhieuNhap = idImport;
+                newImportDetail.FK_MaSanPham = idProd[i];
+                newImportDetail.SoLuongNhap = importQuantityProd[i];
+                newImportDetail.GiaNhap = ch.FormatToNumber(importPriceProd[i]);
+                newImportDetail.GiaBan = ch.FormatToNumber(priceProd[i]);
+
+                newListImportDetail.Add(newImportDetail);
+            }
+
+            var allProductsOfProvider = (from sp in db.tblSanPhams
+                                         join nguon in db.tblNguonCungCaps on sp.PK_MaSanPham equals nguon.FK_MaSanPham
+                                         where nguon.FK_MaNhaCungCap == idProvider
+                                         select sp).ToList();
+            // check valid quantity 
+            var quantityCheck = 0;
+            foreach (var productOfStore in allProductsOfProvider.Select((data, i) => new { data, i }))
+            {
+                var index = productOfStore.i;
+                var quantityInStore = productOfStore.data.SoLuong;
+
+                var oldImport = oldListImportDetail.Where(op => op.FK_MaSanPham == productOfStore.data.PK_MaSanPham).FirstOrDefault();
+                var quantityInOldImport = oldImport == null ? 0 : oldImport.SoLuongNhap;
+
+                var newImport = newListImportDetail.Where(np => np.FK_MaSanPham == productOfStore.data.PK_MaSanPham).FirstOrDefault();
+                var quantityInNewImport = newImport == null ? 0 : newImport.SoLuongNhap;
+
+                var finalQuantityIfEditImport = quantityInStore - quantityInOldImport + quantityInNewImport;
+                // rollback quantity
+                productOfStore.data.SoLuong = finalQuantityIfEditImport;
+                if (finalQuantityIfEditImport < 0)
+                {
+                    quantityCheck++;
+                }
+                // rollback price
+                if (newImport != null)
+                {
+                    productOfStore.data.DonGia = newImport.GiaBan;
+                }
+                if (oldImport != null && newImport == null)
+                {
+                    var importsOfProduct = (from pn in db.tblPhieuNhaps
+                                            join ctnh in db.tblChiTietNhapHangs on pn.PK_MaPhieuNhap equals ctnh.FK_MaPhieuNhap
+                                            where ctnh.FK_MaSanPham == productOfStore.data.PK_MaSanPham
+                                            orderby pn.NgayNhap descending
+                                            select ctnh).ToList();
+                    var currentImportOfProduct = importsOfProduct.Where(i => i.FK_MaPhieuNhap == phieuNhapDuocSua.PK_MaPhieuNhap).FirstOrDefault();
+                    var lastProd = importsOfProduct[0];
+                    var ifLastImportOfProduct = currentImportOfProduct.Equals(lastProd);
+                    if (importsOfProduct.Count >= 2 && ifLastImportOfProduct)       // neu ChiTietNhapHang hien tai la lan nhap hang cuoi cua sp
+                    {
+                        productOfStore.data.DonGia = importsOfProduct[1].GiaBan;
+                    }
+                }
+            }
+            if (quantityCheck != 0)     // co so luong am
+            {
+                result = "Có số lượng sản phẩm < 0 khi sửa phiếu nhập :(";
+                redirect = "0";
+            }
+            else        // tat ca so luong hop le khi thay doi
+            {
+                // sua phieu nhap
+                phieuNhapDuocSua.NgayNhap = importDate;
+                phieuNhapDuocSua.GhiChu = noteImport;
+                // sua chi tiet nhap hang
+                db.tblChiTietNhapHangs.RemoveRange(oldListImportDetail);
+                db.tblChiTietNhapHangs.AddRange(newListImportDetail);
+                // save
+                db.SaveChanges();
+
+                result = "Cập nhật phiếu nhập thành công!";
+                redirect = "1";
+            }
+
+            return Json(new
+            {
+                msg = result,
+                rdt = redirect
+            },
+            JsonRequestBehavior.AllowGet);
         }
     }
 }

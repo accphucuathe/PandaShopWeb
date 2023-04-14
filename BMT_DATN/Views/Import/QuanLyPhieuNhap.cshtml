@@ -16,7 +16,6 @@
         });
         // xoa phieu nhap
         $('a[name="deleteImport"]').click(function () {
-            alert("123");
             var deleteImportId = this.id;
             var obj = {
                 importId: deleteImportId
@@ -76,7 +75,7 @@
                         <th style="width: 50px;">STT</th>
                         <th>Mã phiếu nhập</th>
                         <th>Người lập phiếu</th>
-                        <th>Ngày lập</th>
+                        <th>Ngày nhập</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
@@ -99,7 +98,7 @@
                                 <td style="text-align:center;">@stt</td>
                                 <td>@phieunhap.PK_MaPhieuNhap</td>
                                 <td>@phieunhap.tblNguoiDung.TenNguoiDung</td>
-                                <td>@phieunhap.NgayNhap.ToString("dd-MM-yyyy HH:mm:ss")</td>
+                                <td>@phieunhap.NgayNhap.ToString("dd-MM-yyyy")</td>
                                 <td>
                                     <a href="/xem-phieu-nhap?maPn=@phieunhap.PK_MaPhieuNhap" class="view" title="Xem phiếu nhập" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
                                     <a href="/sua-phieu-nhap?maPn=@phieunhap.PK_MaPhieuNhap" class="edit" title="Sửa phiếu nhập" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
