@@ -4,14 +4,35 @@
     Layout = "~/Views/Shared/layout.cshtml";
 }
 @using BMT_DATN.Models; 
+@using BMT_DATN.Controllers; 
 @{
     int maSanPham = ViewBag.maSanPham;
+    Guid userId = HomeController.nguoidung.maNguoiDung;
     BMT_DATNEntities db = new BMT_DATNEntities();
     CurrencyHelper ch = new CurrencyHelper();
 
     var infoSanPham = (from sp in db.tblSanPhams
                        where sp.PK_MaSanPham == maSanPham
                        select sp).FirstOrDefault();
+    var allReviewThisProduct = (from dgsp in db.tblDanhGiaSanPhams
+                                where dgsp.FK_MaSanPham == maSanPham
+                                select dgsp).ToList();
+    var listSuccessOrderHaveThisProductOfUser = (from dh in db.tblDonHangs
+                                                 join ctttdh in db.tblChiTietTrangThaiDonHangs on dh.PK_MaDonHang equals ctttdh.FK_MaDonHang
+                                                 where dh.FK_MaNguoiDung.Equals(userId) &&
+                                                          ctttdh.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaNhan &&
+                                                          dh.tblChiTietDonHangs.Any(ctdh => ctdh.FK_MaSanPham == maSanPham)
+                                                 select dh).ToList();
+
+    var countReviewThisProductOfUser = (from dgsp in db.tblDanhGiaSanPhams
+                                        where dgsp.FK_MaSanPham == maSanPham &&
+                                                dgsp.FK_MaNguoiDung.Equals(userId)
+                                        select dgsp).Count();
+    var allowReview = false;
+    if (listSuccessOrderHaveThisProductOfUser.Count > 0 && countReviewThisProductOfUser == 0)
+    {
+        allowReview = true;
+    }
 }
 
 <div class="title-all text-center mt-5">
@@ -20,7 +41,7 @@
 <!-- Start Shop Detail  -->
 <div class="shop-detail-box-main">
     <div class="container">
-        <div class="row">
+        <div class="row bg-white p-3">
             <div class="col-xl-5 col-lg-5 col-md-6">
                 <div id="carousel-example-1" class="single-product-slider carousel slide" data-ride="carousel">
                     <div class="carousel-inner" role="listbox">
@@ -51,6 +72,7 @@
             </div>
             <div class="col-xl-7 col-lg-7 col-md-6">
                 <div class="single-product-details">
+                    <input hidden id="productId" value="@infoSanPham.PK_MaSanPham" />
                     <h2>@infoSanPham.TenSanPham</h2>
                     <h3>Kích cỡ: @infoSanPham.KichCo</h3>
                     <h5>Đơn giá: @ch.FormatToCurrency(infoSanPham.DonGia)</h5>
@@ -102,8 +124,56 @@
                 <div class="title-all text-center">
                     <h1>Đánh giá sản phẩm</h1>
                 </div>
-                <div>
+                <div class="container mt-1">
+                    <div class="d-flex justify-content-center row">
+                        <div class="col-md-10">
+                            <div class="d-flex flex-column comment-section">
+                                <div id="allReview">
+                                    @{
+                                        if (allReviewThisProduct.Count == 0)
+                                        { 
+                                            <div class="bg-white p-2">
+                                                <p>Sản phẩm chưa có đánh giá nào</p>
+                                            </div>
+                                        }
+                                        foreach (var review in allReviewThisProduct)
+                                        {
+                                            <div class="bg-white p-2">
+                                                <div class="d-flex flex-row user-info">
+                                                    <img src="~/Image/layout/avatar_profile_2.png" width="50">
+                                                    <div class="d-flex flex-column justify-content-start ml-2">
+                                                        <span class="d-block font-weight-bold name" style="color:#ff5050">@review.tblNguoiDung.TenNguoiDung</span>
+                                                        <span class="date text-black-50">@review.ThoiGianDanhGia</span>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <p class="comment-text">
+                                                        @review.NoiDungDanhGiaSanPham
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
 
+                                @{
+                                    if (allowReview)
+                                    { 
+                                        <div class="bg-light p-2" id="postReview">
+                                            <div class="d-flex flex-row align-items-start">
+                                                <img src="~/Image/layout/avatar_profile_2.png" width="40">
+                                                <textarea class="form-control ml-1 shadow-none textarea" id="txtReviewContent"></textarea>
+                                            </div>
+                                            <div class="mt-2 text-right">
+                                                <button class="btn btn-danger btn-sm shadow-none" type="button" id="btnPostReview">Gửi đánh giá</button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -214,6 +284,32 @@
                 complete: function () {
 
                 },
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UserThemDanhGiaSanPham", "Home")',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+
+                beforeSend: function () {
+                    return checkEpmtyReviewContent();
+                },
+                success: function (response) {
+                    var valueReturn = response;
+                    if (valueReturn.msg != "") {
+                        alert(valueReturn.msg);
+                    }
+                    if (valueReturn.rfr == "1") {
+                        window.location.reload();
+                    }
+                },
+                failure: function (response) {
+                    alert("fail");
+                },
+                complete: function () {
+
+                },
                 error: function (xhr, status, error) {
                     var err = eval("(" + xhr.responseText + ")");
                     alert(err.Message);
@@ -221,4 +317,16 @@
             });
         });
     });
+
+    function checkEpmtyReviewContent() {
+        if (!$.trim($("#txtReviewContent").val())) {
+            alert("Bạn chưa điền nội dung đánh giá sản phẩm!");
+            $("#txtReviewContent").val("");
+            $("#txtReviewContent").focus();
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
 </script>

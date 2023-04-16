@@ -475,5 +475,45 @@ namespace BMT_DATN.Controllers
             },
             JsonRequestBehavior.AllowGet);
         }
+
+        // user them danh gia san pham trong don hang da mua thanh cong (don hang trang thai Da Nhan)
+        [HttpPost]
+        public JsonResult UserThemDanhGiaSanPham(int productId, String reviewContent)
+        {
+            string result = "";
+            string refresh = "";
+            Guid userId = nguoidung.maNguoiDung;
+            var checkCountReviewOfUser = (from dgsp in db.tblDanhGiaSanPhams
+                                          where dgsp.FK_MaSanPham == productId && dgsp.FK_MaNguoiDung.Equals(userId)
+                                          select dgsp).FirstOrDefault();
+            if (checkCountReviewOfUser != null)
+            {
+                result = "Bạn đã đánh giá sản phẩm này";
+                refresh = "1";
+            }
+            else
+            {
+                // them danh gia san pham
+                var productReviewContent = reviewContent.Trim();
+
+                var danhGiaSanPhamMoi = new tblDanhGiaSanPham();
+                danhGiaSanPhamMoi.FK_MaSanPham = productId;
+                danhGiaSanPhamMoi.FK_MaNguoiDung = userId;
+                danhGiaSanPhamMoi.NoiDungDanhGiaSanPham = productReviewContent;
+                danhGiaSanPhamMoi.ThoiGianDanhGia = DateTime.Now;
+                db.tblDanhGiaSanPhams.Add(danhGiaSanPhamMoi);
+                // save
+                db.SaveChanges();
+
+                refresh = "1";
+            }
+
+            return Json(new
+            {
+                msg = result,
+                rfr = refresh
+            },
+            JsonRequestBehavior.AllowGet);
+        }
     }
 }
