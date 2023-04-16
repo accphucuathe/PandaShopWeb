@@ -284,6 +284,18 @@
                 complete: function () {
 
                 },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                },
+            });
+        });
+        $('#btnPostReview').click(function () {
+            var prodId = $("#productId").val();
+            var revContent = $("#txtReviewContent").val();
+            var obj = {
+                productId: prodId,
+                reviewContent: revContent
             }
             $.ajax({
                 type: 'POST',
