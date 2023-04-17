@@ -170,6 +170,7 @@
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
+    <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -311,6 +312,7 @@
     <Content Include="Views\Import\ThemPhieuNhap.cshtml" />
     <Content Include="Views\Import\XemPhieuNhap.cshtml" />
     <Content Include="Views\Import\SuaPhieuNhap.cshtml" />
+    <Content Include="Views\Review\QuanLyDanhGiaSanPham.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -158,3 +158,11 @@ table.table td i {
     .add_user_button :hover {
         background-color: #d33b33;
     }
+
+/*danh gia san pham*/
+
+.table-review .table td, .table-review .table th {
+    white-space: normal !important;
+    word-wrap: break-word !important; 
+}
+/*end danh gia san pham*/

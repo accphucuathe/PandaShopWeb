@@ -1,0 +1,189 @@
+﻿
+@{
+    ViewBag.Title = "QuanLyDanhGiaSanPham";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+
+<link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $('a[name="qldgsp_menu"]').html("<b> &#9205; ĐÁNH GIÁ SẢN PHẨM</b>");
+    $('a[name="qldgsp_menu"]').css("color", "red");
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+
+        // nhan enter tim kiem
+        $(document).keyup(function (event) {
+            if ($("#searchDanhGiaSanPham").is(":focus") && event.key == "Enter") {
+                if ($("#searchDanhGiaSanPham").val() == "") {
+                    alert("Trường tìm kiếm đang rỗng!");
+                }
+                else {
+                    var searchKey = $("#searchDanhGiaSanPham").val();
+                    var obj = {
+                        searchKeyword: searchKey
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("AdminTimKiemDanhGiaSanPham", "Review")',
+                        data: JSON.stringify(obj),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+
+                        beforeSend: function () {
+
+                        },
+                        success: function (response) {
+                            window.location.href = response.redirectToUrl;
+                        },
+                        failure: function (response) {
+                            alert("fail");
+                        },
+                        complete: function () {
+
+                        },
+                        error: function (xhr, status, error) {
+                            var err = eval("(" + xhr.responseText + ")");
+                            alert(err.Message);
+                        },
+                    });
+                }
+            }
+        });
+
+        // xoa danh gia san pham
+        $('a[name="deleteReview"]').click(function () {
+            var deleteReviewId = this.id;
+            var obj = {
+                reviewId: deleteReviewId
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AdminXoaDanhGiaSanPham", "Review")',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+
+                beforeSend: function () {
+
+                },
+                success: function (response) {
+                    var valueReturn = response;
+                    alert(valueReturn.msg);
+                    window.location.reload(true);
+                },
+                failure: function (response) {
+                    alert("fail");
+                },
+                complete: function () {
+
+                },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                },
+            });
+        });
+    });
+</script>
+
+@using BMT_DATN.Models;
+
+<div class="container">
+    <div class="table-responsive table-review">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-7"><h2><b>QUẢN LÝ ĐÁNH GIÁ SẢN PHẨM</b></h2></div>
+                    <div class="col-sm-4">
+                        <div class="search-box">
+                            <i class="material-icons">&#xE8B6;</i>
+                            <input type="text" class="form-control" name="searchDanhGiaSanPham" id="searchDanhGiaSanPham" placeholder="Tìm kiếm ... " value="@ViewBag.searchKeyword">
+                        </div>
+                    </div>
+                    <div class="col-sm-1" title="Thêm" data-toggle="tooltip">
+                        @*<a href="/them-danh-muc-san-pham"><i class="material-icons add_user_button">add</i></a>*@
+                    </div>
+                </div>
+            </div>
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Nội dung đánh giá sản phẩm</th>
+                        <th>Thời gian</th>
+                        <th style="width:180px;">Tên người đánh giá</th>
+                        <th style="width:100px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        string searchKeyword = ViewBag.searchKeyword == null ? "" : ViewBag.searchKeyword;
+                        int pageNumber = ViewBag.pageNumber;
+                        int pageSize = ViewBag.pageSize;
+                        BMT_DATNEntities db = new BMT_DATNEntities();
+                        var query = from dgsp in db.tblDanhGiaSanPhams
+                                    where dgsp.NoiDungDanhGiaSanPham.Contains(searchKeyword)
+                                    orderby dgsp.ThoiGianDanhGia descending
+                                    select dgsp;
+                        var listDanhGiaSanPham = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
+
+                        int stt = listDanhGiaSanPham.Count == 0 ? 0 : pageSize * (pageNumber - 1) + 1;
+                        foreach (var danhgia in listDanhGiaSanPham)
+                        {
+                            <tr>
+                                <td style="text-align:center;">@stt</td>
+                                <td>@danhgia.tblSanPham.TenSanPham</td>
+                                <td>@danhgia.NoiDungDanhGiaSanPham</td>
+                                <td>@danhgia.ThoiGianDanhGia</td>
+                                <td>@danhgia.tblNguoiDung.TenNguoiDung</td>
+                                <td style="width:max-content;">
+                                    <a href="javascript:void(0)" class="delete" title="Xóa" data-toggle="tooltip" name="deleteReview" id="@danhgia.PK_MaDanhGiaSanPham"><i class="material-icons">&#xE872;</i></a>
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+                    }
+                </tbody>
+            </table>
+            <div class="clearfix">
+                @{
+                    int firstResult = stt == 0 ? 0 : pageSize * (pageNumber - 1) + 1;
+                    int lastResult = stt == 0 ? 0 : stt - 1;
+                }
+                <div class="hint-text">Hiển thị kết quả từ <b>@firstResult</b> đến <b>@lastResult</b></div>
+                <ul class="pagination">
+                    <li class="page-item"><a href="/quan-ly-danh-gia-san-pham?searchKeyword=@searchKeyword&&pageNumber=1" class="page-link"><i class="fa fa-angle-double-left"></i></a></li>
+                    @{
+                        var allDanhGiaSanPham = query.ToList();
+                        double pmax = (double)allDanhGiaSanPham.Count / pageSize;
+                        int pageMax = (int)Math.Ceiling(pmax);
+                        int pageTemp = 0;
+                        int page3HienTai = pageNumber;
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (i != 2)     // 4 nut ben canh
+                            {
+                                pageTemp = pageNumber - 2 + i;
+                                if (pageTemp <= 0 || pageTemp > pageMax)
+                                {
+                                    <li class="page-item"><a class="page-link"> </a></li>
+                                }
+                                else
+                                {
+                                    <li class="page-item"><a href="/quan-ly-danh-gia-san-pham?searchKeyword=@searchKeyword&pageNumber=@pageTemp" class="page-link">@pageTemp</a></li>
+                                }
+                            }
+                            else            // nut chinh giua
+                            {
+                                <li class="page-item active"><a href="javascript:void(0)" class="page-link">@page3HienTai</a></li>
+                            }
+                        }
+                    }
+                    <li class="page-item"><a href="/quan-ly-danh-gia-san-pham?searchKeyword=@searchKeyword&&pageNumber=@pageMax" class="page-link"><i class="fa fa-angle-double-right"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

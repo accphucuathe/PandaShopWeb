@@ -207,6 +207,13 @@ namespace BMT_DATN
                 defaults: new { controller = "Import", action = "SuaPhieuNhap", id = UrlParameter.Optional }
             );
 
+            // QuanLyDanhGiaSanPham View
+            routes.MapRoute(
+                name: "QuanLyDanhGiaSanPham",
+                url: "quan-ly-danh-gia-san-pham",
+                defaults: new { controller = "Review", action = "QuanLyDanhGiaSanPham", id = UrlParameter.Optional }
+            );
+
             // mac dinh
             routes.MapRoute(
                 name: "Default",
