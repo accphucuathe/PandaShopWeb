@@ -263,7 +263,27 @@ namespace BMT_DATN.Controllers
         public JsonResult AdminTimKiemDonHang(int? pageNumber, String searchKeyword)
         {
             string searchK = searchKeyword;
+            if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.NhanVien)
+            {
+                return Json(new { redirectToUrl = Url.Action("QuanLyDonHang_NhanVien", "Order", new { searchKeyword = searchK }) });
+            }
             return Json(new { redirectToUrl = Url.Action("QuanLyDonHang", "Order", new { searchKeyword = searchK }) });
+        }
+
+        // QL don hang cua NHAN VIEN
+        public ActionResult QuanLyDonHang_NhanVien(int? pageNumber, String searchKeyword)
+        {
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang &&
+                HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.NhanVien)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            int pageSize = 10;   // set page size
+            ViewBag.searchKeyword = searchKeyword;
+            ViewBag.pageNumber = pageNumber == null ? 1 : pageNumber;
+            ViewBag.pageSize = pageSize;
+
+            return View();
         }
     }
 }

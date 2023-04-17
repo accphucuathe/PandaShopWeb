@@ -313,6 +313,8 @@
     <Content Include="Views\Import\XemPhieuNhap.cshtml" />
     <Content Include="Views\Import\SuaPhieuNhap.cshtml" />
     <Content Include="Views\Review\QuanLyDanhGiaSanPham.cshtml" />
+    <Content Include="Views\Shared\layout_staff.cshtml" />
+    <Content Include="Views\Order\QuanLyDonHang_NhanVien.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

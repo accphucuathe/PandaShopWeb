@@ -56,6 +56,8 @@
         });
     });
     $(document).ready(function () {
+        $(".badge").text(countLi - 1);
+        $('#li_product_side_cart_0').hide();
         $("#selectSort").val(@sortBy).change();
         // scroll
         $('html, body').animate({
@@ -109,7 +111,7 @@
         });
         // change sort san pham
         $('#selectSort').change(function () {
-            alert($(this).find("option:selected").attr('value'));
+            //alert($(this).find("option:selected").attr('value'));
             $('#btnFindSanPham').click();
         });
 
@@ -137,6 +139,9 @@
                     if (valueReturn.rdt == "1") {
                         window.location.href = '@Url.Action("Login", "Home")';
                     }
+                    if (valueReturn.pfa == "1") {
+                        addOneProductInSideCart(idOfAddToCart);
+                    }
                 },
                 failure: function (response) {
                     alert("fail");
@@ -152,6 +157,37 @@
         });
     });
 
+    var countLi = document.getElementById("ul_product_side_cart").getElementsByTagName("li").length;
+    function addOneProductInSideCart(idBtnAdd) {
+        var btnAddToCart = $('#' + idBtnAdd);
+        var divOfProduct = btnAddToCart.parent().parent().parent();
+        var findImageProd = divOfProduct.find('img')[0].src;
+        var findNameProd = divOfProduct.find('h4')[0].innerText;
+        var findPriceProd = divOfProduct.find('h5')[0].innerText;
+
+        var ulAllProductInSideCart = document.getElementById("ul_product_side_cart");
+        var firstProductInSideCart = document.getElementById("li_product_side_cart_0");
+        var cloneProductInSideCart = firstProductInSideCart.cloneNode(true);
+        cloneProductInSideCart.id = "li_product_side_cart_" + countLi;
+        cloneProductInSideCart.style.display = "";
+
+        // setup attr element in clone
+        var imgOfClone = cloneProductInSideCart.querySelector(".cart-thumb");
+        imgOfClone.src = findImageProd;
+
+        var splitedIdOfAddToCart = idBtnAdd.toString().split('_');
+        var prodId = splitedIdOfAddToCart[1];
+        var nameOfClone = cloneProductInSideCart.querySelector('a[name="linkProductSideCart"]');
+        nameOfClone.href = "/chi-tiet-san-pham?maSp=" + prodId;
+        nameOfClone.innerText = findNameProd;
+
+        var priceOfClone = cloneProductInSideCart.querySelector("span");
+        priceOfClone.innerText = findPriceProd;
+
+        ulAllProductInSideCart.appendChild(cloneProductInSideCart);
+        $(".badge").text(countLi);
+        countLi = countLi + 1;
+    }
 </script>
 
 <div class="banner">

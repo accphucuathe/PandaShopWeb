@@ -28,8 +28,6 @@
     <link href="~/Theme/css/custom.css" rel="stylesheet" />
     <!-- Custom Admin CSS -->
     <link href="~/Theme/css/custom_admin.css" rel="stylesheet" />
-    <!-- Custom User CSS -->
-    <link href="~/Theme/css/custom_user.css" rel="stylesheet" />
 
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -40,61 +38,9 @@
 @using BMT_DATN.Controllers;
 @using BMT_DATN.Models;
 <body>
-    <!-- Script For Navigation -->
-    <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            //scroll
-            //$("header").addClass("fixed-menu");
-            // focus searchSanPham
-            $("#btnSearchSanPham").click(function () {
-                setTimeout(function () { $('input[id="searchSanPham"]').focus() }, 1000);
-            });
-            // nhan enter tim kiem
-            $(document).keyup(function (event) {
-                if ($("#searchSanPham").is(":focus") && event.key == "Enter") {
-                    if ($("#searchSanPham").val() == "") {
-                        alert("Trường tìm kiếm đang rỗng!");
-                    }
-                    else {
-                        var searchKey = $("#searchSanPham").val();
-                        var obj = {
-                            maDmsp: 0,
-                            searchKeyword: searchKey,
-                            sortBy: 0
-                        }
-                        $.ajax({
-                            type: 'POST',
-                            url: '@Url.Action("UserTimKiemSanPham", "Home")',
-                            data: JSON.stringify(obj),
-                            contentType: 'application/json; charset=utf-8',
-                            dataType: 'json',
-
-                            beforeSend: function () {
-
-                            },
-                            success: function (response) {
-                                window.location.href = response.redirectToUrl;
-                            },
-                            failure: function (response) {
-                                alert("fail");
-                            },
-                            complete: function () {
-
-                            },
-                            error: function (xhr, status, error) {
-                                var err = eval("(" + xhr.responseText + ")");
-                                alert(err.Message);
-                            },
-                        });
-                    }
-                }
-            });
-        });
-    </script>
 
     <!-- Start Main Top -->
-    <header class="main-header" @*style="position: static"*@ id="hhhhh">
+    <header class="main-header" style="position: static">
         <!-- Start Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
             <div class="container header-bar">
@@ -103,7 +49,7 @@
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa fa-bars"></i>
                     </button>
-                    <a class="navbar-brand" href="/trang-chu"><img height="51px" src="~/Image/layout/padan_logo_merge.png" class="logo" alt=""></a>
+                    <a class="navbar-brand" href="index.html"><img height="51px" src="~/Image/layout/padan_logo_merge.png" class="logo" alt=""></a>
                 </div>
                 <!-- End Header Navigation -->
                 <!-- Collect the nav links, forms, and other content for toggling -->
@@ -123,8 +69,8 @@
                         <li class="dropdown">
                             <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">Đơn hàng <i class="fas fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
-                                <li><a href="/gio-hang">Giỏ hàng</a></li>
-                                <li><a href="/danh-sach-don-hang">Danh sách đơn hàng</a></li>
+                                <li><a href="#">Giỏ hàng</a></li>
+                                <li><a href="#">Đơn hàng của tôi</a></li>
                             </ul>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="#">Cửa hàng</a></li>
@@ -134,23 +80,23 @@
                                     <a href="#" class="nav-link dropdown-toggle arrow" data-toggle="dropdown">@(HomeController.nguoidung.tenNguoiDung) <i class="fas fa-angle-down"></i></a>
                                     <ul class="dropdown-menu">
                                         @{ if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.ChuCuaHang)
-                                            {
+                                           {
                                                 <li><a href="/trang-chu-admin">Quản lý của ADMIN</a></li>
-                                            }
-                                            if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.NhanVien)
-                                            {
+                                           }
+                                           if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.NhanVien)
+                                           {
                                                 <li><a href="/quan-ly-don-hang-nhan-vien">Quản lý đơn hàng</a></li>
-                                            }
+                                           }
                                         }
                                         <li><a href="/thong-tin-ca-nhan">Thông tin cá nhân</a></li>
                                         <li>@Html.ActionLink("Đăng xuất", "UserLogout", "Home")</li>
                                     </ul>
                                 </li>
-                                            }
-                                            else
-                                            {
+                            }
+                            else
+                            {
                                 <li class="nav-item"><a class="nav-link" href="/dang-nhap">Đăng nhập</a></li>
-                                            }
+                            }
                         }
 
                     </ul>
@@ -159,7 +105,7 @@
                 <!-- Start Atribute Navigation -->
                 <div class="attr-nav">
                     <ul>
-                        <li class="search"><a href="#" id="btnSearchSanPham"><i class="fa fa-search"></i></a></li>
+                        <li class="search"><a href="#"><i class="fa fa-search"></i></a></li>
                         <li class="side-menu">
                             <a href="#">
                                 <i class="fa fa-shopping-bag"></i>
@@ -170,51 +116,31 @@
                 </div>
                 <!-- End Atribute Navigation -->
             </div>
-            @{
-                BMT_DATNEntities db = new BMT_DATNEntities();
-                CurrencyHelper ch = new CurrencyHelper();
-                int maGioHang = !HomeController.nguoidung.maGioHang.HasValue ? 0 : HomeController.nguoidung.maGioHang.Value;
-                var currentProductsInCart = (from sp in db.tblChiTietDonHangs
-                                             where sp.FK_MaDonHang == maGioHang
-                                             select new
-                                             {
-                                                 FK_MaDonHang = sp.FK_MaDonHang,
-                                                 FK_MaSanPham = sp.FK_MaSanPham,
-                                                 SoLuongMua = sp.SoLuongMua,
-                                                 DonGia = sp.DonGia,
-                                                 TenSanPham = sp.tblSanPham.TenSanPham,
-                                                 KichCo = sp.tblSanPham.KichCo,
-                                                 SoLuong = sp.tblSanPham.SoLuong,
-                                                 HinhAnh = sp.tblSanPham.HinhAnh
-                                             }
-                                            ).ToList();
-            }
             <!-- Start Side Menu -->
-            <div class="side" id="sideOfCart">
+            <div class="side">
                 <a href="#" class="close-side"><i class="fa fa-times"></i></a>
                 <li class="cart-box">
-                    <ul class="cart-list" id="ul_product_side_cart">
-                        <li id="li_product_side_cart_0">
-                            <a href="#" class="photo"><img src="" class="cart-thumb" alt="" /></a>
-                            <h6><a href="" name="linkProductSideCart"></a></h6>
-                            <p style="text-align:right;"><span class="price"></span></p>
-                        </li>
-                        @{
-                            foreach (var product in currentProductsInCart)
-                            {
-                                <li>
-                                    <a href="#" class="photo"><img src="~/Images_Data/@product.HinhAnh" class="cart-thumb" alt="" /></a>
-                                    <h6><a href="/chi-tiet-san-pham?maSp=@product.FK_MaSanPham">@product.TenSanPham</a></h6>
-                                    <p style="text-align:right;"><span class="price">@ch.FormatToCurrency(product.DonGia)</span></p>
-                                </li>
-                            }
-                        }
-                    </ul>
-                    <ul class="cart-list">
-                        <li class="total">
-                            <a href="/gio-hang" class="btn btn-default hvr-hover btn-cart">Đến giỏ hàng</a>
-                        </li>
-                    </ul>
+                    @*<ul class="cart-list">
+                            <li>
+                                <a href="#" class="photo"><img src="images/img-pro-01.jpg" class="cart-thumb" alt="" /></a>
+                                <h6><a href="#">Delica omtantur </a></h6>
+                                <p>1x - <span class="price">$80.00</span></p>
+                            </li>
+                            <li>
+                                <a href="#" class="photo"><img src="images/img-pro-02.jpg" class="cart-thumb" alt="" /></a>
+                                <h6><a href="#">Omnes ocurreret</a></h6>
+                                <p>1x - <span class="price">$60.00</span></p>
+                            </li>
+                            <li>
+                                <a href="#" class="photo"><img src="images/img-pro-03.jpg" class="cart-thumb" alt="" /></a>
+                                <h6><a href="#">Agam facilisis</a></h6>
+                                <p>1x - <span class="price">$40.00</span></p>
+                            </li>
+                            <li class="total">
+                                <a href="#" class="btn btn-default hvr-hover btn-cart">VIEW CART</a>
+                                <span class="float-right"><strong>Total</strong>: $180.00</span>
+                            </li>
+                        </ul>*@
                 </li>
             </div>
             <!-- End Side Menu -->
@@ -223,21 +149,39 @@
     </header>
     <!-- End Main Top -->
     <!-- Start Top Search -->
-    <div class="top-search" style="background-color: #F3655E">
+    <div class="top-search" style="background-color: rgb(243, 101, 94);">
         <div class="container">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                <input type="text" class="form-control" id="searchSanPham" placeholder=" ...">
+                <input type="text" class="form-control" placeholder="Tìm kiếm ...">
                 <span class="input-group-addon close-search"><i class="fa fa-times"></i></span>
             </div>
         </div>
     </div>
     <!-- End Top Search -->
-    <!-- Content Container-->
+    <!-- Admin Content Container-->
     <div class="content-container">
-        @RenderBody()
+        <div class="row">
+            <div class="menu_admin col-md-2">
+                <h2 class="font-italic font-weight-bold text-center">QUẢN LÝ</h2>
+                <ul>
+                    @*<li><a href="/quan-ly-nguoi-dung" name="qlnd_menu"><b>NGƯỜI DÙNG</b></a></li>
+                    <li><a href="/quan-ly-danh-muc-san-pham" name="qldmsp_menu"><b>DANH MỤC SẢN PHẨM</b></a></li>
+                    <li><a href="/quan-ly-nha-cung-cap" name="qlncc_menu"><b>NHÀ CUNG CẤP</b></a></li>
+                    <li><a href="/quan-ly-san-pham" name="qlsp_menu"><b>SẢN PHẨM</b></a></li>*@
+                    <li><a href="/quan-ly-don-hang-nhan-vien" name="qldh_nv_menu"><b>ĐƠN HÀNG</b></a></li>
+                    @*<li><a href="/quan-ly-phieu-nhap" name="qlpn_menu"><b>PHIẾU NHẬP</b></a></li>
+                    <li><a href="/quan-ly-danh-gia-san-pham" name="qldgsp_menu"><b>ĐÁNH GIÁ SẢN PHẨM</b></a></li>
+                    <li><a href="#"><b>CHƯƠNG TRÌNH <br />KHUYẾN MẠI</b></a></li>*@
+                </ul>
+            </div>
+
+            <div class="content_admin col-md-10">
+                @RenderBody()
+            </div>
+        </div>
     </div>
-    <!-- End Content Container-->
+    <!-- End Admin Content Container-->
     <!-- Start Footer  -->
     <footer>
         <div class="footer-main">

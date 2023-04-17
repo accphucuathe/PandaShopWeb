@@ -143,6 +143,7 @@ namespace BMT_DATN.Controllers
             nguoidung.tenNguoiDung = null;
             nguoidung.tenDangNhap = null;
             nguoidung.quyenNguoiDung = 0;
+            nguoidung.maGioHang = null;
             return Redirect("/trang-chu");
         }
 
@@ -224,16 +225,20 @@ namespace BMT_DATN.Controllers
             var listOrder = (from o in db.tblDonHangs
                              join c in db.tblChiTietTrangThaiDonHangs on o.PK_MaDonHang equals c.FK_MaDonHang
                              where o.FK_MaNguoiDung.Equals(nguoidung.maNguoiDung)
-                             orderby c.FK_MaTrangThaiDonHang
-                             group c by c.FK_MaDonHang
-                                 into gr
+                             orderby o.PK_MaDonHang descending
+                             group c by c.FK_MaDonHang into gr
                              select new
                              {
                                  maDonHang = gr.Key,
-                                 soTrangThai = gr.Select(g => g.FK_MaTrangThaiDonHang).Count()
+                                 soTrangThai = gr.Select(g => g.FK_MaTrangThaiDonHang).Count(),
+                                 trangThaiCuoiCung = gr.OrderByDescending(g => g.FK_MaTrangThaiDonHang)
+                                                        .Select(g => g.FK_MaTrangThaiDonHang)
+                                                        .FirstOrDefault()
                              }
-                                 ).ToList();
-            var currentCart = listOrder.Where(o => o.soTrangThai == 1).LastOrDefault();
+                             ).ToList();
+            var currentCart = listOrder.Where(o => o.soTrangThai == 1 &&
+                                                o.trangThaiCuoiCung == (int)EnumTrangThaiDonHang.GioHang
+                                            ).LastOrDefault();
             HomeController.nguoidung.maGioHang = currentCart?.maDonHang;
         }
 
@@ -243,6 +248,7 @@ namespace BMT_DATN.Controllers
         {
             string result = "";
             string redirect = "";
+            string productFirstAdd = "";
             Guid userId = nguoidung.maNguoiDung;
             int maDonHang = !nguoidung.maGioHang.HasValue ? 0 : nguoidung.maGioHang.Value;
             var sanPhamDuocThem = (from sp in db.tblSanPhams
@@ -287,6 +293,7 @@ namespace BMT_DATN.Controllers
 
                     result = "Thêm sản phẩm vào giỏ hàng thành công!";
                     redirect = "0";
+                    productFirstAdd = "1";
                 }
                 else
                 {
@@ -309,6 +316,7 @@ namespace BMT_DATN.Controllers
 
                         result = "Thêm sản phẩm vào giỏ hàng thành công!";
                         redirect = "0";
+                        productFirstAdd = "1";
                     }
                     else
                     {
@@ -324,7 +332,8 @@ namespace BMT_DATN.Controllers
             return Json(new
             {
                 msg = result,
-                rdt = redirect
+                rdt = redirect,
+                pfa = productFirstAdd
             },
             JsonRequestBehavior.AllowGet);
         }
