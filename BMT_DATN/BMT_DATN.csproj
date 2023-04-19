@@ -171,6 +171,7 @@
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
+    <Compile Include="Controllers\StatisticController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -315,6 +316,9 @@
     <Content Include="Views\Review\QuanLyDanhGiaSanPham.cshtml" />
     <Content Include="Views\Shared\layout_staff.cshtml" />
     <Content Include="Views\Order\QuanLyDonHang_NhanVien.cshtml" />
+    <Content Include="Views\Shared\layout_statistic.cshtml" />
+    <Content Include="Views\Statistic\Index.cshtml" />
+    <Content Include="Views\Statistic\ThongKeSanPham.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

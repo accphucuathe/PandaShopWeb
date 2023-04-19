@@ -32,6 +32,7 @@
                 //orderby ctttdh.FK_MaTrangThaiDonHang descending
                 select new {
                     MaDonHang = ctdh.FK_MaDonHang,
+                    SanPham = ctdh.tblSanPham.TenSanPham,
                     SoLuongMua = ctdh.SoLuongMua,
                     DonGia = ctdh.DonGia,
                     MaTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().FK_MaTrangThaiDonHang,
@@ -43,6 +44,7 @@
                 select new
                 {
                     MaDonHang = gr.Key,
+                    CacSanPham = gr.Select(d => d.SanPham).ToList(),
                     TongTienDonHang = gr.Sum(d => d.DonGia * d.SoLuongMua),
                     MaTrangThaiHienTai = gr.FirstOrDefault().MaTrangThaiDonHang,
                     TrangThaiDonHangHienTai = gr.FirstOrDefault().TenTrangThaiDonHang
@@ -70,6 +72,7 @@
                     <tr style="background: #d33b33; color: #f1f1f1;">
                         @*<th style="width: 30px">STT</th>*@
                         <th style="width: 150px; text-align:center;">Mã đơn hàng</th>
+                        <th class="text-center">Các sản phẩm</th>
                         <th class="text-center">Tổng tiền</th>
                         <th class="text-center">Trạng thái</th>
                         <th class="text-center">Xem chi tiết</th>
@@ -83,6 +86,7 @@
                             <tr style="color: #101010">
                                 @*<td style="text-align: center;">@stt</td>*@
                                 <td class="text-center">@donHang.MaDonHang</td>
+                                <td class="text-left" style="width:500px; white-space:pre;">@string.Join("\n", donHang.CacSanPham)</td>
                                 <td class="text-center">@ch.FormatToCurrency(donHang.TongTienDonHang)</td>
                                 <td class="text-center">@donHang.TrangThaiDonHangHienTai</td>
                                 <td class="text-center">

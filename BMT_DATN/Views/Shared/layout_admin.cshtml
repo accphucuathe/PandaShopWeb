@@ -82,9 +82,10 @@
                                         @{ if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.ChuCuaHang)
                                             {
                                                 <li><a href="/trang-chu-admin">Quản lý của ADMIN</a></li>
+                                                <li><a href="/bao-cao-thong-ke">Báo cáo thống kê</a></li>
                                             }
                                         }
-                                        <li><a href="/thong-tin-nguoi-dung">Thông tin cá nhân</a></li>
+                                        <li><a href="/thong-tin-ca-nhan">Thông tin cá nhân</a></li>
                                         <li>@Html.ActionLink("Đăng xuất", "UserLogout", "Home")</li>
                                     </ul>
                                 </li>

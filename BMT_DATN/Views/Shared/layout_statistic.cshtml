@@ -82,6 +82,7 @@
                                         @{ if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.ChuCuaHang)
                                             {
                                                 <li><a href="/trang-chu-admin">Quản lý của ADMIN</a></li>
+                                                <li><a href="/bao-cao-thong-ke">Báo cáo thống kê</a></li>
                                             }
                                             if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.NhanVien)
                                             {
@@ -164,16 +165,12 @@
     <div class="content-container">
         <div class="row">
             <div class="menu_admin col-md-2">
-                <h2 class="font-italic font-weight-bold text-center">QUẢN LÝ</h2>
+                <h2 class="font-italic font-weight-bold text-center">THỐNG KÊ</h2>
                 <ul>
-                    @*<li><a href="/quan-ly-nguoi-dung" name="qlnd_menu"><b>NGƯỜI DÙNG</b></a></li>
-                    <li><a href="/quan-ly-danh-muc-san-pham" name="qldmsp_menu"><b>DANH MỤC SẢN PHẨM</b></a></li>
-                    <li><a href="/quan-ly-nha-cung-cap" name="qlncc_menu"><b>NHÀ CUNG CẤP</b></a></li>
-                    <li><a href="/quan-ly-san-pham" name="qlsp_menu"><b>SẢN PHẨM</b></a></li>*@
-                    <li><a href="/quan-ly-don-hang-nhan-vien" name="qldh_nv_menu"><b>ĐƠN HÀNG</b></a></li>
-                    @*<li><a href="/quan-ly-phieu-nhap" name="qlpn_menu"><b>PHIẾU NHẬP</b></a></li>
-                    <li><a href="/quan-ly-danh-gia-san-pham" name="qldgsp_menu"><b>ĐÁNH GIÁ SẢN PHẨM</b></a></li>
-                    <li><a href="#"><b>CHƯƠNG TRÌNH <br />KHUYẾN MẠI</b></a></li>*@
+                    <li><a href="/thong-ke-san-pham" name="tksp_menu"><b>SẢN PHẨM</b></a></li>
+                    <li><a href="/thong-ke-don-hang" name="tkdh_menu"><b>ĐƠN HÀNG</b></a></li>
+                    <li><a href="/thong-ke-nhap-hang" name="tknh_menu"><b>NHẬP HÀNG</b></a></li>
+                    <li><a href="/thong-ke-doanh-thu" name="tkdt_menu"><b>DOANH THU</b></a></li>
                 </ul>
             </div>
 

@@ -221,6 +221,18 @@ namespace BMT_DATN
                 defaults: new { controller = "Review", action = "QuanLyDanhGiaSanPham", id = UrlParameter.Optional }
             );
 
+            // BaoCaoThongKe
+            routes.MapRoute(
+                name: "TrangChuBaoCaoThongKe",
+                url: "bao-cao-thong-ke",
+                defaults: new { controller = "Statistic", action = "Index", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "ThongKeSanPham",
+                url: "thong-ke-san-pham",
+                defaults: new { controller = "Statistic", action = "ThongKeSanPham", id = UrlParameter.Optional }
+            );
+
             // mac dinh
             routes.MapRoute(
                 name: "Default",
