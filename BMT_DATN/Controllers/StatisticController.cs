@@ -43,5 +43,31 @@ namespace BMT_DATN.Controllers
             }
             return Json(new { redirectToUrl = Url.Action("ThongKeSanPham", "Statistic", new { categoryId = categoryId }) });
         }
+
+        // Thong ke don hang
+
+
+        // Thong ke nhap hang
+        public ActionResult ThongKeNhapHang(DateTime? startDate, DateTime? endDate)
+        {
+            // check permission
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang && HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.NhanVien)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            DateTime now = DateTime.Now;
+            DateTime firstDayOfMonth = new DateTime(now.Year, now.Month, 1);
+            DateTime sDate = startDate ?? firstDayOfMonth ;
+            DateTime eDate = endDate ?? now ;
+            ViewBag.startDate = sDate;
+            ViewBag.endDate = eDate;
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult AdminLocThongKePhieuNhap(DateTime startDate, DateTime endDate)
+        {
+            return Json(new { redirectToUrl = Url.Action("ThongKeNhapHang", "Statistic", new { startDate = startDate, endDate = endDate }) });
+        }
     }
 }

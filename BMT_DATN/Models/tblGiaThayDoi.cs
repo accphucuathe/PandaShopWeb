@@ -12,13 +12,12 @@ namespace BMT_DATN.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class tblChiTietKhuyenMai
+    public partial class tblGiaThayDoi
     {
-        public int FK_MaChuongTrinhKhuyenMai { get; set; }
         public int FK_MaSanPham { get; set; }
-        public string Note { get; set; }
+        public System.DateTime ThoiGianThayDoiGia { get; set; }
+        public int GiaThayDoi { get; set; }
     
-        public virtual tblChuongTrinhKhuyenMai tblChuongTrinhKhuyenMai { get; set; }
         public virtual tblSanPham tblSanPham { get; set; }
     }
 }

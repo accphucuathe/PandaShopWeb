@@ -18,12 +18,12 @@
                              MaNhaCungCap = pn.FK_MaNhaCungCap,
                              TenNhaCungCap = pn.tblNhaCungCap.TenNhaCungCap,
                              GhiChu = pn.GhiChu,
-                             CacSanPhamNhap = pn.tblChiTietNhapHangs.ToList()
+                             CacSanPhamNhap = pn.tblChiTietPhieuNhaps.ToList()
                          }).FirstOrDefault();
     var allOldImportProductId = infoPhieuNhap.CacSanPhamNhap.Select(op => op.FK_MaSanPham).ToArray();
     var allOldImportProductQuantity = infoPhieuNhap.CacSanPhamNhap.Select(op => op.SoLuongNhap).ToArray();
     var allOldImportProductPrice = infoPhieuNhap.CacSanPhamNhap.Select(op => op.GiaNhap).ToArray();
-    var allOldImportProductSalePrice = infoPhieuNhap.CacSanPhamNhap.Select(op => op.GiaBan).ToArray();
+    //var allOldImportProductSalePrice = infoPhieuNhap.CacSanPhamNhap.Select(op => op.GiaBan).ToArray();
 }
 
 <div class="admin_content_area">
@@ -56,8 +56,6 @@
                     <input type="number" class="form-control" name="importProductQuantity" min="1" step="1" value="1" required />
                     <label>Đơn giá nhập (vnđ):</label>
                     <input type="text" class="form-control" name="importProductPrice" maxlength="12" onkeyup="formatCurrency(this)" autocomplete="off" required>
-                    <label>Đơn giá bán (vnđ):</label>
-                    <input type="text" class="form-control" name="productPrice" maxlength="12" onkeyup="formatCurrency(this)" autocomplete="off" required>
                 </div>
             </div>
 
@@ -121,7 +119,7 @@
     var arrayOldProductImportId = @Html.Raw(Json.Encode(allOldImportProductId));
     var arrayOldProductImportQuantity = @Html.Raw(Json.Encode(allOldImportProductQuantity));       // so luong nhap
     var arrayOldProductImportPrice = @Html.Raw(Json.Encode(allOldImportProductPrice));      // gia nhap
-    var arrayOldProductImportSalePrice = @Html.Raw(Json.Encode(allOldImportProductSalePrice));      // gia ban
+    @*var arrayOldProductImportSalePrice = @Html.Raw(Json.Encode(allOldImportProductSalePrice));*@      // gia ban
     //
     var countImportProduct = 0;
     var arrayProductIdSelected = new Array();
@@ -180,8 +178,8 @@
         inputQuantityTagOfClone.value = 1;
         var inputSalePriceTagOfClone = divOfFirstSelectImportProduct.querySelector('input[name="importProductPrice"]');
         inputSalePriceTagOfClone.value = 0;
-        var inputSalePriceTagOfClone = divOfFirstSelectImportProduct.querySelector('input[name="productPrice"]');
-        inputSalePriceTagOfClone.value = 0;
+        //var inputSalePriceTagOfClone = divOfFirstSelectImportProduct.querySelector('input[name="productPrice"]');
+        //inputSalePriceTagOfClone.value = 0;
     }
 
     function loadOldImportProduct() {
@@ -190,18 +188,18 @@
             var productId = arrayOldProductImportId[i];
             var importQuantity = arrayOldProductImportQuantity[i];
             var importPrice = quickFormatCurrency(arrayOldProductImportPrice[i]);
-            var salePrice = quickFormatCurrency(arrayOldProductImportSalePrice[i]);
+            //var salePrice = quickFormatCurrency(arrayOldProductImportSalePrice[i]);
 
-            addOneImportProduct(productId, importQuantity, importPrice, salePrice);
+            addOneImportProduct(productId, importQuantity, importPrice/*, salePrice*/);
         }
     }
 
-    function addOneImportProduct(productId, importQuantity, importPrice, salePrice) {
+    function addOneImportProduct(productId, importQuantity, importPrice/*, salePrice*/) {
         // set input value
         var productIdValue = productId == null ? arrayProductId[0] : productId;
         var importQuantityValue = importQuantity == null ? 1 : importQuantity;
         var importPriceValue = importPrice == null ? null : importPrice;
-        var salePriceValue = salePrice == null ? quickFormatCurrency(arrayProductPrice[0]) : salePrice;
+        //var salePriceValue = salePrice == null ? quickFormatCurrency(arrayProductPrice[0]) : salePrice;
 
         countImportProduct = countImportProduct + 1;
 
@@ -235,8 +233,8 @@
         var inputImportPriceTagOfClone = newCloneSelectElement.querySelector('input[name="importProductPrice"]');
         inputImportPriceTagOfClone.value = importPriceValue;
 
-        var inputSalePriceTagOfClone = newCloneSelectElement.querySelector('input[name="productPrice"]');
-        inputSalePriceTagOfClone.value = salePriceValue;
+        //var inputSalePriceTagOfClone = newCloneSelectElement.querySelector('input[name="productPrice"]');
+        //inputSalePriceTagOfClone.value = salePriceValue;
 
         newCloneSelectElement.style.display = "";
         setAllLabelNumberImportProduct();

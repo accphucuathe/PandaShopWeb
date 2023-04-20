@@ -133,7 +133,7 @@ namespace BMT_DATN.Controllers
             string result = "";
             // kiem tra co phieu nhap cua ncc + sp nay hay ko
             var checkImport = (from pn in db.tblPhieuNhaps
-                               join ctnh in db.tblChiTietNhapHangs on pn.PK_MaPhieuNhap equals ctnh.FK_MaPhieuNhap
+                               join ctnh in db.tblChiTietPhieuNhaps on pn.PK_MaPhieuNhap equals ctnh.FK_MaPhieuNhap
                                where pn.FK_MaNhaCungCap == providerId && ctnh.FK_MaSanPham == productId
                                select ctnh).FirstOrDefault();
             if (checkImport != null)    // tim dc phieu nhap cua ncc + sp
@@ -245,7 +245,7 @@ namespace BMT_DATN.Controllers
             if (sanPhamBiXoa != null)
             {
                 if (sanPhamBiXoa.tblChiTietDonHangs.Count > 0 ||
-                    sanPhamBiXoa.tblChiTietNhapHangs.Count > 0)        // tồn tại sp đang liên kết đơn hàng, phiếu nhập
+                    sanPhamBiXoa.tblChiTietPhieuNhaps.Count > 0)        // tồn tại sp đang liên kết đơn hàng, phiếu nhập
                 {
                     result = "Sản phẩm đã có đơn hàng hoặc phiếu nhập. Không thể xóa!";
                     refresh = "0";

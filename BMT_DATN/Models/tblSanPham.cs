@@ -19,9 +19,10 @@ namespace BMT_DATN.Models
         {
             this.tblChiTietDonHangs = new HashSet<tblChiTietDonHang>();
             this.tblChiTietKhuyenMais = new HashSet<tblChiTietKhuyenMai>();
-            this.tblChiTietNhapHangs = new HashSet<tblChiTietNhapHang>();
+            this.tblChiTietPhieuNhaps = new HashSet<tblChiTietPhieuNhap>();
             this.tblDanhGiaSanPhams = new HashSet<tblDanhGiaSanPham>();
             this.tblNguonCungCaps = new HashSet<tblNguonCungCap>();
+            this.tblGiaThayDois = new HashSet<tblGiaThayDoi>();
         }
     
         public int PK_MaSanPham { get; set; }
@@ -39,11 +40,13 @@ namespace BMT_DATN.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblChiTietKhuyenMai> tblChiTietKhuyenMais { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tblChiTietNhapHang> tblChiTietNhapHangs { get; set; }
+        public virtual ICollection<tblChiTietPhieuNhap> tblChiTietPhieuNhaps { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblDanhGiaSanPham> tblDanhGiaSanPhams { get; set; }
         public virtual tblDanhMucSanPham tblDanhMucSanPham { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblNguonCungCap> tblNguonCungCaps { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<tblGiaThayDoi> tblGiaThayDois { get; set; }
     }
 }

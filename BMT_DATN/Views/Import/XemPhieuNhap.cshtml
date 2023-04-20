@@ -38,7 +38,7 @@
                                    NgayNhap = pn.NgayNhap,
                                    TenNhaCungCap = pn.tblNhaCungCap.TenNhaCungCap,
                                    GhiChu = pn.GhiChu,
-                                   CacSanPhamDaNhap = pn.tblChiTietNhapHangs.ToList()
+                                   CacSanPhamDaNhap = pn.tblChiTietPhieuNhaps.ToList()
                                }
                               ).FirstOrDefault();
             var totalImportPrice = infoPhieuNhap.CacSanPhamDaNhap.Sum(sp => sp.GiaNhap * sp.SoLuongNhap);

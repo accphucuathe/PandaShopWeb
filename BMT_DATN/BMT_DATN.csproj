@@ -212,7 +212,7 @@
     <Compile Include="Models\tblChiTietKhuyenMai.cs">
       <DependentUpon>DbPanda.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\tblChiTietNhapHang.cs">
+    <Compile Include="Models\tblChiTietPhieuNhap.cs">
       <DependentUpon>DbPanda.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\tblChiTietTrangThaiDonHang.cs">
@@ -228,6 +228,9 @@
       <DependentUpon>DbPanda.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\tblDonHang.cs">
+      <DependentUpon>DbPanda.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\tblGiaThayDoi.cs">
       <DependentUpon>DbPanda.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\tblNguoiDung.cs">
@@ -319,6 +322,7 @@
     <Content Include="Views\Shared\layout_statistic.cshtml" />
     <Content Include="Views\Statistic\Index.cshtml" />
     <Content Include="Views\Statistic\ThongKeSanPham.cshtml" />
+    <Content Include="Views\Statistic\ThongKeNhapHang.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

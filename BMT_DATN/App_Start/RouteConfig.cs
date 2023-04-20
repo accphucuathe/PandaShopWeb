@@ -233,6 +233,12 @@ namespace BMT_DATN
                 defaults: new { controller = "Statistic", action = "ThongKeSanPham", id = UrlParameter.Optional }
             );
 
+            routes.MapRoute(
+                name: "ThongKeNhapHang",
+                url: "thong-ke-nhap-hang",
+                defaults: new { controller = "Statistic", action = "ThongKeNhapHang", id = UrlParameter.Optional }
+            );
+
             // mac dinh
             routes.MapRoute(
                 name: "Default",

@@ -81,7 +81,6 @@ namespace BMT_DATN.Controllers
             int[] idProd = selectImportProduct;
             int[] importQuantityProd = importProductQuantity;
             String[] importPriceProd = importProductPrice;
-            String[] priceProd = productPrice;
 
             // insert tblPhieuNhap
             var phieuNhapMoi = new tblPhieuNhap();
@@ -93,27 +92,24 @@ namespace BMT_DATN.Controllers
 
             var ch = new CurrencyHelper();
             // insert tblChiTietNhapHang
-            List<tblChiTietNhapHang> listCtnh = new List<tblChiTietNhapHang>();
+            List<tblChiTietPhieuNhap> listCtpn = new List<tblChiTietPhieuNhap>();
             for (int i = 0; i < idProd.Length; i++)
             {
                 var idProduct = idProd[i];
-                var chiTietNhapHangMoi = new tblChiTietNhapHang ();
+                var chiTietNhapHangMoi = new tblChiTietPhieuNhap();
                 chiTietNhapHangMoi.FK_MaPhieuNhap = phieuNhapMoi.PK_MaPhieuNhap;
                 chiTietNhapHangMoi.FK_MaSanPham = idProduct;
                 chiTietNhapHangMoi.SoLuongNhap = importQuantityProd[i];
-
                 chiTietNhapHangMoi.GiaNhap = ch.FormatToNumber(importPriceProd[i]);
 
-                chiTietNhapHangMoi.GiaBan = ch.FormatToNumber(priceProd[i]);
-                listCtnh.Add(chiTietNhapHangMoi);
+                listCtpn.Add(chiTietNhapHangMoi);
                 // tang so luong sp trong kho
                 var productOfStore = (from sp in db.tblSanPhams
                                       where sp.PK_MaSanPham == idProduct
                                       select sp).FirstOrDefault();
                 productOfStore.SoLuong += importQuantityProd[i];
-                productOfStore.DonGia = ch.FormatToNumber(priceProd[i]);
             }
-            db.tblChiTietNhapHangs.AddRange(listCtnh);
+            db.tblChiTietPhieuNhaps.AddRange(listCtpn);
 
             // save
             db.SaveChanges();
@@ -151,7 +147,7 @@ namespace BMT_DATN.Controllers
             var phieuNhapBiXoa = (from pn in db.tblPhieuNhaps
                                 where pn.PK_MaPhieuNhap == importId
                                 select pn).FirstOrDefault();
-            var productsOfImport = (from ctnh in db.tblChiTietNhapHangs
+            var productsOfImport = (from ctnh in db.tblChiTietPhieuNhaps
                                     where ctnh.FK_MaPhieuNhap == importId
                                     select ctnh).ToList();
             // kiem tra so luong trong kho co hop le khi xoa phieu nhap hay ko 
@@ -169,23 +165,10 @@ namespace BMT_DATN.Controllers
                 else
                 {
                     productOfStore.SoLuong -= quantityProductOfImport;
-                    // check rollback price
-                    var importsOfProduct = (from pn in db.tblPhieuNhaps
-                                         join ctnh in db.tblChiTietNhapHangs on pn.PK_MaPhieuNhap equals ctnh.FK_MaPhieuNhap
-                                         where ctnh.FK_MaSanPham == productOfStore.PK_MaSanPham
-                                         orderby pn.NgayNhap descending
-                                         select ctnh).ToList();
-                    var currentImportOfProduct = importsOfProduct.Where(i => i.FK_MaPhieuNhap == phieuNhapBiXoa.PK_MaPhieuNhap).FirstOrDefault();
-                    var lastProd = importsOfProduct[0];
-                    var ifLastImportOfProduct = currentImportOfProduct.Equals(lastProd);
-                    if (importsOfProduct.Count >= 2 && ifLastImportOfProduct)       // neu ChiTietNhapHang hien tai la lan nhap hang cuoi cua sp
-                    {
-                        productOfStore.DonGia = importsOfProduct[1].GiaBan;
-                    }
                 }
             }
             // delete phieu nhap + chi tiet nhap hang
-            db.tblChiTietNhapHangs.RemoveRange(productsOfImport);
+            db.tblChiTietPhieuNhaps.RemoveRange(productsOfImport);
             db.tblPhieuNhaps.Remove(phieuNhapBiXoa);
             db.SaveChanges();
             result = "Đã xóa thành công phiếu nhập!";
@@ -222,26 +205,24 @@ namespace BMT_DATN.Controllers
             int[] idProd = selectImportProduct.Skip(1).ToArray();
             int[] importQuantityProd = importProductQuantity.Skip(1).ToArray();
             String[] importPriceProd = importProductPrice.Skip(1).ToArray();
-            String[] priceProd = productPrice.Skip(1).ToArray();
             var ch = new CurrencyHelper();
             // phieu nhap duoc sua
             var phieuNhapDuocSua = (from pn in db.tblPhieuNhaps
                                     where pn.PK_MaPhieuNhap == idImport
                                     select pn).FirstOrDefault();
-            // get old ChiTietNhapHang
-            var oldListImportDetail = (from ctnh in db.tblChiTietNhapHangs
+            // get old ChiTietPhieuNhap
+            var oldListImportDetail = (from ctnh in db.tblChiTietPhieuNhaps
                                        where ctnh.FK_MaPhieuNhap == idImport
                                        select ctnh).ToList();
-            // create new ChiTietNhapHang
-            List<tblChiTietNhapHang> newListImportDetail = new List<tblChiTietNhapHang>();
+            // create new ChiTietPhieuNhap
+            List<tblChiTietPhieuNhap> newListImportDetail = new List<tblChiTietPhieuNhap>();
             for (int i = 0; i < idProd.Length; i++)
             {
-                var newImportDetail = new tblChiTietNhapHang();
+                var newImportDetail = new tblChiTietPhieuNhap();
                 newImportDetail.FK_MaPhieuNhap = idImport;
                 newImportDetail.FK_MaSanPham = idProd[i];
                 newImportDetail.SoLuongNhap = importQuantityProd[i];
                 newImportDetail.GiaNhap = ch.FormatToNumber(importPriceProd[i]);
-                newImportDetail.GiaBan = ch.FormatToNumber(priceProd[i]);
 
                 newListImportDetail.Add(newImportDetail);
             }
@@ -270,26 +251,6 @@ namespace BMT_DATN.Controllers
                 {
                     quantityCheck++;
                 }
-                // rollback price
-                if (newImport != null)
-                {
-                    productOfStore.data.DonGia = newImport.GiaBan;
-                }
-                if (oldImport != null && newImport == null)
-                {
-                    var importsOfProduct = (from pn in db.tblPhieuNhaps
-                                            join ctnh in db.tblChiTietNhapHangs on pn.PK_MaPhieuNhap equals ctnh.FK_MaPhieuNhap
-                                            where ctnh.FK_MaSanPham == productOfStore.data.PK_MaSanPham
-                                            orderby pn.NgayNhap descending
-                                            select ctnh).ToList();
-                    var currentImportOfProduct = importsOfProduct.Where(i => i.FK_MaPhieuNhap == phieuNhapDuocSua.PK_MaPhieuNhap).FirstOrDefault();
-                    var lastProd = importsOfProduct[0];
-                    var ifLastImportOfProduct = currentImportOfProduct.Equals(lastProd);
-                    if (importsOfProduct.Count >= 2 && ifLastImportOfProduct)       // neu ChiTietNhapHang hien tai la lan nhap hang cuoi cua sp
-                    {
-                        productOfStore.data.DonGia = importsOfProduct[1].GiaBan;
-                    }
-                }
             }
             if (quantityCheck != 0)     // co so luong am
             {
@@ -302,8 +263,8 @@ namespace BMT_DATN.Controllers
                 phieuNhapDuocSua.NgayNhap = importDate;
                 phieuNhapDuocSua.GhiChu = noteImport;
                 // sua chi tiet nhap hang
-                db.tblChiTietNhapHangs.RemoveRange(oldListImportDetail);
-                db.tblChiTietNhapHangs.AddRange(newListImportDetail);
+                db.tblChiTietPhieuNhaps.RemoveRange(oldListImportDetail);
+                db.tblChiTietPhieuNhaps.AddRange(newListImportDetail);
                 // save
                 db.SaveChanges();
 

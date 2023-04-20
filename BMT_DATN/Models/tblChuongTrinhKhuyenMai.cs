@@ -24,6 +24,7 @@ namespace BMT_DATN.Models
         public string TenChuongTrinhKhuyenMai { get; set; }
         public System.DateTime NgayBatDau { get; set; }
         public System.DateTime NgayKetThuc { get; set; }
+        public int PhanTramGiamGia { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblChiTietKhuyenMai> tblChiTietKhuyenMais { get; set; }

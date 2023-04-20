@@ -30,7 +30,7 @@ namespace BMT_DATN.Models
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<tblChiTietDonHang> tblChiTietDonHangs { get; set; }
         public virtual DbSet<tblChiTietKhuyenMai> tblChiTietKhuyenMais { get; set; }
-        public virtual DbSet<tblChiTietNhapHang> tblChiTietNhapHangs { get; set; }
+        public virtual DbSet<tblChiTietPhieuNhap> tblChiTietPhieuNhaps { get; set; }
         public virtual DbSet<tblChiTietTrangThaiDonHang> tblChiTietTrangThaiDonHangs { get; set; }
         public virtual DbSet<tblChuongTrinhKhuyenMai> tblChuongTrinhKhuyenMais { get; set; }
         public virtual DbSet<tblDanhGiaSanPham> tblDanhGiaSanPhams { get; set; }
@@ -43,6 +43,7 @@ namespace BMT_DATN.Models
         public virtual DbSet<tblQuyen> tblQuyens { get; set; }
         public virtual DbSet<tblSanPham> tblSanPhams { get; set; }
         public virtual DbSet<tblTrangThaiDonHang> tblTrangThaiDonHangs { get; set; }
+        public virtual DbSet<tblGiaThayDoi> tblGiaThayDois { get; set; }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {

@@ -12,13 +12,12 @@ namespace BMT_DATN.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class tblChiTietNhapHang
+    public partial class tblChiTietPhieuNhap
     {
         public int FK_MaPhieuNhap { get; set; }
         public int FK_MaSanPham { get; set; }
         public int SoLuongNhap { get; set; }
         public int GiaNhap { get; set; }
-        public int GiaBan { get; set; }
     
         public virtual tblPhieuNhap tblPhieuNhap { get; set; }
         public virtual tblSanPham tblSanPham { get; set; }

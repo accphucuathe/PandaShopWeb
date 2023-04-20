@@ -17,7 +17,7 @@ namespace BMT_DATN.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public tblPhieuNhap()
         {
-            this.tblChiTietNhapHangs = new HashSet<tblChiTietNhapHang>();
+            this.tblChiTietPhieuNhaps = new HashSet<tblChiTietPhieuNhap>();
         }
     
         public int PK_MaPhieuNhap { get; set; }
@@ -27,7 +27,7 @@ namespace BMT_DATN.Models
         public int FK_MaNhaCungCap { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tblChiTietNhapHang> tblChiTietNhapHangs { get; set; }
+        public virtual ICollection<tblChiTietPhieuNhap> tblChiTietPhieuNhaps { get; set; }
         public virtual tblNguoiDung tblNguoiDung { get; set; }
         public virtual tblNhaCungCap tblNhaCungCap { get; set; }
     }

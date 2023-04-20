@@ -49,8 +49,6 @@
                     <input type="number" class="form-control" name="importProductQuantity" min="1" step="1" value="1" required />
                     <label>Đơn giá nhập (vnđ):</label>
                     <input type="text" class="form-control" name="importProductPrice" maxlength="12" onkeyup="formatCurrency(this)" autocomplete="off" required>
-                    <label>Đơn giá bán (vnđ):</label>
-                    <input type="text" class="form-control" name="productPrice" maxlength="12" onkeyup="formatCurrency(this)" autocomplete="off" required>
                 </div>
             </div>
 
@@ -175,8 +173,8 @@
         selectTagOfClone.value = arrayProductId[0];
         var inputQuantityTagOfClone = divOfFirstSelectImportProduct.querySelector('input[name="importProductQuantity"]');
         inputQuantityTagOfClone.value = 1;
-        var inputPriceTagOfClone = divOfFirstSelectImportProduct.querySelector('input[name="productPrice"]');
-        inputPriceTagOfClone.value = quickFormatCurrency(arrayProductPrice[0]);
+        //var inputPriceTagOfClone = divOfFirstSelectImportProduct.querySelector('input[name="productPrice"]');
+        //inputPriceTagOfClone.value = quickFormatCurrency(arrayProductPrice[0]);
     }
 
     function addOneImportProduct() {
@@ -207,8 +205,8 @@
         inputQuantityTagOfClone.value = 1;
         var inputQuantityTagOfClone = newCloneSelectElement.querySelector('input[name="importProductPrice"]');
         inputQuantityTagOfClone.value = null;
-        var inputPriceTagOfClone = newCloneSelectElement.querySelector('input[name="productPrice"]');
-        inputPriceTagOfClone.value = quickFormatCurrency(arrayProductPrice[0]);
+        //var inputPriceTagOfClone = newCloneSelectElement.querySelector('input[name="productPrice"]');
+        //inputPriceTagOfClone.value = quickFormatCurrency(arrayProductPrice[0]);
         setAllLabelNumberImportProduct();
     }
 
@@ -233,8 +231,8 @@
                 break;
             }
         }
-        var priceInput = $(selectEle).siblings('input[name="productPrice"]');
-        priceInput.val(quickFormatCurrency(priceNeeded));
+        //var priceInput = $(selectEle).siblings('input[name="productPrice"]');
+        //priceInput.val(quickFormatCurrency(priceNeeded));
         // clear input import quantity + import price
         var importPriceInput = $(selectEle).siblings('input[name="importProductQuantity"]');
         importPriceInput.val(1);
