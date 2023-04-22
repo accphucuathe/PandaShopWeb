@@ -103,6 +103,14 @@ namespace BMT_DATN.Controllers
                 db.tblNguonCungCaps.AddRange(nguonCungCap);
             }
 
+            // insert tblGiaThayDoi
+            var giaThayDoiMoi = new tblGiaThayDoi();
+            giaThayDoiMoi.FK_MaSanPham = sanPhamMoi.PK_MaSanPham;
+            giaThayDoiMoi.ThoiGianThayDoiGia = DateTime.Now;
+            giaThayDoiMoi.GiaThayDoi = sanPhamMoi.DonGia;
+
+            db.tblGiaThayDois.Add(giaThayDoiMoi);
+
             db.SaveChanges();
 
             return RedirectToAction("QuanLySanPham", "Product");
@@ -160,6 +168,7 @@ namespace BMT_DATN.Controllers
             var sanPhamDuocSua = (from sp in db.tblSanPhams
                                 where sp.PK_MaSanPham == productId
                                 select sp).FirstOrDefault();
+            var donGiaCuCuaSanPhamDuocSua = sanPhamDuocSua.DonGia;
             if (sanPhamDuocSua == null)
             {
                 result = "Sản phẩm không còn tồn tại!";
@@ -219,6 +228,18 @@ namespace BMT_DATN.Controllers
                     }
                     db.tblNguonCungCaps.AddRange(nguonCungCapMoi);
                 }
+
+                // insert tblGiaThayDoi neu don gia co su thay doi
+                if (donGiaCuCuaSanPhamDuocSua != sanPhamDuocSua.DonGia)
+                {
+                    var giaThayDoiMoi = new tblGiaThayDoi();
+                    giaThayDoiMoi.FK_MaSanPham = sanPhamDuocSua.PK_MaSanPham;
+                    giaThayDoiMoi.ThoiGianThayDoiGia = DateTime.Now;
+                    giaThayDoiMoi.GiaThayDoi = sanPhamDuocSua.DonGia;
+
+                    db.tblGiaThayDois.Add(giaThayDoiMoi);
+                }
+
                 // save all
                 db.SaveChanges();
                 result = "Sửa thông tin sản phẩm thành công!";

@@ -454,12 +454,8 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
           <EntitySet Name="tblQuyen" EntityType="Self.tblQuyen" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSanPham" EntityType="Self.tblSanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblTrangThaiDonHang" EntityType="Self.tblTrangThaiDonHang" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="tblGiaThayDoi" EntityType="Self.tblGiaThayDoi" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [tblGiaThayDoi].[FK_MaSanPham] AS [FK_MaSanPham], 
-    [tblGiaThayDoi].[ThoiGianThayDoiGia] AS [ThoiGianThayDoiGia], 
-    [tblGiaThayDoi].[GiaThayDoi] AS [GiaThayDoi]
-    FROM [dbo].[tblGiaThayDoi] AS [tblGiaThayDoi]</DefiningQuery>
+          <EntitySet Name="tblGiaThayDoi" EntityType="Self.tblGiaThayDoi" store:Type="Tables" Schema="dbo">
+
           </EntitySet>
           <AssociationSet Name="FK_GiaThayDoi_tblGiaThayDoi_tblSanPham" Association="Self.FK_GiaThayDoi_tblGiaThayDoi_tblSanPham">
             <End Role="tblSanPham" EntitySet="tblSanPham" />
