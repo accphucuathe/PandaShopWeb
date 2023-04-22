@@ -169,6 +169,7 @@
     <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\PromotionController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\StatisticController.cs" />
@@ -323,6 +324,9 @@
     <Content Include="Views\Statistic\Index.cshtml" />
     <Content Include="Views\Statistic\ThongKeSanPham.cshtml" />
     <Content Include="Views\Statistic\ThongKeNhapHang.cshtml" />
+    <Content Include="Views\Promotion\QuanLyChuongTrinhKhuyenMai.cshtml" />
+    <Content Include="Views\Promotion\ThemChuongTrinhKhuyenMai.cshtml" />
+    <Content Include="Views\Promotion\XemChuongTrinhKhuyenMai.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

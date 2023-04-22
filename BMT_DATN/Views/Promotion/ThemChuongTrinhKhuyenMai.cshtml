@@ -1,0 +1,239 @@
+﻿
+@{
+    ViewBag.Title = "ThemChuongTrinhKhuyenMai";
+    Layout = "~/Views/Shared/layout_admin.cshtml";
+}
+@using BMT_DATN.Models;
+@{
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    var allCategory = (from dmsp in db.tblDanhMucSanPhams
+                       select dmsp).ToList();
+    var allProducts = (from sp in db.tblSanPhams
+                       select sp).ToList();
+    DateTime today = DateTime.Now.Date;
+    var idProductsAreOnPromotionOfCategory = (from ctkm in db.tblChuongTrinhKhuyenMais
+                                              join ctctkm in db.tblChiTietKhuyenMais on ctkm.PK_MaChuongTrinhKhuyenMai equals ctctkm.FK_MaChuongTrinhKhuyenMai
+                                              where ctkm.NgayBatDau >= today
+                                              select ctctkm.FK_MaSanPham).ToList();
+    var allAvailableProducts = allProducts.Where(p => !idProductsAreOnPromotionOfCategory.Contains(p.PK_MaSanPham)).ToList();
+}
+
+<div class="admin_content_area">
+    <h2>QUẢN LÝ CHƯƠNG TRÌNH KHUYẾN MẠI - THÊM CHƯƠNG TRÌNH KHUYẾN MẠI</h2>
+    <form class="AdminForm m-md-auto" id="formThemChuongTrinhKhuyenMai">
+        <div>
+            <span class="h4">Nhập các thông tin</span>
+            <div class="form-group">
+                <label for="promotionName">Tên chương trình khuyến mại:</label>
+                <input type="text" class="form-control" name="promotionName" id="promotionName" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+                <label for="promotionStartDate">Ngày bắt đầu:</label>
+                <input type="date" class="form-control" name="promotionStartDate" id="promotionStartDate">
+            </div>
+            <div class="form-group">
+                <label for="promotionEndDate">Ngày kết thúc:</label>
+                <input type="date" class="form-control" name="promotionEndDate" id="promotionEndDate">
+            </div>
+            <div class="form-group">
+                <label for="promotionPercent">Phần trăm giảm giá (%):</label>
+                <input type="number" class="form-control" name="promotionPercent" id="promotionPercent" min="1" max="100" autocomplete="off" required>
+            </div>
+
+            <div>
+                <label>Lựa chọn khuyến mại:</label> <br />
+                <input type="radio" name="promotionTypeChoose" id="rdPromotionByProducts" value="ByProducts" checked />
+                <label for="rdPromotionByProducts">Chọn các sản phẩm</label>
+                <input type="radio" name="promotionTypeChoose" id="rdPromotionByCategory" value="ByCategory" />
+                <label for="rdPromotionByCategory">Chọn danh mục</label>
+            </div>
+
+            @*div chon cac san pham*@
+            <div class="form-group" id="divChooseByCategory">
+                <label>Áp dụng cho sản phẩm thuộc danh mục:</label>
+                <select class="form-control" style="color: #1f1f1f" name="promotionByCategory" id="promotionByCategory" required>
+                    @{
+                        foreach (var category in allCategory)
+                        {
+                            <option style="color: #666666" value="@category.PK_MaDanhMucSanPham">@category.TenDanhMucSanPham</option>
+                        }
+                    }
+                </select>
+
+            </div>
+
+            @*div chon danh muc*@
+            <div class="form-group" id="divChooseByProducts">
+                <label>Áp dụng cho các sản phẩm sau:</label>
+                <div class="col-12 d-flex flex-column" id="allSelectPromotionProducts">
+                    <div class="row pb-3" id="divOfSelectProductPromotion_0">
+                        <select class="form-control col-11" style="color: #1f1f1f" name="promotionByProducts" required>
+                            @{
+                                foreach (var product in allAvailableProducts)
+                                {
+                                    <option style="color: #666666" value="@product.PK_MaSanPham">@product.TenSanPham</option>
+                                }
+                            }
+                        </select>
+                        <button type="button" class="col-1" name="btnRemoveProductPromotion" id="removeProductPromotion_0" onclick="removeOneProductPromotion(this.id)">X</button>
+                    </div>
+
+                </div>
+                <button type="button" onclick="addOneProductPromotion()">+ SP</button>
+            </div>
+
+
+            <div class="col-12 d-flex justify-content-end">
+                <div>
+                    <button type="submit" class="ml-auto btn hvr-hover mr-2" style="color:#ffffff" onclick="return beforeCallProviderAction()">Thêm mới</button>
+                </div>
+                <div>
+                    <button type="button" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="history.back()">Hủy</button>
+                </div>
+            </div>
+
+            @*<div>
+                <button type="submit" class="ml-auto btn hvr-hover" style="color:#ffffff" onclick="return beforeCallProviderAction()">Thêm mới</button>
+            </div>*@
+        </div>
+    </form>
+</div>
+
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $('a[name="qlctkm_menu"]').html("<b> &#9205; CHƯƠNG TRÌNH KHUYẾN MẠI</b>");
+    $('a[name="qlctkm_menu"]').css("color", "red");
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip({
+            trigger: 'hover'
+        });
+        //
+        loadTomorrow();
+        //
+        $("#divChooseByCategory").hide();
+        $('input:radio[name="promotionTypeChoose"]').change(
+            function () {
+                if (this.checked && this.value == 'ByProducts') {
+                    $("#divChooseByProducts").show();
+                    $("#divChooseByCategory").hide();
+                }
+                else {
+                    $("#divChooseByProducts").hide();
+                    $("#divChooseByCategory").show();
+                }
+            }
+        );
+        //
+        $("#removeProductPromotion_0").hide();
+        //
+        $('#formThemChuongTrinhKhuyenMai').submit(function (e) {
+            if (!beforeCallAddPromotionAction()) {
+                e.preventDefault();
+            }
+            else {
+                e.preventDefault();
+                themChuongTrinhKhuyenMaiMoi();
+            }
+        });
+    });
+
+    function loadTomorrow() {
+        var date = new Date();
+        date.setDate(date.getDate() + 1);
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        if (month < 10) month = "0" + month;
+        if (day < 10) day = "0" + day;
+        var tomorrow = year + "-" + month + "-" + day;
+        document.getElementById('promotionStartDate').value = tomorrow;
+        document.getElementById('promotionEndDate').value = tomorrow;
+    }
+
+    var countPromotionProduct = 0;
+    var arrayProductIdSelected = new Array();
+    function addOneProductPromotion() {
+        countPromotionProduct = countPromotionProduct + 1;
+
+        var allSelectElement = document.getElementById("allSelectPromotionProducts");
+        var firstSelectElement = document.getElementById("divOfSelectProductPromotion_0");
+        var cloneSelectElement = firstSelectElement.cloneNode(true);
+        cloneSelectElement.id = "divOfSelectProductPromotion_" + countPromotionProduct;
+        var xButton = cloneSelectElement.querySelector('button[name="btnRemoveProductPromotion"]');
+        xButton.id = "removeProductPromotion_" + countPromotionProduct;
+        xButton.style.display = "";
+
+        allSelectElement.appendChild(cloneSelectElement);
+    }
+
+    function removeOneProductPromotion(idBtn) {
+        var idButton = idBtn.toString().split("_");
+        var idNeeded = idButton[1];
+        const removedDiv = document.getElementById("divOfSelectProductPromotion_" + idNeeded);
+        removedDiv.remove();
+    }
+
+    function hasDuplicateProducts(arr) {
+        return new Set(arr).size !== arr.length;
+    }
+
+    function beforeCallAddPromotionAction() {
+        // check start date - end date
+        var dStart = $("#promotionStartDate").val();
+        var dEnd = $("#promotionEndDate").val();
+        var x = new Date(dStart);
+        var dCurrent = new Date();
+        dCurrent.setHours(7, 0, 0, 0);
+        if (new Date(dStart) <= dCurrent) {
+            alert("Ngày bắt đầu không hợp lệ!");
+            return false;
+        }
+        if (new Date(dStart) > new Date(dEnd)) {
+            alert("Ngày bắt đầu và ngày kết thúc không hợp lệ!");
+            return false;
+        }
+        // check promotion product
+        arrayProductIdSelected.length = 0;
+        $('select[name="promotionByProducts"]').each(function (index) {
+            console.log($(this).val());
+            arrayProductIdSelected.push($(this).val());
+        });
+        var promotionTypeChoose = $('input[name=promotionTypeChoose]:checked', '#formThemChuongTrinhKhuyenMai').val()
+        if (hasDuplicateProducts(arrayProductIdSelected) && promotionTypeChoose == "ByProducts") {
+            alert("Trùng sản phẩm");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    function themChuongTrinhKhuyenMaiMoi() {
+        var formData = new FormData($('#formThemChuongTrinhKhuyenMai')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AdminThemChuongTrinhKhuyenMai", "Promotion")',
+            cache: false,
+            contentType: false, // Not to set any content header
+            processData: false, // Not to process data
+            data: formData,
+
+            beforeSend: function () {
+                return beforeCallAddPromotionAction();
+            },
+            success: function (response) {
+                var valueReturn = response;
+                alert(valueReturn.msg);
+                if (valueReturn.rdt == "1") {
+                    window.location.href = '@Url.Action("QuanLyChuongTrinhKhuyenMai","Promotion")';
+                }
+            },
+            failure: function (response) { alert("fail"); },
+            complete: function () {},
+            error: function (xhr, status, error) {
+                var err = xhr.responseText;
+                console.log(err);
+            },
+        });
+    }
+</script>

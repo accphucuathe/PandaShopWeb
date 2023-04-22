@@ -221,6 +221,23 @@ namespace BMT_DATN
                 defaults: new { controller = "Review", action = "QuanLyDanhGiaSanPham", id = UrlParameter.Optional }
             );
 
+            // QuanLyChuongTrinhKhuyenMai View
+            routes.MapRoute(
+                name: "QuanLyChuongTrinhKhuyenMai",
+                url: "quan-ly-chuong-trinh-khuyen-mai",
+                defaults: new { controller = "Promotion", action = "QuanLyChuongTrinhKhuyenMai", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "ThemChuongTrinhKhuyenMai",
+                url: "them-chuong-trinh-khuyen-mai",
+                defaults: new { controller = "Promotion", action = "ThemChuongTrinhKhuyenMai", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "XemChuongTrinhKhuyenMai",
+                url: "xem-chuong-trinh-khuyen-mai",
+                defaults: new { controller = "Promotion", action = "XemChuongTrinhKhuyenMai", id = UrlParameter.Optional }
+            );
+
             // BaoCaoThongKe
             routes.MapRoute(
                 name: "TrangChuBaoCaoThongKe",

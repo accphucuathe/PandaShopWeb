@@ -96,13 +96,13 @@ namespace BMT_DATN.Controllers
             for (int i = 0; i < idProd.Length; i++)
             {
                 var idProduct = idProd[i];
-                var chiTietNhapHangMoi = new tblChiTietPhieuNhap();
-                chiTietNhapHangMoi.FK_MaPhieuNhap = phieuNhapMoi.PK_MaPhieuNhap;
-                chiTietNhapHangMoi.FK_MaSanPham = idProduct;
-                chiTietNhapHangMoi.SoLuongNhap = importQuantityProd[i];
-                chiTietNhapHangMoi.GiaNhap = ch.FormatToNumber(importPriceProd[i]);
+                var chiTietPhieuNhapMoi = new tblChiTietPhieuNhap();
+                chiTietPhieuNhapMoi.FK_MaPhieuNhap = phieuNhapMoi.PK_MaPhieuNhap;
+                chiTietPhieuNhapMoi.FK_MaSanPham = idProduct;
+                chiTietPhieuNhapMoi.SoLuongNhap = importQuantityProd[i];
+                chiTietPhieuNhapMoi.GiaNhap = ch.FormatToNumber(importPriceProd[i]);
 
-                listCtpn.Add(chiTietNhapHangMoi);
+                listCtpn.Add(chiTietPhieuNhapMoi);
                 // tang so luong sp trong kho
                 var productOfStore = (from sp in db.tblSanPhams
                                       where sp.PK_MaSanPham == idProduct
