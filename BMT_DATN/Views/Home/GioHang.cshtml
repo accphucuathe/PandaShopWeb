@@ -10,7 +10,22 @@
     var ch = new CurrencyHelper();
     int maGioHang = !HomeController.nguoidung.maGioHang.HasValue ? 0 : HomeController.nguoidung.maGioHang.Value;
 
+    // promotion
+    DateTime today = DateTime.Now.Date;
+    var productsAreOnPromotion = (from ctkm in db.tblChuongTrinhKhuyenMais
+                                  join ctctkm in db.tblChiTietKhuyenMais on ctkm.PK_MaChuongTrinhKhuyenMai equals ctctkm.FK_MaChuongTrinhKhuyenMai
+                                  orderby ctkm.NgayBatDau descending
+                                  where ctkm.NgayBatDau <= today && today <= ctkm.NgayKetThuc
+                                  select new
+                                  {
+                                      idPromotionProduct = ctctkm.FK_MaSanPham,
+                                      promotionPercent = ctkm.PhanTramGiamGia
+                                  });
+    //
     var currentProductsInCart = (from sp in db.tblChiTietDonHangs
+                                 join paop in productsAreOnPromotion on sp.FK_MaSanPham equals paop.idPromotionProduct
+                                 into gj
+                                 from paop in gj.DefaultIfEmpty()
                                  where sp.FK_MaDonHang == maGioHang
                                  select new
                                  {
@@ -18,15 +33,33 @@
                                      FK_MaSanPham = sp.FK_MaSanPham,
                                      SoLuongMua = sp.SoLuongMua,
                                      DonGia = sp.DonGia,
+                                     PhanTramGiamGia = paop != null ? paop.promotionPercent : 0 ,
+                                     GiaHienTai = paop != null ? (sp.DonGia * (100 - paop.promotionPercent) / 100) : sp.DonGia,
                                      TenSanPham = sp.tblSanPham.TenSanPham,
                                      KichCo = sp.tblSanPham.KichCo,
                                      SoLuong = sp.tblSanPham.SoLuong,
                                      HinhAnh = sp.tblSanPham.HinhAnh
                                  }
                                  ).ToList();
+    //
+    //var currentProductsInCart = (from sp in db.tblChiTietDonHangs
+    //                             where sp.FK_MaDonHang == maGioHang
+    //                             select new
+    //                             {
+    //                                 FK_MaDonHang = sp.FK_MaDonHang,
+    //                                 FK_MaSanPham = sp.FK_MaSanPham,
+    //                                 SoLuongMua = sp.SoLuongMua,
+    //                                 DonGia = sp.DonGia,
+    //                                 TenSanPham = sp.tblSanPham.TenSanPham,
+    //                                 KichCo = sp.tblSanPham.KichCo,
+    //                                 SoLuong = sp.tblSanPham.SoLuong,
+    //                                 HinhAnh = sp.tblSanPham.HinhAnh
+    //                             }
+    //                             ).ToList();
     var listIds = currentProductsInCart.Select(p => p.FK_MaSanPham).ToArray();
     var listPrices = currentProductsInCart.Select(p => p.DonGia).ToArray();
     var listQuantityInStock = currentProductsInCart.Select(p => p.SoLuong).ToArray();
+    var listCurrentPrices = currentProductsInCart.Select(p => p.GiaHienTai).ToArray();
     //var infoCurrentProductsInCart = db.tblSanPhams.Where(isp => currentProductsInCart.Contains(isp.PK_MaSanPham)).ToList();
     //var totalPrice = infoCurrentProductsInCart.Sum(s => s.DonGia);
 }
@@ -71,7 +104,19 @@
                                                 <p>Kho: @isp.SoLuong</p>
                                             </td>
                                             <td class="price-pr text-right">
-                                                <p id="dg_@isp.FK_MaSanPham">@ch.FormatToCurrency(isp.DonGia)</p>
+                                                @{
+                                                    if (isp.PhanTramGiamGia == 0)
+                                                    {
+                                                        <p id="dg_@isp.FK_MaSanPham">@ch.FormatToCurrency(isp.DonGia)</p>
+                                                        <input hidden name="currentPriceProduct" value="@isp.DonGia" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5><del>@ch.FormatToCurrency(isp.DonGia)</del></h5>
+                                                        <p>@ch.FormatToCurrency(isp.GiaHienTai)</p>
+                                                        <input hidden name="currentPriceProduct" value="@isp.GiaHienTai" />
+                                                    }
+                                                }
                                             </td>
                                             <td class="quantity-box text-right">
                                                 <input type="number" name="quantityProduct" id="sl_@isp.FK_MaSanPham" value=@isp.SoLuongMua min="1" step="1" class="c-input-text qty text" style="width:50px;" />
@@ -136,17 +181,20 @@ $(document).ready(function () {
 let formatCurrency = Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
 var arrIdSanPham = new Array();
 var arrDonGiaSanPham = new Array();
+var arrGiaHienTaiSanPham = new Array();
 var arrSoLuongSanPham = new Array();
 var arrTongTienSanPham = new Array();
 var tongTienTatCa = 0;
 function tinhCacTongTien() {
     arrIdSanPham = @Html.Raw(Json.Encode(listIds));
     arrDonGiaSanPham = @Html.Raw(Json.Encode(listPrices));
+    arrGiaHienTaiSanPham = @Html.Raw(Json.Encode(listCurrentPrices));
     arrSoLuongSanPham = $("input[name='quantityProduct']")
         .map(function () { return $(this).val(); }).get();
     var tongTienTemp = 0;
     for (var i = 0; i < arrIdSanPham.length; i++) {
-        var tongTienSanPham = arrDonGiaSanPham[i] * arrSoLuongSanPham[i];
+        //var tongTienSanPham = arrDonGiaSanPham[i] * arrSoLuongSanPham[i];
+        var tongTienSanPham = arrGiaHienTaiSanPham[i] * arrSoLuongSanPham[i];
 
         var pTong = document.getElementById("tong_" + arrIdSanPham[i]);
         pTong.innerHTML = formatCurrency.format(tongTienSanPham);

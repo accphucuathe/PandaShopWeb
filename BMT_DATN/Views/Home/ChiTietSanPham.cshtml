@@ -14,6 +14,22 @@
     var infoSanPham = (from sp in db.tblSanPhams
                        where sp.PK_MaSanPham == maSanPham
                        select sp).FirstOrDefault();
+    // promotion
+    DateTime today = DateTime.Now.Date;
+    var checkPromotionOfThisProduct = (from ctkm in db.tblChuongTrinhKhuyenMais
+                                       join ctctkm in db.tblChiTietKhuyenMais on ctkm.PK_MaChuongTrinhKhuyenMai equals ctctkm.FK_MaChuongTrinhKhuyenMai
+                                       orderby ctkm.NgayBatDau descending
+                                       where ctkm.NgayBatDau <= today &&
+                                                today <= ctkm.NgayKetThuc &&
+                                                ctctkm.FK_MaSanPham == infoSanPham.PK_MaSanPham
+                                       select ctkm).FirstOrDefault();
+    var donGiaKhuyenMai = 0;
+    if (checkPromotionOfThisProduct != null)
+    {
+        var promotionPercent = checkPromotionOfThisProduct.PhanTramGiamGia;
+        donGiaKhuyenMai = infoSanPham.DonGia * (100 - promotionPercent) / 100;
+    }
+    //
     var allReviewThisProduct = (from dgsp in db.tblDanhGiaSanPhams
                                 where dgsp.FK_MaSanPham == maSanPham
                                 select dgsp).ToList();
@@ -75,7 +91,18 @@
                     <input hidden id="productId" value="@infoSanPham.PK_MaSanPham" />
                     <h2>@infoSanPham.TenSanPham</h2>
                     <h3>Kích cỡ: @infoSanPham.KichCo</h3>
-                    <h5>Đơn giá: </h5><h5>@ch.FormatToCurrency(infoSanPham.DonGia)</h5>
+                    @{
+                        if (checkPromotionOfThisProduct == null)
+                        {
+                            <h5>Đơn giá: @ch.FormatToCurrency(infoSanPham.DonGia)</h5>
+                        }
+                        else
+                        {
+                            <h5>Đơn giá: <del>@ch.FormatToCurrency(infoSanPham.DonGia)</del></h5>
+                            <h5>Giá khuyến mại: @ch.FormatToCurrency(donGiaKhuyenMai)</h5>
+                        }
+                    }
+
                     <p class="available-stock"><span>Số lượng sản phẩm trong kho: @infoSanPham.SoLuong </span>
                     <p>
                         <h4>Mô tả:</h4>
@@ -83,38 +110,38 @@
                         @infoSanPham.MoTa
                     </p>
                     @*<ul>
-                        <li>
-                            <div class="form-group size-st">
-                                <label class="size-label">Kích cỡ:</label>
-                                <label>@infoSanPham.k</label>
-                                <select id="basic" class="selectpicker show-tick form-control">
-                                    <option value="0">Size</option>
-                                    <option value="0">S</option>
-                                    <option value="1">M</option>
-                                    <option value="1">L</option>
-                                    <option value="1">XL</option>
-                                    <option value="1">XXL</option>
-                                    <option value="1">3XL</option>
-                                    <option value="1">4XL</option>
-                                </select>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="form-group quantity-box">
-                                <label class="control-label">Quantity</label>
-                                <input class="form-control" value="0" min="0" max="20" type="number">
-                            </div>
-                        </li>
-                    </ul>*@
+            <li>
+                <div class="form-group size-st">
+                    <label class="size-label">Kích cỡ:</label>
+                    <label>@infoSanPham.k</label>
+                    <select id="basic" class="selectpicker show-tick form-control">
+                        <option value="0">Size</option>
+                        <option value="0">S</option>
+                        <option value="1">M</option>
+                        <option value="1">L</option>
+                        <option value="1">XL</option>
+                        <option value="1">XXL</option>
+                        <option value="1">3XL</option>
+                        <option value="1">4XL</option>
+                    </select>
+                </div>
+            </li>
+            <li>
+                <div class="form-group quantity-box">
+                    <label class="control-label">Quantity</label>
+                    <input class="form-control" value="0" min="0" max="20" type="number">
+                </div>
+            </li>
+        </ul>*@
 
                     <div class="price-box-bar">
                         <div class="cart-and-bay-btn">
                             <button type="button" name="btnAddToCart" id="product_@infoSanPham.PK_MaSanPham" class="ml-auto btn hvr-hover mr-2" style="color:#ffffff" onclick="return beforeCallProviderAction()">Thêm vào giỏ hàng</button>
                             <button type="button" class="ml-auto btn hvr-hover mr-2" style="color:#ffffff" onclick="history.back()">Quay lại</button>
                             @*<a class="btn hvr-hover" data-fancybox-close="" href="#">Buy New</a>
-        <a class="btn hvr-hover" data-fancybox-close="" href="#">Add to cart</a>*@
+                <a class="btn hvr-hover" data-fancybox-close="" href="#">Add to cart</a>*@
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </div>
         </div>

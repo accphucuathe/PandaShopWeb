@@ -366,16 +366,17 @@ namespace BMT_DATN.Controllers
         }
 
         // trang thanh toan
-        public ActionResult ThanhToan(int[] idProduct, int[] quantityProduct)
+        public ActionResult ThanhToan(int[] idProduct, int[] quantityProduct, int[] currentPriceProduct)
         {
             if (Session["userID"] == null)
             {
                 return RedirectToAction("Login");
             }
-            // luu thay doi so luong san pham
+            // luu thay doi so luong san pham + luu gia hien tai (xu ly neu co khuyen mai)
             int maDonHang = !nguoidung.maGioHang.HasValue ? 0 : nguoidung.maGioHang.Value;
             int[] idProd = idProduct;
             int[] quantityProd = quantityProduct;
+            int[] currentPriceProd = currentPriceProduct;
             var productsInCurrentCart = (from ctdh in db.tblChiTietDonHangs
                                          where ctdh.FK_MaDonHang == maDonHang
                                          select ctdh).ToList();
@@ -385,6 +386,7 @@ namespace BMT_DATN.Controllers
                 if (prd != null)
                 {
                     prd.SoLuongMua = quantityProd[i];
+                    prd.DonGia = currentPriceProd[i];
                 }
             }
             // save
