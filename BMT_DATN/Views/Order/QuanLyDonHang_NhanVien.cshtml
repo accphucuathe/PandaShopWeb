@@ -5,6 +5,7 @@
 }
 
 @using BMT_DATN.Models;
+@using BMT_DATN.Controllers;
 
 <link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
@@ -242,6 +243,7 @@
                         string searchKeyword = ViewBag.searchKeyword == null ? "" : ViewBag.searchKeyword;
                         int pageNumber = ViewBag.pageNumber;
                         int pageSize = ViewBag.pageSize;
+                        Guid userId = HomeController.nguoidung.maNguoiDung;
                         BMT_DATNEntities db = new BMT_DATNEntities();
                         var query = from dh in db.tblDonHangs
                                         //where ncc.TenNhaCungCap.Contains(searchKeyword)
@@ -250,10 +252,12 @@
                                     {
                                         MaDonHang = dh.PK_MaDonHang,
                                         TenNguoiDung = dh.tblNguoiDung.TenNguoiDung,
-                                        MaTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().FK_MaTrangThaiDonHang,
-                                        TenTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().tblTrangThaiDonHang.TenTrangThaiDonHang
+                                        MaTrangThaiDonHang = dh.FK_MaTrangThaiDonHang,
+                                        TenTrangThaiDonHang = dh.tblTrangThaiDonHang.TenTrangThaiDonHang,
+                                        MaNhanVienXuLy = dh.FK_MaNhanVienXuLy
                                     };
                         var listDonHang = query.Where(dh => dh.MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang &&
+                                                        (dh.MaNhanVienXuLy == userId || !dh.MaNhanVienXuLy.HasValue)  &&
                                                         dh.TenNguoiDung.Contains(searchKeyword))
                                                .OrderBy(dh => dh.MaTrangThaiDonHang)
                                                .Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();

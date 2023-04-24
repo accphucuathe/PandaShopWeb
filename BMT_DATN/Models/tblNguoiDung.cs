@@ -17,9 +17,9 @@ namespace BMT_DATN.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public tblNguoiDung()
         {
-            this.tblChiTietTrangThaiDonHangs = new HashSet<tblChiTietTrangThaiDonHang>();
             this.tblDanhGiaSanPhams = new HashSet<tblDanhGiaSanPham>();
             this.tblDonHangs = new HashSet<tblDonHang>();
+            this.tblDonHangs1 = new HashSet<tblDonHang>();
             this.tblPhieuNhaps = new HashSet<tblPhieuNhap>();
         }
     
@@ -35,11 +35,11 @@ namespace BMT_DATN.Models
         public int FK_MaQuyen { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tblChiTietTrangThaiDonHang> tblChiTietTrangThaiDonHangs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblDanhGiaSanPham> tblDanhGiaSanPhams { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblDonHang> tblDonHangs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<tblDonHang> tblDonHangs1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblPhieuNhap> tblPhieuNhaps { get; set; }
         public virtual tblQuyen tblQuyen { get; set; }

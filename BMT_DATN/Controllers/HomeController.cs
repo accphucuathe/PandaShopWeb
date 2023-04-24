@@ -222,24 +222,31 @@ namespace BMT_DATN.Controllers
         // lay gio hang hien tai
         public void LayGioHangHienTai()
         {
+            //var listOrder = (from o in db.tblDonHangs
+            //                 join c in db.tblChiTietTrangThaiDonHangs on o.PK_MaDonHang equals c.FK_MaDonHang
+            //                 where o.FK_MaNguoiDung.Equals(nguoidung.maNguoiDung)
+            //                 orderby o.PK_MaDonHang descending
+            //                 group c by c.FK_MaDonHang into gr
+            //                 select new
+            //                 {
+            //                     maDonHang = gr.Key,
+            //                     soTrangThai = gr.Select(g => g.FK_MaTrangThaiDonHang).Count(),
+            //                     trangThaiCuoiCung = gr.OrderByDescending(g => g.FK_MaTrangThaiDonHang)
+            //                                            .Select(g => g.FK_MaTrangThaiDonHang)
+            //                                            .FirstOrDefault()
+            //                 }
+            //                 ).ToList();
+            //var currentCart = listOrder.Where(o => o.soTrangThai == 1 &&
+            //                                    o.trangThaiCuoiCung == (int)EnumTrangThaiDonHang.GioHang
+            //                                ).LastOrDefault();
             var listOrder = (from o in db.tblDonHangs
-                             join c in db.tblChiTietTrangThaiDonHangs on o.PK_MaDonHang equals c.FK_MaDonHang
                              where o.FK_MaNguoiDung.Equals(nguoidung.maNguoiDung)
                              orderby o.PK_MaDonHang descending
-                             group c by c.FK_MaDonHang into gr
-                             select new
-                             {
-                                 maDonHang = gr.Key,
-                                 soTrangThai = gr.Select(g => g.FK_MaTrangThaiDonHang).Count(),
-                                 trangThaiCuoiCung = gr.OrderByDescending(g => g.FK_MaTrangThaiDonHang)
-                                                        .Select(g => g.FK_MaTrangThaiDonHang)
-                                                        .FirstOrDefault()
-                             }
+                             select o
                              ).ToList();
-            var currentCart = listOrder.Where(o => o.soTrangThai == 1 &&
-                                                o.trangThaiCuoiCung == (int)EnumTrangThaiDonHang.GioHang
-                                            ).LastOrDefault();
-            HomeController.nguoidung.maGioHang = currentCart?.maDonHang;
+            var currentCart = listOrder.Where(o => o.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.GioHang)
+                                        .FirstOrDefault();
+            HomeController.nguoidung.maGioHang = currentCart?.PK_MaDonHang;
         }
 
         // user them san pham vao gio hang
@@ -250,6 +257,7 @@ namespace BMT_DATN.Controllers
             string redirect = "";
             string productFirstAdd = "";
             Guid userId = nguoidung.maNguoiDung;
+            string userName = nguoidung.tenNguoiDung;
             int maDonHang = !nguoidung.maGioHang.HasValue ? 0 : nguoidung.maGioHang.Value;
             var sanPhamDuocThem = (from sp in db.tblSanPhams
                                    where sp.PK_MaSanPham == productId
@@ -261,23 +269,38 @@ namespace BMT_DATN.Controllers
             }
             else
             {
+                if (sanPhamDuocThem.SoLuong == 0)   // so luong trong kho = 0 thi ko them vao gio hang
+                {
+                    return Json(new
+                    {
+                        msg = "Rất tiếc! Sản phẩm hiện đang tạm hết",
+                        rdt = "0",
+                        pfa = ""
+                    },
+            JsonRequestBehavior.AllowGet);
+                }
                 if (maDonHang == 0)   //chua co gio hang thi tao gio hang moi
                 {
                     // insert tblDonHang
                     var donHangMoi = new tblDonHang();
+                    donHangMoi.TenNguoiNhan = "";
                     donHangMoi.DiaChiGiaoHang = "";
                     donHangMoi.SoDienThoai = "";
                     donHangMoi.GhiChu = "";
                     donHangMoi.FK_MaNguoiDung = userId;
+                    donHangMoi.ThoiGianTaoDonHang = null;
+                    donHangMoi.FK_MaNhanVienXuLy = null;
+                    donHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.GioHang;
+                    donHangMoi.ThoiGianCapNhatTrangThai = DateTime.Now;
                     db.tblDonHangs.Add(donHangMoi);
 
-                    // insert tblChiTietTrangThaiDonHang
-                    var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
-                    trangThaiDonHangMoi.FK_MaDonHang = donHangMoi.PK_MaDonHang;
-                    trangThaiDonHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.GioHang;
-                    trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
-                    trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
-                    db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
+                    // insert tblLichSuTrangThaiDonHang
+                    var lichSuTrangThaiDonHangMoi = new tblLichSuTrangThaiDonHang();
+                    lichSuTrangThaiDonHangMoi.FK_MaDonHang = donHangMoi.PK_MaDonHang;
+                    lichSuTrangThaiDonHangMoi.TenTrangThaiDonHang = "Giỏ hàng";
+                    lichSuTrangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
+                    lichSuTrangThaiDonHangMoi.TenNguoiCapNhat = userName;
+                    db.tblLichSuTrangThaiDonHangs.Add(lichSuTrangThaiDonHangMoi);
 
                     // insert tblChiTietDonHang
                     var chiTietDonHangMoi = new tblChiTietDonHang();
@@ -397,24 +420,28 @@ namespace BMT_DATN.Controllers
         }
 
         // Action khi user thanh toan
-        public ActionResult UserThanhToan(String addressShipping, String phoneShipping, String noteShipping) 
+        public ActionResult UserThanhToan(String receiverShipping, String addressShipping, String phoneShipping, String noteShipping) 
         {
             Guid userId = nguoidung.maNguoiDung;
+            string userName = nguoidung.tenNguoiDung;
             int maDonHang = !nguoidung.maGioHang.HasValue ? 0 : nguoidung.maGioHang.Value;
             // ghi nhan trang thai moi cua don hang
-            var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
-            trangThaiDonHangMoi.FK_MaDonHang = maDonHang;
-            trangThaiDonHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.ChoXacNhan;
-            trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
-            trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
-            db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
+            var lichSuTrangThaiDonHangMoi = new tblLichSuTrangThaiDonHang();
+            lichSuTrangThaiDonHangMoi.FK_MaDonHang = maDonHang;
+            lichSuTrangThaiDonHangMoi.TenTrangThaiDonHang = "Chờ xác nhận";
+            lichSuTrangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
+            lichSuTrangThaiDonHangMoi.TenNguoiCapNhat = userName;
+            db.tblLichSuTrangThaiDonHangs.Add(lichSuTrangThaiDonHangMoi);
             // luu sdt + dia chi giao hang + ghi chu
             var donHangHienTai = (from dh in db.tblDonHangs
                                   where dh.PK_MaDonHang == maDonHang
                                   select dh).FirstOrDefault();
+            donHangHienTai.TenNguoiNhan = receiverShipping;
             donHangHienTai.DiaChiGiaoHang = addressShipping;
             donHangHienTai.SoDienThoai = phoneShipping;
             donHangHienTai.GhiChu = noteShipping;
+            donHangHienTai.ThoiGianTaoDonHang = DateTime.Now;
+            donHangHienTai.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.ChoXacNhan;
             // save
             db.SaveChanges();
             LayGioHangHienTai();
@@ -452,21 +479,25 @@ namespace BMT_DATN.Controllers
             string result = "";
             string redirect = "";
             Guid userId = nguoidung.maNguoiDung;
-            var currentOrderStatus = (from ctttdh in db.tblChiTietTrangThaiDonHangs
-                                      where ctttdh.FK_MaDonHang == cancelOrderId &&
-                                            ctttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
-                                      orderby ctttdh.FK_MaTrangThaiDonHang descending
-                                      select ctttdh).FirstOrDefault();
+            string userName = nguoidung.tenNguoiDung;
+            //var currentOrderStatus = (from ctttdh in db.tblChiTietTrangThaiDonHangs
+            //                          where ctttdh.FK_MaDonHang == cancelOrderId &&
+            //                                ctttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
+            //                          orderby ctttdh.FK_MaTrangThaiDonHang descending
+            //                          select ctttdh).FirstOrDefault();
+            var currentOrderStatus = (from dh in db.tblDonHangs
+                                      where dh.PK_MaDonHang == cancelOrderId
+                                      select dh).FirstOrDefault();
             // chi cho phep khach hang huy khi don hang "cho xac nhan"
             if (currentOrderStatus.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.ChoXacNhan)
             {
                 // ghi nhan trang thai "Da huy" cua don hang
-                var trangThaiHuyDonHang = new tblChiTietTrangThaiDonHang();
+                var trangThaiHuyDonHang = new tblLichSuTrangThaiDonHang();
                 trangThaiHuyDonHang.FK_MaDonHang = cancelOrderId;
-                trangThaiHuyDonHang.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.DaHuy;
+                trangThaiHuyDonHang.TenTrangThaiDonHang = "Đã hủy";
                 trangThaiHuyDonHang.ThoiGianCapNhat = DateTime.Now;
-                trangThaiHuyDonHang.FK_MaNhanVienCapNhat = userId;
-                db.tblChiTietTrangThaiDonHangs.Add(trangThaiHuyDonHang);
+                trangThaiHuyDonHang.TenNguoiCapNhat = userName;
+                db.tblLichSuTrangThaiDonHangs.Add(trangThaiHuyDonHang);
                 // save
                 db.SaveChanges();
 

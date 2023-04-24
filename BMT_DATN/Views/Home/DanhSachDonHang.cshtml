@@ -35,8 +35,8 @@
                     SanPham = ctdh.tblSanPham.TenSanPham,
                     SoLuongMua = ctdh.SoLuongMua,
                     DonGia = ctdh.DonGia,
-                    MaTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().FK_MaTrangThaiDonHang,
-                    TenTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().tblTrangThaiDonHang.TenTrangThaiDonHang
+                    MaTrangThaiDonHang = dh.FK_MaTrangThaiDonHang,
+                    TenTrangThaiDonHang = dh.tblTrangThaiDonHang.TenTrangThaiDonHang
                 }
                 into infoDonHang
                 group infoDonHang by infoDonHang.MaDonHang into gr

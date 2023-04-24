@@ -25,18 +25,29 @@
                      }
                     ).ToList();
     var totalPrice = infoOrder.Sum(s => s.TongTienSanPham);
-    var listStatusOrder = (from cttdh in db.tblChiTietTrangThaiDonHangs
-                           where cttdh.FK_MaDonHang == maDh &&
-                                 cttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
-                           select new
-                           {
-                               MaDonHang = cttdh.FK_MaDonHang,
-                               MaTrangThaiDonHang = cttdh.FK_MaTrangThaiDonHang,
-                               TenTrangThaiDonHang = cttdh.tblTrangThaiDonHang.TenTrangThaiDonHang,
-                               ThoiGianCapNhat = cttdh.ThoiGianCapNhat
-                           }
+    //var listStatusOrder = (from cttdh in db.tblChiTietTrangThaiDonHangs
+    //                       where cttdh.FK_MaDonHang == maDh &&
+    //                             cttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
+    //                       select new
+    //                       {
+    //                           MaDonHang = cttdh.FK_MaDonHang,
+    //                           MaTrangThaiDonHang = cttdh.FK_MaTrangThaiDonHang,
+    //                           TenTrangThaiDonHang = cttdh.tblTrangThaiDonHang.TenTrangThaiDonHang,
+    //                           ThoiGianCapNhat = cttdh.ThoiGianCapNhat
+    //                       }
+    //                       ).ToList();
+    var listStatusOrder = (from lsttdh in db.tblLichSuTrangThaiDonHangs
+                           where lsttdh.FK_MaDonHang == maDh &&
+                                 !lsttdh.TenTrangThaiDonHang.Equals("Giỏ hàng")
+                           select lsttdh
                            ).ToList();
-    var currentStatusOrder = listStatusOrder.OrderByDescending(tt => tt.MaTrangThaiDonHang).FirstOrDefault();
+    //var currentStatusOrder = listStatusOrder.OrderByDescending(tt => tt.MaTrangThaiDonHang).FirstOrDefault();
+    var currentStatusOrder = (from dh in db.tblDonHangs
+                              where dh.PK_MaDonHang == maDh
+                              select new { 
+                                MaTrangThaiDonHang = dh.FK_MaTrangThaiDonHang,
+                                TenTrangThaiDonHang = dh.tblTrangThaiDonHang.TenTrangThaiDonHang
+                              }).FirstOrDefault();
     var infoShipping = (from dh in db.tblDonHangs
                         where dh.PK_MaDonHang == maDh
                         select dh).FirstOrDefault();
@@ -113,6 +124,7 @@
                     </div>
                     <div style="color: #101010;">
                         <ul>
+                            <li>Địa chỉ giao hàng: @infoShipping.TenNguoiNhan</li>
                             <li>Địa chỉ giao hàng: @infoShipping.DiaChiGiaoHang</li>
                             <li>SĐT: @infoShipping.SoDienThoai</li>
                             <li>Ghi chú đơn hàng: @infoShipping.GhiChu</li>

@@ -36,17 +36,20 @@
                                {
                                    MaDonHang = dh.PK_MaDonHang,
                                    NguoiMua = dh.tblNguoiDung.TenNguoiDung,
+                                   TenNguoiNhan = dh.TenNguoiNhan,
                                    DiaChiGiaoHang = dh.DiaChiGiaoHang,
                                    SoDienThoai = dh.SoDienThoai,
                                    GhiChu = dh.GhiChu,
+                                   NgayDatHang = dh.ThoiGianTaoDonHang,
                                    CacSanPhamDatMua = dh.tblChiTietDonHangs.ToList()
                                }
                               ).FirstOrDefault();
             var totalPrice = infoDonHang.CacSanPhamDatMua.Sum(sp => sp.DonGia * sp.SoLuongMua);
-            var listStatusOrder = (from ctttdh in db.tblChiTietTrangThaiDonHangs
-                                   where ctttdh.FK_MaDonHang == maDh &&
-                                         ctttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
-                                   select ctttdh).ToList();
+            var listStatusOrder = (from lsttdh in db.tblLichSuTrangThaiDonHangs
+                                   where lsttdh.FK_MaDonHang == maDh &&
+                                         !lsttdh.TenTrangThaiDonHang.Equals("Giỏ hàng") &&
+                                         !lsttdh.TenTrangThaiDonHang.Equals("Chờ xác nhận")
+                                   select lsttdh).ToList();
         }
         <table class="table table-striped table-hover table-bordered">
             <thead>
@@ -65,6 +68,10 @@
                     <td>@infoDonHang.NguoiMua</td>
                 </tr>
                 <tr>
+                    <td>Người nhận hàng</td>
+                    <td>@infoDonHang.TenNguoiNhan</td>
+                </tr>
+                <tr>
                     <td>Địa chỉ giao hàng</td>
                     <td>@infoDonHang.DiaChiGiaoHang</td>
                 </tr>
@@ -75,6 +82,10 @@
                 <tr>
                     <td>Ghi chú</td>
                     <td>@infoDonHang.GhiChu</td>
+                </tr>
+                <tr>
+                    <td>Ngày đặt hàng</td>
+                    <td>@infoDonHang.NgayDatHang</td>
                 </tr>
                 <tr>
                     <td rowspan="@infoDonHang.CacSanPhamDatMua.Count">Các sản phẩm đặt mua</td>
@@ -115,7 +126,7 @@
                                 foreach (var chiTietTrangThai in listStatusOrder)
                                 {
                                     <li>
-                                        @chiTietTrangThai.ThoiGianCapNhat.ToString("dd-MM-yyyy HH:mm:ss") - @chiTietTrangThai.tblTrangThaiDonHang.TenTrangThaiDonHang - @chiTietTrangThai.tblNguoiDung.TenNguoiDung
+                                        @chiTietTrangThai.ThoiGianCapNhat.ToString("dd-MM-yyyy HH:mm:ss") - @chiTietTrangThai.TenTrangThaiDonHang - @chiTietTrangThai.TenNguoiCapNhat
                                     </li>
                                 }
                             }

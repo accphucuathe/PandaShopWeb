@@ -237,6 +237,11 @@ namespace BMT_DATN
                 url: "xem-chuong-trinh-khuyen-mai",
                 defaults: new { controller = "Promotion", action = "XemChuongTrinhKhuyenMai", id = UrlParameter.Optional }
             );
+            routes.MapRoute(
+                name: "SuaChuongTrinhKhuyenMai",
+                url: "sua-chuong-trinh-khuyen-mai",
+                defaults: new { controller = "Promotion", action = "SuaChuongTrinhKhuyenMai", id = UrlParameter.Optional }
+            );
 
             // BaoCaoThongKe
             routes.MapRoute(

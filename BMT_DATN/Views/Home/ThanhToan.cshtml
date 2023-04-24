@@ -100,8 +100,13 @@
                         <div class="mb-3">
                             <input type="checkbox" id="chkInfoShipping" />
                             <label>Sử dụng địa chỉ và số điện thoại của tài khoản</label>
+                            <input type="text" name="receiverTemp" value="@userInfo.TenNguoiDung" hidden />
                             <input type="text" name="addressTemp" value="@userInfo.DiaChi" hidden />
                             <input type="text" name="phoneTemp" value="@userInfo.SoDienThoai" hidden />
+                        </div>
+                        <div class="mb-3">
+                            <label>Tên người nhận *</label>
+                            <input type="text" name="receiverShipping" class="form-control" autocomplete="off" required>
                         </div>
                         <div class="mb-3">
                             <label>Địa chỉ *</label>
@@ -148,9 +153,11 @@
             window.location.href = '@Url.Action("GioHang", "Home")';
         });
         $("#chkInfoShipping").change(function () {
+            var uReceiver = $("input[name='receiverTemp']").val();
             var uAddress = $("input[name='addressTemp']").val();
             var uPhone = $("input[name='phoneTemp']").val();
             if (this.checked) {
+                $("input[name='receiverShipping']").val(uReceiver);
                 $("input[name='addressShipping']").val(uAddress);
                 $("input[name='phoneShipping']").val(uPhone);
             }

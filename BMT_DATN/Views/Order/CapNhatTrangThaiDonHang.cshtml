@@ -13,22 +13,26 @@
                        select new
                        {
                            MaDonHang = dh.PK_MaDonHang,
-                           NguoiMua = dh.tblNguoiDung.TenNguoiDung,
+                           NguoiNhanHang = dh.TenNguoiNhan,
                            DiaChiGiaoHang = dh.DiaChiGiaoHang,
                            SoDienThoai = dh.SoDienThoai,
                            GhiChu = dh.GhiChu,
                            CacSanPhamDatMua = dh.tblChiTietDonHangs.ToList(),
-                           CacTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.ToList()
+                           MaTrangThaiDonHang = dh.FK_MaTrangThaiDonHang,
+                           TrangThaiDonHang = dh.tblTrangThaiDonHang.TenTrangThaiDonHang,
+                           CacTrangThaiDonHang = dh.tblLichSuTrangThaiDonHangs.ToList()
                        }
                       ).FirstOrDefault();
     var totalPrice = infoDonHang.CacSanPhamDatMua.Sum(sp => sp.DonGia * sp.SoLuongMua);
     var allStatusAvailable = db.tblTrangThaiDonHangs
                                            .Where(tt => tt.PK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang &&
-                                                    tt.PK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.DaHuy)
+                                                    tt.PK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.DaHuy &&
+                                                    tt.PK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.MuaTaiCuaHang)
                                            .OrderBy(tt => tt.PK_MaTrangThaiDonHang)
                                            .ToList();
-    var currentOrderStatus = infoDonHang.CacTrangThaiDonHang.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang)
-                                                            .FirstOrDefault().tblTrangThaiDonHang.PK_MaTrangThaiDonHang;
+    //var currentOrderStatus = infoDonHang.CacTrangThaiDonHang.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang)
+    //                                                        .FirstOrDefault().tblTrangThaiDonHang.PK_MaTrangThaiDonHang;
+    var currentOrderStatus = infoDonHang.MaTrangThaiDonHang;
 }
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
@@ -112,8 +116,8 @@
                 <input type="text" class="form-control" name="orderId" id="orderId" value="@infoDonHang.MaDonHang" disabled>
             </div>
             <div class="form-group">
-                <label for="userName">Tên khách hàng:</label>
-                <input type="text" class="form-control" name="userName" id="userName" value="@infoDonHang.NguoiMua" disabled>
+                <label for="userName">Tên người nhận:</label>
+                <input type="text" class="form-control" name="userName" id="userName" value="@infoDonHang.NguoiNhanHang" disabled>
             </div>
             <div class="form-group">
                 <label for="addressShipping">Địa chỉ giao hàng:</label>

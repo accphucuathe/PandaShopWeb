@@ -53,7 +53,7 @@
             var splitCancelOrderId = $(this).attr('id').split('_');
             var idDh = splitCancelOrderId[1];   // id don hang
             var idTtdh = splitCancelOrderId[2];   // id trang thai don hang
-            if (idTtdh == 2 || idTtdh == 3) {       // 2: ChoXacNhan, 3: DaXacNhan
+            if (idTtdh == 2) {       // 2: ChoXacNhan
                 var cfm = confirm("Bạn chắc chắn muốn hủy đơn hàng này?");
                 if (cfm) {
                     adminHuyDonHang(idDh, idTtdh);
@@ -96,7 +96,7 @@
     });
     function checkAllowUpdateStatus(ele) {
         var statusId = ele.name;
-        var trangThaiDaNhan = 6;        //6: DaNhan, 7: DaHuy, 9: DaHoanTra
+        var trangThaiDaNhan = 6;        //6: DaNhan, 7: DaHuy, 9: DaHoanTra, 10: MuaTaiCuaHang
         var trangThaiDaHuy = 7;
         var trangThaiDaHoanTra = 9;
         var trangThaiMuaTaiCuaHang = 10;
@@ -238,6 +238,17 @@
                 </thead>
                 <tbody>
                     @{
+                        //int[] priorities = {2, 3, 4, 5, 8, 6, 9, 10, 7, 1 };
+                        int[] priorities = {(int)EnumTrangThaiDonHang.ChoXacNhan,
+                                            (int)EnumTrangThaiDonHang.DaXacNhan,
+                                            (int)EnumTrangThaiDonHang.DangGiao,
+                                            (int)EnumTrangThaiDonHang.DaGiao,
+                                            (int)EnumTrangThaiDonHang.DangHoanTra,
+                                            (int)EnumTrangThaiDonHang.DaNhan,
+                                            (int)EnumTrangThaiDonHang.DaHoanTra,
+                                            (int)EnumTrangThaiDonHang.MuaTaiCuaHang,
+                                            (int)EnumTrangThaiDonHang.DaHuy,
+                                            (int)EnumTrangThaiDonHang.GioHang };
                         string searchKeyword = ViewBag.searchKeyword == null ? "" : ViewBag.searchKeyword;
                         int pageNumber = ViewBag.pageNumber;
                         int pageSize = ViewBag.pageSize;
@@ -248,12 +259,16 @@
                                     select new {
                                         MaDonHang = dh.PK_MaDonHang,
                                         TenNguoiDung = dh.tblNguoiDung.TenNguoiDung,
-                                        MaTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().FK_MaTrangThaiDonHang,
-                                        TenTrangThaiDonHang = dh.tblChiTietTrangThaiDonHangs.OrderByDescending(tt => tt.FK_MaTrangThaiDonHang).FirstOrDefault().tblTrangThaiDonHang.TenTrangThaiDonHang
+                                        MaTrangThaiDonHang = dh.FK_MaTrangThaiDonHang,
+                                        TenTrangThaiDonHang = dh.tblTrangThaiDonHang.TenTrangThaiDonHang,
+                                        ThoiGianTaoDonHang = dh.ThoiGianTaoDonHang
                                     };
-                        var listDonHang = query.Where(dh => dh.MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang &&
+
+                        var listDonHang = query.ToList();
+                        listDonHang = listDonHang.Where(dh => dh.MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang &&
                                                         dh.TenNguoiDung.Contains(searchKeyword))
-                                               .OrderBy(dh => dh.MaTrangThaiDonHang)
+                                               .OrderBy(dh => Array.IndexOf(priorities, dh.MaTrangThaiDonHang))
+                                               .ThenBy(dh => dh.ThoiGianTaoDonHang)
                                                .Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
 
                         int stt = listDonHang.Count == 0 ? 0 : pageSize * (pageNumber - 1) + 1;

@@ -45,19 +45,6 @@
     <NavigationProperty Name="tblPhieuNhap" Relationship="Self.FK_MaPhieuNhap_tblChiTietNhapHang_tblPhieuNhap" FromRole="tblChiTietPhieuNhap" ToRole="tblPhieuNhap" />
     <NavigationProperty Name="tblSanPham" Relationship="Self.FK_MaSP_tblChiTietNhapHang_tblSanPham" FromRole="tblChiTietPhieuNhap" ToRole="tblSanPham" />
   </EntityType>
-  <EntityType Name="tblChiTietTrangThaiDonHang">
-    <Key>
-      <PropertyRef Name="FK_MaDonHang" />
-      <PropertyRef Name="FK_MaTrangThaiDonHang" />
-    </Key>
-    <Property Name="FK_MaDonHang" Type="Int32" Nullable="false" />
-    <Property Name="FK_MaTrangThaiDonHang" Type="Int32" Nullable="false" />
-    <Property Name="ThoiGianCapNhat" Type="DateTime" Nullable="false" Precision="3" />
-    <Property Name="FK_MaNhanVienCapNhat" Type="Guid" Nullable="false" />
-    <NavigationProperty Name="tblDonHang" Relationship="Self.FK_MaDH_tblChiTietTrangThaiDonHang_tblDonHang" FromRole="tblChiTietTrangThaiDonHang" ToRole="tblDonHang" />
-    <NavigationProperty Name="tblNguoiDung" Relationship="Self.FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung" FromRole="tblChiTietTrangThaiDonHang" ToRole="tblNguoiDung" />
-    <NavigationProperty Name="tblTrangThaiDonHang" Relationship="Self.FK_MaTTDH_tblChiTietTrangThaiDonHang_tblTrangThaiDonHang" FromRole="tblChiTietTrangThaiDonHang" ToRole="tblTrangThaiDonHang" />
-  </EntityType>
   <EntityType Name="tblChuongTrinhKhuyenMai">
     <Key>
       <PropertyRef Name="PK_MaChuongTrinhKhuyenMai" />
@@ -95,13 +82,31 @@
       <PropertyRef Name="PK_MaDonHang" />
     </Key>
     <Property Name="PK_MaDonHang" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TenNguoiNhan" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="DiaChiGiaoHang" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
     <Property Name="SoDienThoai" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-    <Property Name="FK_MaNguoiDung" Type="Guid" Nullable="false" />
     <Property Name="GhiChu" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="FK_MaNguoiDung" Type="Guid" Nullable="false" />
+    <Property Name="ThoiGianTaoDonHang" Type="DateTime" Precision="3" />
+    <Property Name="FK_MaNhanVienXuLy" Type="Guid" />
+    <Property Name="FK_MaTrangThaiDonHang" Type="Int32" Nullable="false" />
+    <Property Name="ThoiGianCapNhatTrangThai" Type="DateTime" Precision="3" />
     <NavigationProperty Name="tblChiTietDonHangs" Relationship="Self.FK_MaDH_tblChiTietDonHang_tblDonHang" FromRole="tblDonHang" ToRole="tblChiTietDonHang" />
-    <NavigationProperty Name="tblChiTietTrangThaiDonHangs" Relationship="Self.FK_MaDH_tblChiTietTrangThaiDonHang_tblDonHang" FromRole="tblDonHang" ToRole="tblChiTietTrangThaiDonHang" />
     <NavigationProperty Name="tblNguoiDung" Relationship="Self.FK_MaNguoiDung_tblDonHang_tblNguoiDung" FromRole="tblDonHang" ToRole="tblNguoiDung" />
+    <NavigationProperty Name="tblNguoiDung1" Relationship="Self.FK_tblDonHang_tblNguoiDung" FromRole="tblDonHang" ToRole="tblNguoiDung" />
+    <NavigationProperty Name="tblTrangThaiDonHang" Relationship="Self.FK_tblDonHang_tblTrangThaiDonHang" FromRole="tblDonHang" ToRole="tblTrangThaiDonHang" />
+    <NavigationProperty Name="tblLichSuTrangThaiDonHangs" Relationship="Self.FK_tblLichSuTrangThaiDonHang_tblDonHang" FromRole="tblDonHang" ToRole="tblLichSuTrangThaiDonHang" />
+  </EntityType>
+  <EntityType Name="tblLichSuTrangThaiDonHang">
+    <Key>
+      <PropertyRef Name="FK_MaDonHang" />
+      <PropertyRef Name="TenTrangThaiDonHang" />
+    </Key>
+    <Property Name="FK_MaDonHang" Type="Int32" Nullable="false" />
+    <Property Name="TenTrangThaiDonHang" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ThoiGianCapNhat" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="TenNguoiCapNhat" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="tblDonHang" Relationship="Self.FK_tblLichSuTrangThaiDonHang_tblDonHang" FromRole="tblLichSuTrangThaiDonHang" ToRole="tblDonHang" />
   </EntityType>
   <EntityType Name="tblNguoiDung">
     <Key>
@@ -117,9 +122,9 @@
     <Property Name="MatKhauDaMaHoa" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
     <Property Name="TinhTrangHoatDong" Type="Boolean" Nullable="false" />
     <Property Name="FK_MaQuyen" Type="Int32" Nullable="false" />
-    <NavigationProperty Name="tblChiTietTrangThaiDonHangs" Relationship="Self.FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung" FromRole="tblNguoiDung" ToRole="tblChiTietTrangThaiDonHang" />
     <NavigationProperty Name="tblDanhGiaSanPhams" Relationship="Self.FK_MaNguoiDung_tblDanhGiaSanPham_tblNguoiDung" FromRole="tblNguoiDung" ToRole="tblDanhGiaSanPham" />
     <NavigationProperty Name="tblDonHangs" Relationship="Self.FK_MaNguoiDung_tblDonHang_tblNguoiDung" FromRole="tblNguoiDung" ToRole="tblDonHang" />
+    <NavigationProperty Name="tblDonHangs1" Relationship="Self.FK_tblDonHang_tblNguoiDung" FromRole="tblNguoiDung" ToRole="tblDonHang" />
     <NavigationProperty Name="tblPhieuNhaps" Relationship="Self.FK_MaNguoiDung_tblPhieuNhap_tblNguoiDung" FromRole="tblNguoiDung" ToRole="tblPhieuNhap" />
     <NavigationProperty Name="tblQuyen" Relationship="Self.FK_MaQuyen_tblNguoiDung_tblQuyen" FromRole="tblNguoiDung" ToRole="tblQuyen" />
   </EntityType>
@@ -193,7 +198,7 @@
     </Key>
     <Property Name="PK_MaTrangThaiDonHang" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="TenTrangThaiDonHang" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-    <NavigationProperty Name="tblChiTietTrangThaiDonHangs" Relationship="Self.FK_MaTTDH_tblChiTietTrangThaiDonHang_tblTrangThaiDonHang" FromRole="tblTrangThaiDonHang" ToRole="tblChiTietTrangThaiDonHang" />
+    <NavigationProperty Name="tblDonHangs" Relationship="Self.FK_tblDonHang_tblTrangThaiDonHang" FromRole="tblTrangThaiDonHang" ToRole="tblDonHang" />
   </EntityType>
   <EntityType Name="tblGiaThayDoi">
     <Key>
@@ -278,42 +283,6 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_MaDH_tblChiTietTrangThaiDonHang_tblDonHang">
-    <End Role="tblDonHang" Type="Self.tblDonHang" Multiplicity="1" />
-    <End Role="tblChiTietTrangThaiDonHang" Type="Self.tblChiTietTrangThaiDonHang" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="tblDonHang">
-        <PropertyRef Name="PK_MaDonHang" />
-      </Principal>
-      <Dependent Role="tblChiTietTrangThaiDonHang">
-        <PropertyRef Name="FK_MaDonHang" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung">
-    <End Role="tblNguoiDung" Type="Self.tblNguoiDung" Multiplicity="1" />
-    <End Role="tblChiTietTrangThaiDonHang" Type="Self.tblChiTietTrangThaiDonHang" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="tblNguoiDung">
-        <PropertyRef Name="PK_MaNguoiDung" />
-      </Principal>
-      <Dependent Role="tblChiTietTrangThaiDonHang">
-        <PropertyRef Name="FK_MaNhanVienCapNhat" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK_MaTTDH_tblChiTietTrangThaiDonHang_tblTrangThaiDonHang">
-    <End Role="tblTrangThaiDonHang" Type="Self.tblTrangThaiDonHang" Multiplicity="1" />
-    <End Role="tblChiTietTrangThaiDonHang" Type="Self.tblChiTietTrangThaiDonHang" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="tblTrangThaiDonHang">
-        <PropertyRef Name="PK_MaTrangThaiDonHang" />
-      </Principal>
-      <Dependent Role="tblChiTietTrangThaiDonHang">
-        <PropertyRef Name="FK_MaTrangThaiDonHang" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="FK_MaNguoiDung_tblDanhGiaSanPham_tblNguoiDung">
     <End Role="tblNguoiDung" Type="Self.tblNguoiDung" Multiplicity="1" />
     <End Role="tblDanhGiaSanPham" Type="Self.tblDanhGiaSanPham" Multiplicity="*" />
@@ -359,6 +328,42 @@
       </Principal>
       <Dependent Role="tblDonHang">
         <PropertyRef Name="FK_MaNguoiDung" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tblDonHang_tblNguoiDung">
+    <End Role="tblNguoiDung" Type="Self.tblNguoiDung" Multiplicity="0..1" />
+    <End Role="tblDonHang" Type="Self.tblDonHang" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tblNguoiDung">
+        <PropertyRef Name="PK_MaNguoiDung" />
+      </Principal>
+      <Dependent Role="tblDonHang">
+        <PropertyRef Name="FK_MaNhanVienXuLy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tblDonHang_tblTrangThaiDonHang">
+    <End Role="tblTrangThaiDonHang" Type="Self.tblTrangThaiDonHang" Multiplicity="1" />
+    <End Role="tblDonHang" Type="Self.tblDonHang" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tblTrangThaiDonHang">
+        <PropertyRef Name="PK_MaTrangThaiDonHang" />
+      </Principal>
+      <Dependent Role="tblDonHang">
+        <PropertyRef Name="FK_MaTrangThaiDonHang" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tblLichSuTrangThaiDonHang_tblDonHang">
+    <End Role="tblDonHang" Type="Self.tblDonHang" Multiplicity="1" />
+    <End Role="tblLichSuTrangThaiDonHang" Type="Self.tblLichSuTrangThaiDonHang" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tblDonHang">
+        <PropertyRef Name="PK_MaDonHang" />
+      </Principal>
+      <Dependent Role="tblLichSuTrangThaiDonHang">
+        <PropertyRef Name="FK_MaDonHang" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -439,11 +444,11 @@
     <EntitySet Name="tblChiTietDonHangs" EntityType="Self.tblChiTietDonHang" />
     <EntitySet Name="tblChiTietKhuyenMais" EntityType="Self.tblChiTietKhuyenMai" />
     <EntitySet Name="tblChiTietPhieuNhaps" EntityType="Self.tblChiTietPhieuNhap" />
-    <EntitySet Name="tblChiTietTrangThaiDonHangs" EntityType="Self.tblChiTietTrangThaiDonHang" />
     <EntitySet Name="tblChuongTrinhKhuyenMais" EntityType="Self.tblChuongTrinhKhuyenMai" />
     <EntitySet Name="tblDanhGiaSanPhams" EntityType="Self.tblDanhGiaSanPham" />
     <EntitySet Name="tblDanhMucSanPhams" EntityType="Self.tblDanhMucSanPham" />
     <EntitySet Name="tblDonHangs" EntityType="Self.tblDonHang" />
+    <EntitySet Name="tblLichSuTrangThaiDonHangs" EntityType="Self.tblLichSuTrangThaiDonHang" />
     <EntitySet Name="tblNguoiDungs" EntityType="Self.tblNguoiDung" />
     <EntitySet Name="tblNguonCungCaps" EntityType="Self.tblNguonCungCap" />
     <EntitySet Name="tblNhaCungCaps" EntityType="Self.tblNhaCungCap" />
@@ -476,18 +481,6 @@
       <End Role="tblSanPham" EntitySet="tblSanPhams" />
       <End Role="tblChiTietPhieuNhap" EntitySet="tblChiTietPhieuNhaps" />
     </AssociationSet>
-    <AssociationSet Name="FK_MaDH_tblChiTietTrangThaiDonHang_tblDonHang" Association="Self.FK_MaDH_tblChiTietTrangThaiDonHang_tblDonHang">
-      <End Role="tblDonHang" EntitySet="tblDonHangs" />
-      <End Role="tblChiTietTrangThaiDonHang" EntitySet="tblChiTietTrangThaiDonHangs" />
-    </AssociationSet>
-    <AssociationSet Name="FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung" Association="Self.FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung">
-      <End Role="tblNguoiDung" EntitySet="tblNguoiDungs" />
-      <End Role="tblChiTietTrangThaiDonHang" EntitySet="tblChiTietTrangThaiDonHangs" />
-    </AssociationSet>
-    <AssociationSet Name="FK_MaTTDH_tblChiTietTrangThaiDonHang_tblTrangThaiDonHang" Association="Self.FK_MaTTDH_tblChiTietTrangThaiDonHang_tblTrangThaiDonHang">
-      <End Role="tblTrangThaiDonHang" EntitySet="tblTrangThaiDonHangs" />
-      <End Role="tblChiTietTrangThaiDonHang" EntitySet="tblChiTietTrangThaiDonHangs" />
-    </AssociationSet>
     <AssociationSet Name="FK_MaNguoiDung_tblDanhGiaSanPham_tblNguoiDung" Association="Self.FK_MaNguoiDung_tblDanhGiaSanPham_tblNguoiDung">
       <End Role="tblNguoiDung" EntitySet="tblNguoiDungs" />
       <End Role="tblDanhGiaSanPham" EntitySet="tblDanhGiaSanPhams" />
@@ -503,6 +496,18 @@
     <AssociationSet Name="FK_MaNguoiDung_tblDonHang_tblNguoiDung" Association="Self.FK_MaNguoiDung_tblDonHang_tblNguoiDung">
       <End Role="tblNguoiDung" EntitySet="tblNguoiDungs" />
       <End Role="tblDonHang" EntitySet="tblDonHangs" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tblDonHang_tblNguoiDung" Association="Self.FK_tblDonHang_tblNguoiDung">
+      <End Role="tblNguoiDung" EntitySet="tblNguoiDungs" />
+      <End Role="tblDonHang" EntitySet="tblDonHangs" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tblDonHang_tblTrangThaiDonHang" Association="Self.FK_tblDonHang_tblTrangThaiDonHang">
+      <End Role="tblTrangThaiDonHang" EntitySet="tblTrangThaiDonHangs" />
+      <End Role="tblDonHang" EntitySet="tblDonHangs" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tblLichSuTrangThaiDonHang_tblDonHang" Association="Self.FK_tblLichSuTrangThaiDonHang_tblDonHang">
+      <End Role="tblDonHang" EntitySet="tblDonHangs" />
+      <End Role="tblLichSuTrangThaiDonHang" EntitySet="tblLichSuTrangThaiDonHangs" />
     </AssociationSet>
     <AssociationSet Name="FK_MaNguoiDung_tblPhieuNhap_tblNguoiDung" Association="Self.FK_MaNguoiDung_tblPhieuNhap_tblNguoiDung">
       <End Role="tblNguoiDung" EntitySet="tblNguoiDungs" />

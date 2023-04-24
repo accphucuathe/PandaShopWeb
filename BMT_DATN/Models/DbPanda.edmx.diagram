@@ -4,23 +4,23 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="c3401f2af2db4bb8af37c042a80e1a48" Name="Diagram1">
+      <Diagram DiagramId="4241709f314e4f5da962e7a903678579" Name="Diagram1">
         <EntityTypeShape EntityType="BMT_DATNModel.sysdiagram" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblChiTietDonHang" Width="1.5" PointX="5.25" PointY="8.625" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblChiTietKhuyenMai" Width="1.5" PointX="5.25" PointY="5.75" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblChiTietPhieuNhap" Width="1.5" PointX="5.25" PointY="11.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="BMT_DATNModel.tblChiTietTrangThaiDonHang" Width="1.5" PointX="5.25" PointY="14.5" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblChuongTrinhKhuyenMai" Width="1.5" PointX="3" PointY="4.625" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblDanhGiaSanPham" Width="1.5" PointX="8.25" PointY="8.5" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblDanhMucSanPham" Width="1.5" PointX="0.75" PointY="8.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="BMT_DATNModel.tblDonHang" Width="1.5" PointX="3" PointY="13.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="BMT_DATNModel.tblNguoiDung" Width="1.5" PointX="0.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMT_DATNModel.tblDonHang" Width="1.5" PointX="3" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMT_DATNModel.tblLichSuTrangThaiDonHang" Width="1.5" PointX="5.25" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMT_DATNModel.tblNguoiDung" Width="1.5" PointX="0.75" PointY="12.625" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblNguonCungCap" Width="1.5" PointX="8.25" PointY="5.75" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblNhaCungCap" Width="1.5" PointX="6" PointY="2.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="BMT_DATNModel.tblPhieuNhap" Width="1.5" PointX="3" PointY="20.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="BMT_DATNModel.tblQuyen" Width="1.5" PointX="1.5" PointY="18" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMT_DATNModel.tblPhieuNhap" Width="1.5" PointX="3" PointY="21.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMT_DATNModel.tblQuyen" Width="1.5" PointX="1.5" PointY="18.75" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblSanPham" Width="1.5" PointX="3" PointY="7.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="BMT_DATNModel.tblTrangThaiDonHang" Width="1.5" PointX="3" PointY="26" IsExpanded="true" />
+        <EntityTypeShape EntityType="BMT_DATNModel.tblTrangThaiDonHang" Width="1.5" PointX="0.75" PointY="21.25" IsExpanded="true" />
         <EntityTypeShape EntityType="BMT_DATNModel.tblGiaThayDoi" Width="1.5" PointX="5.25" PointY="23.25" IsExpanded="true" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaDH_tblChiTietDonHang_tblDonHang" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaSP_tblChiTietDonHang_tblSanPham" ManuallyRouted="false" />
@@ -28,13 +28,13 @@
         <AssociationConnector Association="BMT_DATNModel.FK_MaSP_tblChiTietKhuyenMai_tblSanPham" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaPhieuNhap_tblChiTietNhapHang_tblPhieuNhap" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaSP_tblChiTietNhapHang_tblSanPham" ManuallyRouted="false" />
-        <AssociationConnector Association="BMT_DATNModel.FK_MaDH_tblChiTietTrangThaiDonHang_tblDonHang" ManuallyRouted="false" />
-        <AssociationConnector Association="BMT_DATNModel.FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung" ManuallyRouted="false" />
-        <AssociationConnector Association="BMT_DATNModel.FK_MaTTDH_tblChiTietTrangThaiDonHang_tblTrangThaiDonHang" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaNguoiDung_tblDanhGiaSanPham_tblNguoiDung" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaSP_tblDanhGiaSanPham_tblSanPham" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaDanhMucSanPham_tblSanPham_tblDanhMucSanPham" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaNguoiDung_tblDonHang_tblNguoiDung" ManuallyRouted="false" />
+        <AssociationConnector Association="BMT_DATNModel.FK_tblDonHang_tblNguoiDung" ManuallyRouted="false" />
+        <AssociationConnector Association="BMT_DATNModel.FK_tblDonHang_tblTrangThaiDonHang" ManuallyRouted="false" />
+        <AssociationConnector Association="BMT_DATNModel.FK_tblLichSuTrangThaiDonHang_tblDonHang" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaNguoiDung_tblPhieuNhap_tblNguoiDung" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaQuyen_tblNguoiDung_tblQuyen" ManuallyRouted="false" />
         <AssociationConnector Association="BMT_DATNModel.FK_MaNCC_tblNguonCungCap_tblNhaCungCap" ManuallyRouted="false" />

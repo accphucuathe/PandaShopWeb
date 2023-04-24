@@ -17,13 +17,13 @@ namespace BMT_DATN.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public tblTrangThaiDonHang()
         {
-            this.tblChiTietTrangThaiDonHangs = new HashSet<tblChiTietTrangThaiDonHang>();
+            this.tblDonHangs = new HashSet<tblDonHang>();
         }
     
         public int PK_MaTrangThaiDonHang { get; set; }
         public string TenTrangThaiDonHang { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tblChiTietTrangThaiDonHang> tblChiTietTrangThaiDonHangs { get; set; }
+        public virtual ICollection<tblDonHang> tblDonHangs { get; set; }
     }
 }

@@ -31,11 +31,11 @@ namespace BMT_DATN.Models
         public virtual DbSet<tblChiTietDonHang> tblChiTietDonHangs { get; set; }
         public virtual DbSet<tblChiTietKhuyenMai> tblChiTietKhuyenMais { get; set; }
         public virtual DbSet<tblChiTietPhieuNhap> tblChiTietPhieuNhaps { get; set; }
-        public virtual DbSet<tblChiTietTrangThaiDonHang> tblChiTietTrangThaiDonHangs { get; set; }
         public virtual DbSet<tblChuongTrinhKhuyenMai> tblChuongTrinhKhuyenMais { get; set; }
         public virtual DbSet<tblDanhGiaSanPham> tblDanhGiaSanPhams { get; set; }
         public virtual DbSet<tblDanhMucSanPham> tblDanhMucSanPhams { get; set; }
         public virtual DbSet<tblDonHang> tblDonHangs { get; set; }
+        public virtual DbSet<tblLichSuTrangThaiDonHang> tblLichSuTrangThaiDonHangs { get; set; }
         public virtual DbSet<tblNguoiDung> tblNguoiDungs { get; set; }
         public virtual DbSet<tblNguonCungCap> tblNguonCungCaps { get; set; }
         public virtual DbSet<tblNhaCungCap> tblNhaCungCaps { get; set; }

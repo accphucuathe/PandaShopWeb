@@ -22,23 +22,23 @@
                                       promotionPercent = ctkm.PhanTramGiamGia
                                   });
     //
-    var currentProductsInCart = (from sp in db.tblChiTietDonHangs
-                                 join paop in productsAreOnPromotion on sp.FK_MaSanPham equals paop.idPromotionProduct
+    var currentProductsInCart = (from ctdh in db.tblChiTietDonHangs
+                                 join paop in productsAreOnPromotion on ctdh.FK_MaSanPham equals paop.idPromotionProduct
                                  into gj
                                  from paop in gj.DefaultIfEmpty()
-                                 where sp.FK_MaDonHang == maGioHang
+                                 where ctdh.FK_MaDonHang == maGioHang
                                  select new
                                  {
-                                     FK_MaDonHang = sp.FK_MaDonHang,
-                                     FK_MaSanPham = sp.FK_MaSanPham,
-                                     SoLuongMua = sp.SoLuongMua,
-                                     DonGia = sp.DonGia,
+                                     FK_MaDonHang = ctdh.FK_MaDonHang,
+                                     FK_MaSanPham = ctdh.FK_MaSanPham,
+                                     SoLuongMua = ctdh.SoLuongMua,
+                                     DonGia = ctdh.tblSanPham.DonGia,
                                      PhanTramGiamGia = paop != null ? paop.promotionPercent : 0 ,
-                                     GiaHienTai = paop != null ? (sp.DonGia * (100 - paop.promotionPercent) / 100) : sp.DonGia,
-                                     TenSanPham = sp.tblSanPham.TenSanPham,
-                                     KichCo = sp.tblSanPham.KichCo,
-                                     SoLuong = sp.tblSanPham.SoLuong,
-                                     HinhAnh = sp.tblSanPham.HinhAnh
+                                     GiaHienTai = paop != null ? (ctdh.tblSanPham.DonGia * (100 - paop.promotionPercent) / 100) : ctdh.tblSanPham.DonGia,
+                                     TenSanPham = ctdh.tblSanPham.TenSanPham,
+                                     KichCo = ctdh.tblSanPham.KichCo,
+                                     SoLuong = ctdh.tblSanPham.SoLuong,
+                                     HinhAnh = ctdh.tblSanPham.HinhAnh
                                  }
                                  ).ToList();
     //
@@ -239,6 +239,10 @@ function checkSoLuongSanPhamHopLy() {
         for (var i = 0; i < arrSoLuongTrongKho.length; i++) {
             if (arrSoLuongTrongKho[i] < arrSoLuongSanPham[i]) {
                 alert("Số lượng sản phẩm không hợp lệ!");
+                return false;
+            }
+            if (arrSoLuongSanPham[i] >= 50) {
+                alert("Nếu bạn có nhu cầu đặt mua số lượng lớn, vui lòng liên hệ trực tiếp với cửa hàng để nhận được giá bán sỉ tốt nhất \n Địa chỉ cửa hàng: số 29 ngõ 258 Tân Mai - Hoàng Mai - Hà Nội \n Hotline: 0396638066");
                 return false;
             }
         }

@@ -12,15 +12,13 @@ namespace BMT_DATN.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class tblChiTietTrangThaiDonHang
+    public partial class tblLichSuTrangThaiDonHang
     {
         public int FK_MaDonHang { get; set; }
-        public int FK_MaTrangThaiDonHang { get; set; }
+        public string TenTrangThaiDonHang { get; set; }
         public System.DateTime ThoiGianCapNhat { get; set; }
-        public System.Guid FK_MaNhanVienCapNhat { get; set; }
+        public string TenNguoiCapNhat { get; set; }
     
         public virtual tblDonHang tblDonHang { get; set; }
-        public virtual tblNguoiDung tblNguoiDung { get; set; }
-        public virtual tblTrangThaiDonHang tblTrangThaiDonHang { get; set; }
     }
 }

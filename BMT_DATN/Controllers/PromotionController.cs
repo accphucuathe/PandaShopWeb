@@ -162,7 +162,7 @@ namespace BMT_DATN.Controllers
             }
             else
             {
-                result = "Xóa đánh giá sản phẩm thất bại!";
+                result = "Xóa chương trình khuyến mại thất bại!";
             }
 
             return Json(new
@@ -178,6 +178,18 @@ namespace BMT_DATN.Controllers
         {
             string searchK = searchKeyword;
             return Json(new { redirectToUrl = Url.Action("QuanLyChuongTrinhKhuyenMai", "Promotion", new { searchKeyword = searchK }) });
+        }
+
+        // QL chuong trinh khuyen mai - sua ctkm
+        public ActionResult SuaChuongTrinhKhuyenMai()
+        {
+            // check permission
+            if (HomeController.nguoidung.quyenNguoiDung != (int)EnumQuyen.ChuCuaHang)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
         }
     }
 }

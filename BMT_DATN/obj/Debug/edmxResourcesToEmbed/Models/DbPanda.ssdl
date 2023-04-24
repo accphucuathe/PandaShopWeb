@@ -39,16 +39,6 @@
     <Property Name="SoLuongNhap" Type="int" Nullable="false" />
     <Property Name="GiaNhap" Type="int" Nullable="false" />
   </EntityType>
-  <EntityType Name="tblChiTietTrangThaiDonHang">
-    <Key>
-      <PropertyRef Name="FK_MaDonHang" />
-      <PropertyRef Name="FK_MaTrangThaiDonHang" />
-    </Key>
-    <Property Name="FK_MaDonHang" Type="int" Nullable="false" />
-    <Property Name="FK_MaTrangThaiDonHang" Type="int" Nullable="false" />
-    <Property Name="ThoiGianCapNhat" Type="datetime" Nullable="false" />
-    <Property Name="FK_MaNhanVienCapNhat" Type="uniqueidentifier" Nullable="false" />
-  </EntityType>
   <EntityType Name="tblChuongTrinhKhuyenMai">
     <Key>
       <PropertyRef Name="PK_MaChuongTrinhKhuyenMai" />
@@ -82,10 +72,15 @@
       <PropertyRef Name="PK_MaDonHang" />
     </Key>
     <Property Name="PK_MaDonHang" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TenNguoiNhan" Type="nvarchar" MaxLength="50" />
     <Property Name="DiaChiGiaoHang" Type="nvarchar" MaxLength="100" />
     <Property Name="SoDienThoai" Type="varchar" MaxLength="10" />
-    <Property Name="FK_MaNguoiDung" Type="uniqueidentifier" Nullable="false" />
     <Property Name="GhiChu" Type="nvarchar" MaxLength="255" />
+    <Property Name="FK_MaNguoiDung" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="ThoiGianTaoDonHang" Type="datetime" />
+    <Property Name="FK_MaNhanVienXuLy" Type="uniqueidentifier" />
+    <Property Name="FK_MaTrangThaiDonHang" Type="int" Nullable="false" />
+    <Property Name="ThoiGianCapNhatTrangThai" Type="datetime" />
   </EntityType>
   <!--Errors Found During Generation:
 warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -98,6 +93,16 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
     <Property Name="FK_MaSanPham" Type="int" Nullable="false" />
     <Property Name="ThoiGianThayDoiGia" Type="datetime" Nullable="false" />
     <Property Name="GiaThayDoi" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="tblLichSuTrangThaiDonHang">
+    <Key>
+      <PropertyRef Name="FK_MaDonHang" />
+      <PropertyRef Name="TenTrangThaiDonHang" />
+    </Key>
+    <Property Name="FK_MaDonHang" Type="int" Nullable="false" />
+    <Property Name="TenTrangThaiDonHang" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="ThoiGianCapNhat" Type="datetime" Nullable="false" />
+    <Property Name="TenNguoiCapNhat" Type="nvarchar" MaxLength="50" Nullable="false" />
   </EntityType>
   <EntityType Name="tblNguoiDung">
     <Key>
@@ -218,18 +223,6 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_MaDH_tblChiTietTrangThaiDonHang_tblDonHang">
-    <End Role="tblDonHang" Type="Self.tblDonHang" Multiplicity="1" />
-    <End Role="tblChiTietTrangThaiDonHang" Type="Self.tblChiTietTrangThaiDonHang" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="tblDonHang">
-        <PropertyRef Name="PK_MaDonHang" />
-      </Principal>
-      <Dependent Role="tblChiTietTrangThaiDonHang">
-        <PropertyRef Name="FK_MaDonHang" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="FK_MaNCC_tblNguonCungCap_tblNhaCungCap">
     <End Role="tblNhaCungCap" Type="Self.tblNhaCungCap" Multiplicity="1" />
     <End Role="tblNguonCungCap" Type="Self.tblNguonCungCap" Multiplicity="*" />
@@ -290,15 +283,15 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung">
-    <End Role="tblNguoiDung" Type="Self.tblNguoiDung" Multiplicity="1" />
-    <End Role="tblChiTietTrangThaiDonHang" Type="Self.tblChiTietTrangThaiDonHang" Multiplicity="*" />
+  <Association Name="FK_MaNhanVienXuLy_tblDonHang_tblNguoiDung">
+    <End Role="tblNguoiDung" Type="Self.tblNguoiDung" Multiplicity="0..1" />
+    <End Role="tblDonHang" Type="Self.tblDonHang" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="tblNguoiDung">
         <PropertyRef Name="PK_MaNguoiDung" />
       </Principal>
-      <Dependent Role="tblChiTietTrangThaiDonHang">
-        <PropertyRef Name="FK_MaNhanVienCapNhat" />
+      <Dependent Role="tblDonHang">
+        <PropertyRef Name="FK_MaNhanVienXuLy" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -386,15 +379,27 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_MaTTDH_tblChiTietTrangThaiDonHang_tblTrangThaiDonHang">
+  <Association Name="FK_tblDonHang_tblTrangThaiDonHang">
     <End Role="tblTrangThaiDonHang" Type="Self.tblTrangThaiDonHang" Multiplicity="1" />
-    <End Role="tblChiTietTrangThaiDonHang" Type="Self.tblChiTietTrangThaiDonHang" Multiplicity="*" />
+    <End Role="tblDonHang" Type="Self.tblDonHang" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="tblTrangThaiDonHang">
         <PropertyRef Name="PK_MaTrangThaiDonHang" />
       </Principal>
-      <Dependent Role="tblChiTietTrangThaiDonHang">
+      <Dependent Role="tblDonHang">
         <PropertyRef Name="FK_MaTrangThaiDonHang" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tblLichSuTrangThaiDonHang_tblDonHang">
+    <End Role="tblDonHang" Type="Self.tblDonHang" Multiplicity="1" />
+    <End Role="tblLichSuTrangThaiDonHang" Type="Self.tblLichSuTrangThaiDonHang" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tblDonHang">
+        <PropertyRef Name="PK_MaDonHang" />
+      </Principal>
+      <Dependent Role="tblLichSuTrangThaiDonHang">
+        <PropertyRef Name="FK_MaDonHang" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -437,11 +442,11 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
     <EntitySet Name="tblChiTietDonHang" EntityType="Self.tblChiTietDonHang" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblChiTietKhuyenMai" EntityType="Self.tblChiTietKhuyenMai" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblChiTietPhieuNhap" EntityType="Self.tblChiTietPhieuNhap" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="tblChiTietTrangThaiDonHang" EntityType="Self.tblChiTietTrangThaiDonHang" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblChuongTrinhKhuyenMai" EntityType="Self.tblChuongTrinhKhuyenMai" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblDanhGiaSanPham" EntityType="Self.tblDanhGiaSanPham" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblDanhMucSanPham" EntityType="Self.tblDanhMucSanPham" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblDonHang" EntityType="Self.tblDonHang" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblLichSuTrangThaiDonHang" EntityType="Self.tblLichSuTrangThaiDonHang" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblNguoiDung" EntityType="Self.tblNguoiDung" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblNguonCungCap" EntityType="Self.tblNguonCungCap" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblNhaCungCap" EntityType="Self.tblNhaCungCap" Schema="dbo" store:Type="Tables" />
@@ -449,7 +454,13 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
     <EntitySet Name="tblQuyen" EntityType="Self.tblQuyen" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblSanPham" EntityType="Self.tblSanPham" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="tblTrangThaiDonHang" EntityType="Self.tblTrangThaiDonHang" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="tblGiaThayDoi" EntityType="Self.tblGiaThayDoi" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="tblGiaThayDoi" EntityType="Self.tblGiaThayDoi" store:Type="Tables" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [tblGiaThayDoi].[FK_MaSanPham] AS [FK_MaSanPham], 
+    [tblGiaThayDoi].[ThoiGianThayDoiGia] AS [ThoiGianThayDoiGia], 
+    [tblGiaThayDoi].[GiaThayDoi] AS [GiaThayDoi]
+    FROM [dbo].[tblGiaThayDoi] AS [tblGiaThayDoi]</DefiningQuery>
+    </EntitySet>
     <AssociationSet Name="FK_GiaThayDoi_tblGiaThayDoi_tblSanPham" Association="Self.FK_GiaThayDoi_tblGiaThayDoi_tblSanPham">
       <End Role="tblSanPham" EntitySet="tblSanPham" />
       <End Role="tblGiaThayDoi" EntitySet="tblGiaThayDoi" />
@@ -465,10 +476,6 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
     <AssociationSet Name="FK_MaDH_tblChiTietDonHang_tblDonHang" Association="Self.FK_MaDH_tblChiTietDonHang_tblDonHang">
       <End Role="tblDonHang" EntitySet="tblDonHang" />
       <End Role="tblChiTietDonHang" EntitySet="tblChiTietDonHang" />
-    </AssociationSet>
-    <AssociationSet Name="FK_MaDH_tblChiTietTrangThaiDonHang_tblDonHang" Association="Self.FK_MaDH_tblChiTietTrangThaiDonHang_tblDonHang">
-      <End Role="tblDonHang" EntitySet="tblDonHang" />
-      <End Role="tblChiTietTrangThaiDonHang" EntitySet="tblChiTietTrangThaiDonHang" />
     </AssociationSet>
     <AssociationSet Name="FK_MaNCC_tblNguonCungCap_tblNhaCungCap" Association="Self.FK_MaNCC_tblNguonCungCap_tblNhaCungCap">
       <End Role="tblNhaCungCap" EntitySet="tblNhaCungCap" />
@@ -490,9 +497,9 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
       <End Role="tblNguoiDung" EntitySet="tblNguoiDung" />
       <End Role="tblPhieuNhap" EntitySet="tblPhieuNhap" />
     </AssociationSet>
-    <AssociationSet Name="FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung" Association="Self.FK_MaNhanVien_tblChiTietTrangThaiDonHang_tblNguoiDung">
+    <AssociationSet Name="FK_MaNhanVienXuLy_tblDonHang_tblNguoiDung" Association="Self.FK_MaNhanVienXuLy_tblDonHang_tblNguoiDung">
       <End Role="tblNguoiDung" EntitySet="tblNguoiDung" />
-      <End Role="tblChiTietTrangThaiDonHang" EntitySet="tblChiTietTrangThaiDonHang" />
+      <End Role="tblDonHang" EntitySet="tblDonHang" />
     </AssociationSet>
     <AssociationSet Name="FK_MaPhieuNhap_tblChiTietNhapHang_tblPhieuNhap" Association="Self.FK_MaPhieuNhap_tblChiTietNhapHang_tblPhieuNhap">
       <End Role="tblPhieuNhap" EntitySet="tblPhieuNhap" />
@@ -522,9 +529,13 @@ warning 6002: The table/view 'BMT_DATN.dbo.tblGiaThayDoi' does not have a primar
       <End Role="tblSanPham" EntitySet="tblSanPham" />
       <End Role="tblNguonCungCap" EntitySet="tblNguonCungCap" />
     </AssociationSet>
-    <AssociationSet Name="FK_MaTTDH_tblChiTietTrangThaiDonHang_tblTrangThaiDonHang" Association="Self.FK_MaTTDH_tblChiTietTrangThaiDonHang_tblTrangThaiDonHang">
+    <AssociationSet Name="FK_tblDonHang_tblTrangThaiDonHang" Association="Self.FK_tblDonHang_tblTrangThaiDonHang">
       <End Role="tblTrangThaiDonHang" EntitySet="tblTrangThaiDonHang" />
-      <End Role="tblChiTietTrangThaiDonHang" EntitySet="tblChiTietTrangThaiDonHang" />
+      <End Role="tblDonHang" EntitySet="tblDonHang" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tblLichSuTrangThaiDonHang_tblDonHang" Association="Self.FK_tblLichSuTrangThaiDonHang_tblDonHang">
+      <End Role="tblDonHang" EntitySet="tblDonHang" />
+      <End Role="tblLichSuTrangThaiDonHang" EntitySet="tblLichSuTrangThaiDonHang" />
     </AssociationSet>
   </EntityContainer>
 </Schema>

@@ -33,10 +33,15 @@
     var allReviewThisProduct = (from dgsp in db.tblDanhGiaSanPhams
                                 where dgsp.FK_MaSanPham == maSanPham
                                 select dgsp).ToList();
+    //var listSuccessOrderHaveThisProductOfUser = (from dh in db.tblDonHangs
+    //                                             join ctttdh in db.tblChiTietTrangThaiDonHangs on dh.PK_MaDonHang equals ctttdh.FK_MaDonHang
+    //                                             where dh.FK_MaNguoiDung.Equals(userId) &&
+    //                                                      ctttdh.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaNhan &&
+    //                                                      dh.tblChiTietDonHangs.Any(ctdh => ctdh.FK_MaSanPham == maSanPham)
+    //                                             select dh).ToList();
     var listSuccessOrderHaveThisProductOfUser = (from dh in db.tblDonHangs
-                                                 join ctttdh in db.tblChiTietTrangThaiDonHangs on dh.PK_MaDonHang equals ctttdh.FK_MaDonHang
                                                  where dh.FK_MaNguoiDung.Equals(userId) &&
-                                                          ctttdh.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaNhan &&
+                                                          dh.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaNhan &&
                                                           dh.tblChiTietDonHangs.Any(ctdh => ctdh.FK_MaSanPham == maSanPham)
                                                  select dh).ToList();
 

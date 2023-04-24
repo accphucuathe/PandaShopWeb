@@ -43,6 +43,10 @@ namespace BMT_DATN.Controllers
         {
             ViewBag.maDonHang = maDh;
 
+            if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.NhanVien)
+            {
+                return View("XemDonHang", "layout_staff");
+            }
             return View();
         }
 
@@ -54,8 +58,22 @@ namespace BMT_DATN.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            var infoDonHang = (from dh in db.tblDonHangs
+                               where dh.PK_MaDonHang == maDh
+                               select dh).FirstOrDefault();
+            if (infoDonHang.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaNhan ||
+                infoDonHang.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaHoanTra ||
+                infoDonHang.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaHuy ||
+                infoDonHang.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.MuaTaiCuaHang)
+            {
+                return RedirectToAction("QuanLyDonHang", "Order");
+            }
             ViewBag.maDonHang = maDh;
 
+            if (HomeController.nguoidung.quyenNguoiDung == (int)EnumQuyen.NhanVien)
+            {
+                return View("XemDonHang", "layout_staff");
+            }
             return View();
         }
 
@@ -66,10 +84,18 @@ namespace BMT_DATN.Controllers
             string redirect = "";
             string refresh = "";
             Guid userId = HomeController.nguoidung.maNguoiDung;
-            var checkTrangThaiDonHang = (from ctttdh in db.tblChiTietTrangThaiDonHangs
-                                         where ctttdh.FK_MaDonHang == orderId &&
-                                                ctttdh.FK_MaTrangThaiDonHang == newOrderStatusId
-                                         select ctttdh).FirstOrDefault();
+            string userName = HomeController.nguoidung.tenNguoiDung;
+            //var checkTrangThaiDonHang = (from ctttdh in db.tblChiTietTrangThaiDonHangs
+            //                             where ctttdh.FK_MaDonHang == orderId &&
+            //                                    ctttdh.FK_MaTrangThaiDonHang == newOrderStatusId
+            //                             select ctttdh).FirstOrDefault();
+            var getTenTrangThaiDonHang = (from ttdh in db.tblTrangThaiDonHangs
+                                          where ttdh.PK_MaTrangThaiDonHang == newOrderStatusId
+                                          select ttdh.TenTrangThaiDonHang).FirstOrDefault();
+            var checkTrangThaiDonHang = (from lsttdh in db.tblLichSuTrangThaiDonHangs
+                                         where lsttdh.FK_MaDonHang == orderId &&
+                                                lsttdh.TenTrangThaiDonHang.Equals(getTenTrangThaiDonHang)
+                                         select lsttdh).FirstOrDefault();
             if (checkTrangThaiDonHang != null)
             {
                 result = "Đơn hàng đã có trạng thái này";
@@ -79,13 +105,25 @@ namespace BMT_DATN.Controllers
             else
             {
                 // lay trang thai hien tai cua don hang
-                var currentOrderStatus = (from ctttdh in db.tblChiTietTrangThaiDonHangs
-                                          where ctttdh.FK_MaDonHang == orderId &&
-                                                ctttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
-                                          orderby ctttdh.FK_MaTrangThaiDonHang descending
-                                          select ctttdh).FirstOrDefault();
+                //var currentOrderStatus = (from ctttdh in db.tblChiTietTrangThaiDonHangs
+                //                          where ctttdh.FK_MaDonHang == orderId &&
+                //                                ctttdh.FK_MaTrangThaiDonHang != (int)EnumTrangThaiDonHang.GioHang
+                //                          orderby ctttdh.FK_MaTrangThaiDonHang descending
+                //                          select ctttdh).FirstOrDefault();
+                // lay don hang hien tai
+                var currentOrder = (from dh in db.tblDonHangs
+                                    where dh.PK_MaDonHang == orderId
+                                    select dh).FirstOrDefault();
+                currentOrder.FK_MaTrangThaiDonHang = newOrderStatusId;
+                currentOrder.ThoiGianCapNhatTrangThai = DateTime.Now;
+
                 result = "Đã cập nhật trạng thái cho đơn hàng này";
                 redirect = "1";
+                // neu trang thai moi la "Da xac nhan" thi se luu lai nhan vien xu ly
+                if (newOrderStatusId == (int)EnumTrangThaiDonHang.DaXacNhan)
+                {
+                    currentOrder.FK_MaNhanVienXuLy = userId;
+                }
                 // neu trang thai moi la "Dang Giao" thi se giam tru so luong sp trong kho
                 if (newOrderStatusId == (int)EnumTrangThaiDonHang.DangGiao)
                 {
@@ -112,6 +150,7 @@ namespace BMT_DATN.Controllers
                 // neu trang thai moi la "Da Huy"
                 if (newOrderStatusId == (int)EnumTrangThaiDonHang.DaHuy)
                 {
+                    currentOrder.FK_MaNhanVienXuLy = userId;    // luu nhan vien huy don
                     result = "Đã hủy đơn hàng này";
                     redirect = "0";
                     refresh = "1";
@@ -143,13 +182,13 @@ namespace BMT_DATN.Controllers
                     refresh = "1";
                 }
 
-                // cap nhat trang thai don hang moi
-                var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
-                trangThaiDonHangMoi.FK_MaDonHang = orderId;
-                trangThaiDonHangMoi.FK_MaTrangThaiDonHang = newOrderStatusId;
-                trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
-                trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
-                db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
+                // luu lai lich su trang thai don hang moi
+                var lichSuTrangThaiDonHangMoi = new tblLichSuTrangThaiDonHang();
+                lichSuTrangThaiDonHangMoi.FK_MaDonHang = orderId;
+                lichSuTrangThaiDonHangMoi.TenTrangThaiDonHang = getTenTrangThaiDonHang;
+                lichSuTrangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
+                lichSuTrangThaiDonHangMoi.TenNguoiCapNhat = userName;
+                db.tblLichSuTrangThaiDonHangs.Add(lichSuTrangThaiDonHangMoi);
                 // save
                 db.SaveChanges();
             }
@@ -178,11 +217,12 @@ namespace BMT_DATN.Controllers
 
         // QL don hang - admin them don hang moi
         [HttpPost]
-        public JsonResult AdminThemDonHang(String noteShipping, int[] productIds, int[] productQuantitys)
+        public JsonResult AdminThemDonHang(String receiverShipping, String addressShipping, String phoneShipping, String noteShipping, int[] productIds, int[] productQuantitys)
         {
             string result = "";
             string redirect = "";
             Guid userId = HomeController.nguoidung.maNguoiDung;
+            string userName = HomeController.nguoidung.tenNguoiDung;
             int[] idProd = productIds;
             int[] quantityProd = productQuantitys;
             int[] priceProd = new int[idProd.Length];
@@ -210,19 +250,24 @@ namespace BMT_DATN.Controllers
             {
                 // insert tblDonHang
                 var donHangMoi = new tblDonHang();
-                donHangMoi.DiaChiGiaoHang = "Mua tại cửa hàng";
-                donHangMoi.SoDienThoai = "";
+                donHangMoi.TenNguoiNhan = receiverShipping;
+                donHangMoi.DiaChiGiaoHang = addressShipping;
+                donHangMoi.SoDienThoai = phoneShipping;
                 donHangMoi.GhiChu = noteShipping;
                 donHangMoi.FK_MaNguoiDung = userId;
+                donHangMoi.ThoiGianTaoDonHang = DateTime.Now;
+                donHangMoi.FK_MaNhanVienXuLy = userId;
+                donHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.MuaTaiCuaHang;
+                donHangMoi.ThoiGianCapNhatTrangThai = DateTime.Now;
                 db.tblDonHangs.Add(donHangMoi);
 
                 // insert tblChiTietTrangThaiDonHang
-                var trangThaiDonHangMoi = new tblChiTietTrangThaiDonHang();
-                trangThaiDonHangMoi.FK_MaDonHang = donHangMoi.PK_MaDonHang;
-                trangThaiDonHangMoi.FK_MaTrangThaiDonHang = (int)EnumTrangThaiDonHang.MuaTaiCuaHang;
-                trangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
-                trangThaiDonHangMoi.FK_MaNhanVienCapNhat = userId;
-                db.tblChiTietTrangThaiDonHangs.Add(trangThaiDonHangMoi);
+                var lichSuTrangThaiDonHangMoi = new tblLichSuTrangThaiDonHang();
+                lichSuTrangThaiDonHangMoi.FK_MaDonHang = donHangMoi.PK_MaDonHang;
+                lichSuTrangThaiDonHangMoi.TenTrangThaiDonHang = "Mua tại cửa hàng";
+                lichSuTrangThaiDonHangMoi.ThoiGianCapNhat = DateTime.Now;
+                lichSuTrangThaiDonHangMoi.TenNguoiCapNhat = userName;
+                db.tblLichSuTrangThaiDonHangs.Add(lichSuTrangThaiDonHangMoi);
 
                 // insert tblChiTietDonHang
                 List<tblChiTietDonHang> listCtdh = new List<tblChiTietDonHang>();
