@@ -69,6 +69,11 @@ namespace BMT_DATN
                 url: "chi-tiet-don-hang",
                 defaults: new { controller = "Home", action = "ChiTietDonHang", id = UrlParameter.Optional }
             );
+            routes.MapRoute(
+                name: "VeCuaHang",
+                url: "cua-hang",
+                defaults: new { controller = "Home", action = "AboutUs", id = UrlParameter.Optional }
+            );
 
             // Admin + QuanLyNguoiDung View
             routes.MapRoute(
@@ -254,11 +259,20 @@ namespace BMT_DATN
                 url: "thong-ke-san-pham",
                 defaults: new { controller = "Statistic", action = "ThongKeSanPham", id = UrlParameter.Optional }
             );
-
+            routes.MapRoute(
+                name: "ThongKeDonHang",
+                url: "thong-ke-don-hang",
+                defaults: new { controller = "Statistic", action = "ThongKeDonHang", id = UrlParameter.Optional }
+            );
             routes.MapRoute(
                 name: "ThongKeNhapHang",
                 url: "thong-ke-nhap-hang",
                 defaults: new { controller = "Statistic", action = "ThongKeNhapHang", id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "ThongKeDoanhThu",
+                url: "thong-ke-doanh-thu",
+                defaults: new { controller = "Statistic", action = "ThongKeDoanhThu", id = UrlParameter.Optional }
             );
 
             // mac dinh

@@ -557,5 +557,10 @@ namespace BMT_DATN.Controllers
             },
             JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult AboutUs()
+        {
+            return View();
+        }
     }
 }

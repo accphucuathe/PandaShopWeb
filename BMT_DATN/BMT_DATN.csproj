@@ -99,6 +99,7 @@
     <Content Include="Global.asax" />
     <Content Include="Image\layout\avatar_profile.png" />
     <Content Include="Image\layout\avatar_profile_2.png" />
+    <Content Include="Image\layout\ghe_tham_panda_shop.jpg" />
     <Content Include="Image\layout\padan_logo_merge.png" />
     <Content Include="Image\layout\panda_banner_01.jpg" />
     <Content Include="Image\layout\panda_banner_02.jpg" />
@@ -328,6 +329,9 @@
     <Content Include="Views\Promotion\ThemChuongTrinhKhuyenMai.cshtml" />
     <Content Include="Views\Promotion\XemChuongTrinhKhuyenMai.cshtml" />
     <Content Include="Views\Promotion\SuaChuongTrinhKhuyenMai.cshtml" />
+    <Content Include="Views\Statistic\ThongKeDonHang.cshtml" />
+    <Content Include="Views\Statistic\ThongKeDoanhThu.cshtml" />
+    <Content Include="Views\Home\AboutUs.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

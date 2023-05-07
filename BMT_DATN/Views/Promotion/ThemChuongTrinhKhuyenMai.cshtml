@@ -184,7 +184,7 @@
         var x = new Date(dStart);
         var dCurrent = new Date();
         dCurrent.setHours(7, 0, 0, 0);
-        if (new Date(dStart) <= dCurrent) {
+        if (new Date(dStart) < dCurrent) {
             alert("Ngày bắt đầu không hợp lệ!");
             return false;
         }

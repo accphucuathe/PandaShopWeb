@@ -1,0 +1,139 @@
+﻿
+@{
+    ViewBag.Title = "Thống kê đơn hàng";
+    Layout = "~/Views/Shared/layout_statistic.cshtml";
+}
+
+@using BMT_DATN.Models;
+@{
+    DateTime startDate = ViewBag.startDate;
+    DateTime endDate = ViewBag.endDate;
+    DateTime endDateFilter = endDate.AddDays(1);
+    BMT_DATNEntities db = new BMT_DATNEntities();
+    CurrencyHelper ch = new CurrencyHelper();
+    var ordersByDate = (from dh in db.tblDonHangs
+                         join ctdh in db.tblChiTietDonHangs on dh.PK_MaDonHang equals ctdh.FK_MaDonHang
+                         where (startDate <= dh.ThoiGianCapNhatTrangThai && dh.ThoiGianCapNhatTrangThai < endDateFilter &&
+                                (dh.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaNhan ||
+                                dh.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaHoanTra ||
+                                dh.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaHuy ||
+                                dh.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.MuaTaiCuaHang))
+                         select new
+                         {
+                             MaDonHang = dh.PK_MaDonHang,
+                             NgayKetThuc = dh.ThoiGianCapNhatTrangThai,
+                             TrangThaiDonHang = dh.tblTrangThaiDonHang.TenTrangThaiDonHang,
+                             MaSanPham = ctdh.FK_MaSanPham,
+                             TenSanPham = ctdh.tblSanPham.TenSanPham,
+                             SoLuongMua = ctdh.SoLuongMua,
+                             DonGia = ctdh.DonGia
+                         }
+                         into listOrders
+                         group listOrders by listOrders.MaDonHang into gr
+                         orderby gr.Key descending
+                         select new
+                         {
+                             MaDonHang = gr.Key,
+                             TrangThaiDonHang = gr.Select(p => p.TrangThaiDonHang).FirstOrDefault(),
+                             NgayKetThuc = gr.Select(p => p.NgayKetThuc).FirstOrDefault(),
+                             TongTienThanhToan = gr.Sum(p => p.SoLuongMua * p.DonGia)
+                         }
+                         ).ToList();
+
+}
+
+<link href="~/Theme/css/custom_admin_1.css" rel="stylesheet" />
+<script src="~/Theme/js/jquery-3.2.1.min.js"></script>
+<script>
+    $('a[name="tkdh_menu"]').html("<b> &#9205; ĐƠN HÀNG</b>");
+    $('a[name="tkdh_menu"]').css("color", "red");
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip({
+            trigger: 'hover'
+        });
+        // tim theo khoang thoi gian
+        $('a[name="filterDonHang"]').click(function () {
+            var dStart = $("#startDateFilter").val();
+            var dEnd = $("#endDateFilter").val();
+            var obj = {
+                startDate: dStart,
+                endDate: dEnd
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AdminLocThongKeDonHang", "Statistic")',
+                data: JSON.stringify(obj),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+
+                beforeSend: function () {
+
+                },
+                success: function (response) {
+                    window.location.href = response.redirectToUrl;
+                },
+                failure: function (response) {
+                    alert("fail");
+                },
+                complete: function () {
+
+                },
+                error: function (xhr, status, error) {
+                    var err = xhr.responseText;
+                    console.log(err);
+                },
+            });
+        });
+    });
+</script>
+
+<div class="container">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-4"><h2><b>THỐNG KÊ ĐƠN HÀNG</b></h2></div>
+                    <div class="col-sm-7">
+                        <div class="search-box">
+                            <label>Từ: </label>
+                            <input type="date" id="startDateFilter" value="@startDate.ToString("yyyy-MM-dd")" />
+                            <label>Đến: </label>
+                            <input type="date" id="endDateFilter" value="@endDate.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+                    <div class="col-sm-1" title="Lọc" data-toggle="tooltip">
+                        <a href="javascript:void(0)" name="filterDonHang"><i class="material-icons add_user_button">&#xef4f;</i></a>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">STT</th>
+                        <th>Mã đơn hàng</th>
+                        <th>Ngày kết thúc đơn hàng</th>
+                        <th>Trạng thái đơn hàng</th>
+                        <th>Tổng tiền đơn hàng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int stt = 0;
+                        foreach (var ord in ordersByDate)
+                        {
+                            <tr>
+                                <td style="text-align:center;">@(stt+1)</td>
+                                <td>@ord.MaDonHang</td>
+                                <td>@ord.NgayKetThuc.Value.ToString("dd-MM-yyyy")</td>
+                                <td>@ord.TrangThaiDonHang</td>
+                                <td class="text-right">@ch.FormatToCurrency(ord.TongTienThanhToan)</td>
+                            </tr>
+                            stt++;
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

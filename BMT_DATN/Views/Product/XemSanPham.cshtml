@@ -32,7 +32,8 @@
                                    SoLuong = sp.SoLuong,
                                    DonGia = sp.DonGia,
                                    TenDanhMucSanPham = sp.tblDanhMucSanPham.TenDanhMucSanPham,
-                                   CacNhaCungCap = sp.tblNguonCungCaps.ToList()
+                                   CacNhaCungCap = sp.tblNguonCungCaps.ToList(),
+                                   GiaThayDoi = sp.tblGiaThayDois.ToList()
                                }).FirstOrDefault();
         }
         <table class="table table-striped table-hover table-bordered">
@@ -83,6 +84,19 @@
                                 foreach (var ncc in infoSanPham.CacNhaCungCap)
                                 {
                                     <li style="list-style: circle; margin-left: 15px;">@ncc.tblNhaCungCap.TenNhaCungCap</li>
+                                }
+                            }
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Lịch sử thay đổi</td>
+                    <td>
+                        <ul>
+                            @{
+                                foreach (var gia in infoSanPham.GiaThayDoi)
+                                {
+                                    <li style="list-style: circle; margin-left: 15px;">@gia.ThoiGianThayDoiGia - @ch.FormatToCurrency(gia.GiaThayDoi)</li>
                                 }
                             }
                         </ul>

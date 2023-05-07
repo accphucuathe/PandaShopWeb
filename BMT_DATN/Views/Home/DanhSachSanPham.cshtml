@@ -41,6 +41,32 @@
             break;
     }
     var listProduct = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
+    // promotion
+    DateTime today = DateTime.Now.Date;
+    var productsAreOnPromotion = (from ctkm in db.tblChuongTrinhKhuyenMais
+                                  join ctctkm in db.tblChiTietKhuyenMais on ctkm.PK_MaChuongTrinhKhuyenMai equals ctctkm.FK_MaChuongTrinhKhuyenMai
+                                  orderby ctkm.NgayBatDau descending
+                                  where ctkm.NgayBatDau <= today && today <= ctkm.NgayKetThuc
+                                  select new
+                                  {
+                                      idPromotionProduct = ctctkm.FK_MaSanPham,
+                                      promotionPercent = ctkm.PhanTramGiamGia
+                                  });
+    //
+    var listProduct2 = (from lp in listProduct
+                        join paop in productsAreOnPromotion on lp.PK_MaSanPham equals paop.idPromotionProduct
+                                      into gj
+                        from paop in gj.DefaultIfEmpty()
+                        select new
+                        {
+                            HinhAnh = lp.HinhAnh,
+                            PK_MaSanPham = lp.PK_MaSanPham,
+                            TenSanPham = lp.TenSanPham,
+                            DonGia = lp.DonGia,
+                            PhanTramGiamGia = paop != null ? paop.promotionPercent : 0 ,
+                            GiaHienTai = paop != null ? (lp.DonGia * (100 - paop.promotionPercent) / 100) : lp.DonGia,
+                        }).ToList();
+    var x = 0;
 }
 
 <script src="~/Theme/js/jquery-3.2.1.min.js"></script>
@@ -266,7 +292,7 @@
                             <div role="tabpanel" class="tab-pane fade show active" id="grid-view">
                                 <div class="row">
                                     @{
-                                        foreach (var product in listProduct)
+                                        foreach (var product in listProduct2)
                                         {
                                             <div class="col-sm-6 col-md-6 col-lg-4 col-xl-4 card-product">
                                                 <div class="products-single fix card-product-single">
@@ -278,7 +304,17 @@
                                                     </div>
                                                     <div class="why-text card-product-single-name">
                                                         <h4><a href="/chi-tiet-san-pham?maSp=@product.PK_MaSanPham">@product.TenSanPham</a></h4>
-                                                        <h5>@ch.FormatToCurrency(product.DonGia)</h5>
+                                                        @{
+                                                            if (product.PhanTramGiamGia == 0)
+                                                            { 
+                                                                <h5>@ch.FormatToCurrency(product.DonGia)</h5>
+                                                            }
+                                                            else
+                                                            {
+                                                                <h6 style="width:50%; display:inline;"><del>@ch.FormatToCurrency(product.DonGia)</del></h6>
+                                                                <h5 style="width:50%; display:inline;">@ch.FormatToCurrency(product.GiaHienTai)</h5>
+                                                            }
+                                                        }
                                                     </div>
                                                 </div>
                                             </div>

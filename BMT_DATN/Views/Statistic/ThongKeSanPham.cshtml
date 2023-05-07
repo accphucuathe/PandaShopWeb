@@ -91,6 +91,7 @@
                         <th style="width: 50px;">STT</th>
                         <th>Tên sản phẩm</th>
                         <th>Số lượng còn lại</th>
+                        <th>Số lượng đã bán</th>
                     </tr>
                 </thead>
                 @*<tbody>
@@ -140,6 +141,11 @@
                                 { 
                                     <td>@prod.SoLuong</td>
                                 }
+                                <td>@prod.tblChiTietDonHangs.Where(o => (o.tblDonHang.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.DaNhan ||
+                                                                        o.tblDonHang.FK_MaTrangThaiDonHang == (int)EnumTrangThaiDonHang.MuaTaiCuaHang) &&
+                                                                        o.FK_MaSanPham == prod.PK_MaSanPham).Count()
+                                
+                                </td>
                             </tr>
                             stt++;
                         }
